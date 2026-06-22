@@ -1,0 +1,19 @@
+# Environment variables (YOUR API KEY!)
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+
+# OS files
+.DS_Store
+.DS_Store?
+
+# R
+.Rhistory
+
+CLAUDE.md
