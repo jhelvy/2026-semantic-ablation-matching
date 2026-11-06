@@ -110,23 +110,97 @@ def _openai_resp(text, status="completed", reason=None, refusal=False):
     part = NS(type="refusal", refusal="no") if refusal else NS(type="output_text", text=text)
     return NS(output=[NS(type="message", content=[part])], output_text=text, status=status,
               incomplete_details=NS(reason=reason) if reason else None,
-              usage=NS(input_tokens=1000, output_tokens=300), model="gpt-6-luna", id="resp_1")
+              usage=NS(input_tokens=1000, output_tokens=300), model="gpt-4o-mini", id="resp_1")
 
 
 def test_openai_request_shape_and_statuses():
     fake = _FakeResponses(_openai_resp('{"match": 0, "confidence": 0.6, "rationale": "none"}'))
     llm_clients._clients["openai"] = NS(responses=fake)
-    r = llm_clients.call_model(MODELS["luna"], "p", 50)
+    r = llm_clients.call_model(MODELS["gpt4omini"], "p", 50)
     assert r.status == "no_match"
     assert fake.kwargs["text"]["format"]["strict"] is True
-    assert fake.kwargs["reasoning"] == {"effort": "medium"}
-    llm_clients.call_model(MODELS["gpt4omini"], "p", 50)        # bridge model: no reasoning param
-    assert "reasoning" not in llm_clients._clients["openai"].responses.kwargs
+    assert "reasoning" not in fake.kwargs                        # non-reasoning bridge model
+    llm_clients.call_model(MODELS["gpt4omini"], "p", 50, effort="low")
+    assert fake.kwargs["reasoning"] == {"effort": "low"}         # explicit override is passed through
     llm_clients._clients["openai"] = NS(responses=_FakeResponses(
         _openai_resp("", "incomplete", "max_output_tokens")))
-    assert llm_clients.call_model(MODELS["luna"], "p", 50).status == "truncated"
+    assert llm_clients.call_model(MODELS["gpt4omini"], "p", 50).status == "truncated"
     llm_clients._clients["openai"] = NS(responses=_FakeResponses(_openai_resp("", refusal=True)))
-    assert llm_clients.call_model(MODELS["luna"], "p", 50).status == "refusal"
+    assert llm_clients.call_model(MODELS["gpt4omini"], "p", 50).status == "refusal"
+
+
+# ---------------------------------------------------------------- kimi (openai-compatible)
+class _FakeChat:
+    def __init__(self, resp):
+        self.resp, self.kwargs = resp, None
+        self.completions = self
+
+    def create(self, **kw):
+        self.kwargs = kw
+        return self.resp
+
+
+def _chat_resp(text, finish="stop"):
+    return NS(choices=[NS(message=NS(content=text, refusal=None), finish_reason=finish)],
+              usage=NS(prompt_tokens=2000, completion_tokens=900), model="moonshotai/kimi-k3", id="gen_1")
+
+
+def test_kimi_request_shape_and_statuses():
+    cfg = MODELS["kimik3"]
+    key = f"openai_compatible:|{cfg.base_url}|{cfg.api_key_env}"
+    fake = _FakeChat(_chat_resp('{"match": 7, "confidence": 0.7, "rationale": "code"}'))
+    llm_clients._clients[key] = NS(chat=fake)
+    r = llm_clients.call_model(cfg, "p", 50)
+    assert r.status == "ok" and r.match_index == 7
+    assert fake.kwargs["response_format"]["type"] == "json_schema"
+    if "openrouter.ai" in cfg.base_url:                          # default: provider pinned, no fallback
+        assert fake.kwargs["extra_body"]["provider"] == {"order": ["moonshotai"], "allow_fallbacks": False}
+    assert abs(r.cost_usd - (2000 * 3.0 + 900 * 15.0) / 1e6) < 1e-12
+    assert cfg.default_sample_frac == 0.3
+    llm_clients._clients[key] = NS(chat=_FakeChat(_chat_resp("", "length")))
+    assert llm_clients.call_model(cfg, "p", 50).status == "truncated"
+
+
+# ---------------------------------------------------------------- claude CLI pilot adapter
+def test_claude_cli_adapter(monkeypatch=None):
+    import shutil
+    import subprocess
+    seen = {}
+    envelope = {"type": "result", "subtype": "success", "is_error": False, "session_id": "s1",
+                "result": "", "structured_output": {"match": 2, "confidence": 0.9, "rationale": "sku"},
+                "usage": {"input_tokens": 50, "cache_read_input_tokens": 3000, "output_tokens": 120}}
+
+    def fake_run(cmd, input, capture_output, text, cwd, env, timeout):
+        seen.update(cmd=cmd, env=env, cwd=cwd, input=input)
+        return NS(returncode=0, stdout=json.dumps(envelope), stderr="")
+
+    orig_run, orig_which = subprocess.run, shutil.which
+    subprocess.run, shutil.which = fake_run, (lambda name: "/usr/local/bin/claude")
+    import os
+    os.environ["ANTHROPIC_API_KEY"] = "sk-test-should-not-leak"
+    try:
+        r = llm_clients.call_model(MODELS["haiku55_cli"], "PROMPT", 50)
+        assert r.status == "ok" and r.match_index == 2 and r.cost_usd == 0.0
+        assert r.input_tokens == 3050                            # total context, to detect injected context
+        assert "ANTHROPIC_API_KEY" not in seen["env"]            # never bills the API
+        for flag in ("-p", "--json-schema", "--tools", "--strict-mcp-config", "--no-session-persistence",
+                     "--system-prompt", "--setting-sources"):
+            assert flag in seen["cmd"], flag
+        assert seen["cmd"][seen["cmd"].index("--tools") + 1] == ""
+        assert seen["input"] == "PROMPT"
+        envelope.update(is_error=True, result="Claude usage limit reached")
+        try:
+            llm_clients.call_model(MODELS["haiku55_cli"], "PROMPT", 50)
+            raise AssertionError("usage limit should be fatal")
+        except FatalAPIError:
+            pass
+    finally:
+        subprocess.run, shutil.which = orig_run, orig_which
+        os.environ.pop("ANTHROPIC_API_KEY", None)
+    assert llm_runner.LLM_METHODS["llm_haiku55_cli"].result_root == "pilot_results"
+    assert llm_runner.LLM_METHODS["llm_haiku55"].result_root == "results"
+    ck = llm_runner.checkpoint_path_for("pilot_results/abt-buy/llm_haiku55_cli/original.parquet")
+    assert ck.parts[:2] == ("checkpoints", "pilot")
 
 
 # ---------------------------------------------------------------- runner
@@ -224,13 +298,17 @@ def test_parse_fail_retried_once():
         assert (df3["status"] == "ok").all()
 
 
-def test_method_registry():
-    assert {"llm_haiku55", "llm_haiku55_tf", "llm_opus55", "llm_luna", "llm_gpt4omini"} <= set(llm_runner.LLM_METHODS)
-    try:
-        llm_runner.run_llm(*_toy_data(), "opus55")
-        raise AssertionError("opus55 full run should require --sample-frac")
-    except ValueError:
-        pass
+def test_method_registry_and_default_subsample():
+    assert {"llm_haiku55", "llm_haiku55_tf", "llm_sonnet55", "llm_gpt4omini", "llm_kimik3",
+            "llm_haiku55_cli", "llm_sonnet55_cli"} <= set(llm_runner.LLM_METHODS)
+    with tempfile.TemporaryDirectory() as tmp:
+        llm_runner.call_model = _fake_call(["ok"] * 30)
+        out = Path(tmp) / "results" / "toy" / "llm_sonnet55" / "original.parquet"
+        df = llm_runner.run_llm(*_toy_data(), "sonnet55", output_path=str(out))
+        assert len(df) == 9                                     # 30% of 30 query records
+        df_h = llm_runner.run_llm(*_toy_data(), "haiku55",
+                                  output_path=str(Path(tmp) / "results" / "toy" / "h" / "o.parquet"))
+        assert set(df["id_left"]) <= set(df_h["id_left"]) and len(df_h) == 30
 
 
 if __name__ == "__main__":

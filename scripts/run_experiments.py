@@ -9,13 +9,14 @@ Usage:
 
 Harness-v2 LLM methods (see scripts/llm_runner.py; `python scripts/llm_cost_estimate.py`
 prices a run without calling any API):
-    python scripts/run_experiments.py --dataset abt-buy --methods llm_haiku55,llm_luna
-    python scripts/run_experiments.py --dataset all --methods llm_opus55 --sample-frac 0.2
+    python scripts/run_experiments.py --dataset abt-buy --methods llm_haiku55,llm_gpt4omini
+    python scripts/run_experiments.py --dataset all --methods llm_sonnet55,llm_kimik3   # 30% subsample by default
+    python scripts/run_experiments.py --dataset abt-buy --methods llm_haiku55_cli --sample-frac 0.05 --workers 2   # subscription pilot -> pilot_results/
     python scripts/run_experiments.py --dataset abt-buy --methods llm_sonnet55 --effort high
     python scripts/run_experiments.py --dataset abt-buy --methods llm_haiku55 --repeat 2
 
 Non-default options are appended to the result directory name, e.g.
-results/abt-buy/llm_opus55__sample0.2/original.parquet, so runs never overwrite each other.
+results/abt-buy/llm_haiku55__effort-high/original.parquet, so runs never overwrite each other.
 """
 
 import pandas as pd
@@ -142,7 +143,7 @@ def run_single_experiment(dataset_name, transformation, method_name, method_func
         import inspect
         accepts_llm_options = 'llm_options' in inspect.signature(method_func).parameters
         label = run_label(method_name, llm_options) if accepts_llm_options else method_name
-        output_dir = Path(f"results/{dataset_name}/{label}")
+        output_dir = Path(getattr(method_func, "result_root", "results")) / dataset_name / label
         output_dir.mkdir(parents=True, exist_ok=True)
         output_file = output_dir / f"{transformation}.parquet"
 

@@ -12,8 +12,8 @@ them against the first real run and re-estimate.
 
 Usage:
     python scripts/llm_cost_estimate.py
-    python scripts/llm_cost_estimate.py --datasets abt-buy --models haiku55,luna
-    python scripts/llm_cost_estimate.py --out-tokens 800 --subsample-frac 0.2
+    python scripts/llm_cost_estimate.py --datasets abt-buy --models haiku55,gpt4omini
+    python scripts/llm_cost_estimate.py --out-tokens 1500 --cpt-original 1.8 --cpt-transformed 1.2
 """
 
 import argparse
@@ -37,7 +37,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--datasets", default="abt-buy,amazon-google")
     ap.add_argument("--transformations", default=",".join(TRANSFORMATIONS))
-    ap.add_argument("--models", default=",".join(k for k in MODELS if k != "openweight"))
+    ap.add_argument("--models", default=",".join(k for k, c in MODELS.items() if c.provider != "claude_cli"))
     ap.add_argument("--prompt", default="standard", choices=["standard", "token_fallback"])
     ap.add_argument("--out-tokens", type=int, default=600,
                     help="Assumed output tokens per call incl. thinking (reasoning models)")
@@ -45,8 +45,6 @@ def main():
                     help="Chars per token for Original text")
     ap.add_argument("--cpt-transformed", type=float, default=2.5,
                     help="Chars per token for ciphered/scrambled text")
-    ap.add_argument("--subsample-frac", type=float, default=0.2,
-                    help="Fraction used for models with full_run=False (Opus, Astra)")
     args = ap.parse_args()
 
     rows = []
@@ -59,8 +57,9 @@ def main():
             in_tok = chars / cpt
             for mk in args.models.split(","):
                 cfg = MODELS[mk]
-                frac = 1.0 if cfg.full_run else args.subsample_frac
-                out_per_call = args.out_tokens if cfg.effort else 150
+                frac = cfg.default_sample_frac or 1.0
+                # gpt-4o-mini is the only non-reasoning model; Kimi K3 reasons by default
+                out_per_call = 150 if cfg.key == "gpt4omini" else args.out_tokens
                 n = len(reqs) * frac
                 cost = (in_tok * frac) / 1e6 * cfg.input_price + n * out_per_call / 1e6 * cfg.output_price
                 rows.append(dict(dataset=ds, transformation=t, model=mk, queries=int(n),

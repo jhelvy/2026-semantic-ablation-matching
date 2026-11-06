@@ -160,11 +160,13 @@ def build_requests(df_left, df_right, df_mapping, prompt_key="standard", top_k=N
 # =============================================================================
 
 def checkpoint_path_for(output_path):
+    """results/... -> checkpoints/...; pilot_results/... -> checkpoints/pilot/..."""
     p = Path(output_path)
     parts = list(p.parts)
-    if "results" in parts:
-        parts[parts.index("results")] = "checkpoints"
-        return Path(*parts)
+    for root, repl in (("results", ["checkpoints"]), ("pilot_results", ["checkpoints", "pilot"])):
+        if root in parts:
+            i = parts.index(root)
+            return Path(*parts[:i], *repl, *parts[i + 1:])
     return p.with_suffix(".checkpoint.parquet")
 
 
@@ -209,9 +211,8 @@ def run_llm(df_left, df_right, df_mapping, model_key, prompt_key="standard", out
             effort=None, sample_frac=None, sample_seed=42, workers=8, max_error_rate=0.01,
             shuffle_candidates=False, shuffle_seed=0, top_k=None, max_text_length=2000):
     cfg = MODELS[model_key]
-    if sample_frac is None and not cfg.full_run:
-        raise ValueError(f"{model_key} is configured for subsample runs only; pass --sample-frac "
-                         "(or set full_run=True in llm_clients.MODELS)")
+    if sample_frac is None:
+        sample_frac = cfg.default_sample_frac      # e.g. Sonnet / Kimi: fixed 30% subsample
     eff = cfg.effort if effort is None else (effort or None)
     print(f"\n{cfg.label} [{cfg.model_id}] prompt={prompt_key} effort={eff} "
           f"sample_frac={sample_frac} workers={workers}")
@@ -321,6 +322,8 @@ def make_llm_method(model_key, prompt_key):
                        output_path=output_path, **(llm_options or {}))
     _method.__name__ = f"llm_{model_key}" + ("_tf" if prompt_key == "token_fallback" else "")
     _method.__doc__ = f"{MODELS[model_key].label}, TF-IDF blocking, {prompt_key} prompt (harness v2)."
+    # Subscription (CLI) pilots never write to results/, so they cannot leak into reported numbers.
+    _method.result_root = "pilot_results" if MODELS[model_key].provider == "claude_cli" else "results"
     return _method
 
 

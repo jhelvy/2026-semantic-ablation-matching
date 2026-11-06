@@ -232,18 +232,17 @@ What changed:
 
 Models (`llm_clients.MODELS`; prices checked 2026-11-06, re-check before budgeting):
 
-| Method | Model ID | Role | Default run |
+| Method | Model | Run | Notes |
 |---|---|---|---|
-| `llm_haiku55` | `claude-haiku-5-5` | small | full |
-| `llm_sonnet55` | `claude-sonnet-5-5` | mid | full |
-| `llm_opus55` | `claude-opus-5-5` | flagship | `--sample-frac` required |
-| `llm_luna` | `gpt-6-luna` | small | full |
-| `llm_sol` | `gpt-6.1-sol` | mid | full |
-| `llm_astra` | `gpt-6-astra` | flagship | `--sample-frac` required |
-| `llm_gpt4omini` | `gpt-4o-mini` | bridge to the TKDE submission | full |
-| `llm_openweight` | any OpenAI-compatible server | open-weight | full |
+| `llm_haiku55` | `claude-haiku-5-5` | full grid | reported |
+| `llm_sonnet55` | `claude-sonnet-5-5` | fixed 30% subsample | reported |
+| `llm_gpt4omini` | `gpt-4o-mini` | full grid | reported; bridge to the TKDE submission |
+| `llm_kimik3` | Kimi K3 (`moonshotai/kimi-k3` on OpenRouter, pinned to the Moonshot AI provider) | fixed 30% subsample | reported; open weights, hosted |
+| `llm_haiku55_cli`, `llm_sonnet55_cli` | Claude Code CLI on a subscription | any | **pilots only**; written to `pilot_results/` |
 
-Each method also has a token-fallback variant with a `_tf` suffix (for example `llm_haiku55_tf`). All reasoning models default to effort `medium`. Claude 5.5 models always think; effort is the only control.
+Each method also has a token-fallback variant with a `_tf` suffix. Sonnet and Kimi use the same seed, so they see the same 30% of query records, and those records are also part of the Haiku and GPT-4o-mini runs. Claude models run at effort `medium` with adaptive thinking, which cannot be turned off. GPT-4o-mini is not a reasoning model. Kimi K3 runs at its provider's default reasoning setting.
+
+Subscription pilots run `claude -p` from an empty temporary directory, with no tools, no MCP servers, only project-level settings, and a replaced system prompt. `ANTHROPIC_API_KEY` is removed from their environment, so they can never bill the API. The CLI's JSON output fields and whether user-level context still reaches the model have not been checked yet. On the first pilot, compare the logged `input_tokens` with the prompt size, and look at `raw_response`. Use `--workers 2` or so, to stay inside subscription limits.
 
 Setup and checks (none of these call an API):
 
@@ -254,20 +253,22 @@ python scripts/test_llm_harness.py      # offline tests with fake clients
 python scripts/llm_cost_estimate.py     # prices one pass from locally built prompts
 ```
 
-Running (these do call APIs and cost money):
+Pilots (subscription; no API cost):
 
 ```bash
-# 1. Pilot: cheap models, two conditions, to check the pipeline and calibrate the cost estimate
-python scripts/run_experiments.py --dataset abt-buy --methods llm_haiku55,llm_luna \
-    --transformations original,ciphered_words
-# 2. Full grid for small and mid models
-python scripts/run_experiments.py --dataset all --methods llm_haiku55,llm_luna,llm_sonnet55,llm_sol,llm_gpt4omini
-# 3. Flagships on a fixed 20% subsample (the same query records for every model and condition)
-python scripts/run_experiments.py --dataset all --methods llm_opus55,llm_astra --sample-frac 0.2
+python scripts/run_experiments.py --dataset abt-buy --methods llm_haiku55_cli \
+    --transformations original,ciphered_words --sample-frac 0.05 --workers 2
+```
+
+Reported runs (these call APIs and cost money; about $65-150 per pass of the standard prompt on 2 datasets x 4 conditions):
+
+```bash
+python scripts/run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini   # full grid
+python scripts/run_experiments.py --dataset all --methods llm_sonnet55,llm_kimik3     # 30% subsample
 # Options: --effort low|high, --repeat N, --shuffle-candidates, --top-k K, --workers N
 ```
 
-Non-default options are appended to the result directory name (for example `results/abt-buy/llm_opus55__sample0.2/`), so runs never overwrite each other. `cv_threshold.py` and `analyze_results.py` pick up the new directories automatically.
+Non-default options are appended to the result directory name (for example `results/abt-buy/llm_haiku55__effort-high/`), so runs never overwrite each other. `cv_threshold.py` and `analyze_results.py` pick up the new directories automatically.
 
 ## Project Structure
 

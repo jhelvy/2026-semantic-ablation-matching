@@ -21,6 +21,10 @@ Every adapter:
 Fatal account-level errors (bad key, no credit, unknown model) raise
 FatalAPIError so a run stops instead of writing thousands of blank rows.
 
+Providers: Anthropic Messages API, OpenAI Responses API, any OpenAI-compatible
+Chat Completions server (Kimi K3 via OpenRouter or Moonshot), and the Claude
+Code CLI on a subscription (pilots only).
+
 Sampling parameters (temperature etc.) are NOT sent: current Claude models
 reject them, and current OpenAI reasoning models do not support them.
 Run-to-run variance must therefore be measured with repeated runs.
@@ -66,55 +70,78 @@ MATCH_SCHEMA = {
 # =============================================================================
 # MODEL REGISTRY
 # =============================================================================
-# Prices are USD per 1M tokens (standard tier, short context), checked 2026-11-06:
+# Lineup for the reported results (decided 2026-11-06; proof of concept, not a
+# model survey):
+#   haiku55   - Claude Haiku 5.5, full grid
+#   sonnet55  - Claude Sonnet 5.5, fixed 30% subsample
+#   gpt4omini - GPT-4o-mini, full grid (bridge to the TKDE submission)
+#   kimik3    - Kimi K3 (open weights, hosted), fixed 30% subsample
+# Subsampled models share one seed, so Sonnet and Kimi see the same query
+# records, which are also a subset of the Haiku / GPT-4o-mini runs.
+#
+# *_cli entries run through the Claude Code CLI on a Claude subscription. They
+# are for pilots and prompt iteration only and write to pilot_results/, never
+# to results/.
+#
+# Prices are USD per 1M tokens, checked 2026-11-06; re-check before budgeting.
 #   Claude: claude-api skill model table (cached 2026-10-06)
 #   OpenAI: https://developers.openai.com/api/docs/pricing
-# Re-check before budgeting. Output tokens include thinking/reasoning tokens.
+#   Kimi K3: https://openrouter.ai/moonshotai/kimi-k3 (Moonshot AI provider)
+# Output tokens include thinking/reasoning tokens.
+
+SUBSAMPLE_FRAC = 0.3
 
 
 @dataclass(frozen=True)
 class ModelConfig:
     key: str                 # short name used in method names / result dirs
-    provider: str            # "anthropic" | "openai" | "openweight"
+    provider: str            # "anthropic" | "openai" | "openai_compatible" | "claude_cli"
     model_id: str            # exact API model string
     label: str               # display label for tables/figures
     input_price: float       # $ / 1M input tokens
     output_price: float      # $ / 1M output tokens
     effort: Optional[str]    # default reasoning effort; None = do not send
     max_output_tokens: int   # cap incl. thinking tokens
-    tier: str                # "small" | "mid" | "flagship" | "bridge" | "open"
-    full_run: bool = True    # False = run on a subsample by default (cost)
+    tier: str                # "small" | "mid" | "bridge" | "open" | "pilot"
+    default_sample_frac: Optional[float] = None   # None = full grid
+    base_url: Optional[str] = None                # openai_compatible only
+    api_key_env: Optional[str] = None             # openai_compatible only
+    extra_body: Optional[dict] = None             # openai_compatible only
+    response_format: str = "json_schema"          # openai_compatible: json_schema | json_object | none
 
+
+_KIMI_BASE_URL = os.environ.get("KIMI_BASE_URL", "https://openrouter.ai/api/v1")
+_KIMI_ON_OPENROUTER = "openrouter.ai" in _KIMI_BASE_URL
 
 MODELS = {
-    # --- Anthropic (Claude 5.5 family). Thinking is adaptive by default on all
-    # three; Opus 5.5 cannot disable it, so effort is the only control.
+    # --- Anthropic. Thinking is adaptive by default on the 5.5 family.
     "haiku55": ModelConfig("haiku55", "anthropic", "claude-haiku-5-5", "Claude Haiku 5.5",
                            0.10, 0.50, "medium", 8000, "small"),
     "sonnet55": ModelConfig("sonnet55", "anthropic", "claude-sonnet-5-5", "Claude Sonnet 5.5",
-                            2.00, 10.00, "medium", 8000, "mid"),
-    "opus55": ModelConfig("opus55", "anthropic", "claude-opus-5-5", "Claude Opus 5.5",
-                          4.00, 20.00, "medium", 8000, "flagship", full_run=False),
-    # --- OpenAI (GPT-6 family; all reasoning models).
-    "luna": ModelConfig("luna", "openai", "gpt-6-luna", "GPT-6 Luna",
-                        0.10, 0.50, "medium", 8000, "small"),
-    "sol": ModelConfig("sol", "openai", "gpt-6.1-sol", "GPT-6.1 Sol",
-                       2.00, 10.00, "medium", 8000, "mid"),
-    "astra": ModelConfig("astra", "openai", "gpt-6-astra", "GPT-6 Astra",
-                         10.00, 50.00, "medium", 8000, "flagship", full_run=False),
+                            2.00, 10.00, "medium", 8000, "mid", default_sample_frac=SUBSAMPLE_FRAC),
     # --- Bridge to the TKDE submission: same model, fixed harness.
     "gpt4omini": ModelConfig("gpt4omini", "openai", "gpt-4o-mini", "GPT-4o-mini (harness v2)",
                              0.15, 0.60, None, 1024, "bridge"),
-    # --- Open-weight model behind any OpenAI-compatible server (vLLM, Ollama,
-    # OpenRouter, Together...). Configure with env vars:
-    #   OPENWEIGHT_BASE_URL, OPENWEIGHT_MODEL, OPENWEIGHT_API_KEY (optional),
-    #   OPENWEIGHT_INPUT_PRICE / OPENWEIGHT_OUTPUT_PRICE (optional, $/1M; 0 for local)
-    "openweight": ModelConfig("openweight", "openweight",
-                              os.environ.get("OPENWEIGHT_MODEL", "UNSET"),
-                              f"Open-weight ({os.environ.get('OPENWEIGHT_MODEL', 'unset')})",
-                              float(os.environ.get("OPENWEIGHT_INPUT_PRICE", "0")),
-                              float(os.environ.get("OPENWEIGHT_OUTPUT_PRICE", "0")),
-                              None, 4000, "open"),
+    # --- Kimi K3 (Moonshot AI open weights), hosted. Default: OpenRouter pinned to
+    # the Moonshot AI provider with fallbacks off, so every call hits the same
+    # deployment (OpenRouter otherwise routes across ~20 hosts with different
+    # serving stacks). For Moonshot's own API set KIMI_BASE_URL=https://api.moonshot.ai/v1
+    # and KIMI_MODEL=kimi-k3. Effort is left at the provider default (not sent).
+    "kimik3": ModelConfig("kimik3", "openai_compatible",
+                          os.environ.get("KIMI_MODEL", "moonshotai/kimi-k3" if _KIMI_ON_OPENROUTER else "kimi-k3"),
+                          "Kimi K3", 3.00, 15.00, None, 16000, "open",
+                          default_sample_frac=SUBSAMPLE_FRAC, base_url=_KIMI_BASE_URL,
+                          api_key_env="KIMI_API_KEY",
+                          extra_body=({"provider": {"order": ["moonshotai"], "allow_fallbacks": False}}
+                                      if _KIMI_ON_OPENROUTER else None),
+                          response_format=os.environ.get("KIMI_RESPONSE_FORMAT", "json_schema")),
+    # --- Pilot-only: Claude Code CLI on a subscription (no API billing). Same
+    # prompts and schema, but a different harness (CLI system prompt, CLI
+    # defaults), so these numbers are never reported.
+    "haiku55_cli": ModelConfig("haiku55_cli", "claude_cli", "claude-haiku-5-5",
+                               "Claude Haiku 5.5 (CLI pilot)", 0.0, 0.0, "medium", 8000, "pilot"),
+    "sonnet55_cli": ModelConfig("sonnet55_cli", "claude_cli", "claude-sonnet-5-5",
+                                "Claude Sonnet 5.5 (CLI pilot)", 0.0, 0.0, "medium", 8000, "pilot"),
 }
 
 # =============================================================================
@@ -209,13 +236,12 @@ def _client(provider: str):
         if not os.getenv("OPENAI_API_KEY"):
             raise FatalAPIError("OPENAI_API_KEY not set (.env or environment)")
         c = openai.OpenAI(max_retries=6, timeout=300.0)
-    elif provider == "openweight":
+    elif provider.startswith("openai_compatible:"):
         import openai
-        base_url = os.getenv("OPENWEIGHT_BASE_URL")
-        if not base_url or os.getenv("OPENWEIGHT_MODEL", "UNSET") == "UNSET":
-            raise FatalAPIError("Set OPENWEIGHT_BASE_URL and OPENWEIGHT_MODEL for the open-weight model")
-        c = openai.OpenAI(base_url=base_url, api_key=os.getenv("OPENWEIGHT_API_KEY", "none"),
-                          max_retries=6, timeout=600.0)
+        _, base_url, key_env = provider.split("|")   # "openai_compatible:|<url>|<KEY_ENV>"
+        if not os.getenv(key_env):
+            raise FatalAPIError(f"{key_env} not set (.env or environment)")
+        c = openai.OpenAI(base_url=base_url, api_key=os.getenv(key_env), max_retries=6, timeout=900.0)
     else:
         raise ValueError(f"unknown provider {provider}")
     _clients[provider] = c
@@ -314,19 +340,25 @@ def _call_openai(cfg: ModelConfig, prompt: str, effort: Optional[str], n_candida
     return LLMResult(status, idx, conf, rat, error=err, **base)
 
 
-def _call_openweight(cfg: ModelConfig, prompt: str, effort: Optional[str], n_candidates: int) -> LLMResult:
+def _call_openai_compatible(cfg: ModelConfig, prompt: str, effort: Optional[str], n_candidates: int) -> LLMResult:
     import openai
-    client = _client("openweight")
+    client = _client(f"openai_compatible:|{cfg.base_url}|{cfg.api_key_env}")
+    kwargs = dict(model=cfg.model_id, messages=[{"role": "user", "content": prompt}],
+                  max_tokens=cfg.max_output_tokens)
+    if cfg.response_format == "json_schema":
+        kwargs["response_format"] = {"type": "json_schema", "json_schema": {
+            "name": "entity_match", "schema": MATCH_SCHEMA, "strict": True}}
+    elif cfg.response_format == "json_object":   # schema then rests on the prompt + parser
+        kwargs["response_format"] = {"type": "json_object"}
+    extra = dict(cfg.extra_body or {})
+    if effort:
+        extra["reasoning"] = {"effort": effort}   # OpenRouter's unified reasoning field
+    if extra:
+        kwargs["extra_body"] = extra
     t0 = time.time()
     try:
         # Chat Completions: the most widely implemented OpenAI-compatible endpoint.
-        resp = client.chat.completions.create(
-            model=cfg.model_id,
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=cfg.max_output_tokens,
-            response_format={"type": "json_schema",
-                             "json_schema": {"name": "entity_match", "schema": MATCH_SCHEMA, "strict": True}},
-        )
+        resp = client.chat.completions.create(**kwargs)
     except openai.APIError as e:
         if _is_fatal(e):
             raise FatalAPIError(f"{type(e).__name__}: {e}") from e
@@ -339,19 +371,88 @@ def _call_openweight(cfg: ModelConfig, prompt: str, effort: Optional[str], n_can
     base = dict(raw_response=text, stop_reason=str(choice.finish_reason), input_tokens=inp,
                 output_tokens=out, cost_usd=_cost(cfg, inp, out), model_served=str(resp.model),
                 request_id=str(resp.id), latency_s=time.time() - t0)
+    if getattr(choice.message, "refusal", None):
+        return LLMResult("refusal", error=str(choice.message.refusal)[:500], **base)
     if choice.finish_reason == "length":
         return LLMResult("truncated", error="hit max_tokens", **base)
+    if choice.finish_reason == "content_filter":
+        return LLMResult("refusal", error="content_filter", **base)
     status, idx, conf, rat, err = parse_match_json(text, n_candidates)
     return LLMResult(status, idx, conf, rat, error=err, **base)
 
 
-_CALLERS = {"anthropic": _call_anthropic, "openai": _call_openai, "openweight": _call_openweight}
+# ---- Claude Code CLI (subscription; PILOT ONLY) -----------------------------
+# Isolation: empty temp working directory (no project CLAUDE.md or memory),
+# only "project" setting sources (so user-level hooks and plugins are not
+# loaded), no tools, no MCP servers, no slash commands, replaced system prompt.
+# ANTHROPIC_API_KEY is removed from the child environment so the CLI uses the
+# subscription login and can never bill the API.
+# UNVERIFIED until the first pilot: the JSON envelope field names
+# ("structured_output", "result", "usage", "is_error", "subtype") and whether
+# any user-level context is still injected. Compare logged input_tokens with an
+# API count of the same prompt; a large excess means extra context got in.
+
+CLI_SYSTEM_PROMPT = "You are an expert at entity matching. Answer only in the requested JSON format."
+_CLI_FATAL_HINTS = ("usage limit", "rate limit", "limit reached", "not logged in", "please run /login",
+                    "authentication", "invalid api key")
+
+
+def _call_claude_cli(cfg: ModelConfig, prompt: str, effort: Optional[str], n_candidates: int) -> LLMResult:
+    import shutil
+    import subprocess
+    import tempfile
+    exe = shutil.which("claude")
+    if not exe:
+        raise FatalAPIError("claude CLI not found on PATH")
+    cmd = [exe, "-p", "--model", cfg.model_id, "--output-format", "json",
+           "--json-schema", json.dumps(MATCH_SCHEMA), "--tools", "", "--strict-mcp-config",
+           "--no-session-persistence", "--disable-slash-commands", "--setting-sources", "project",
+           "--system-prompt", CLI_SYSTEM_PROMPT]
+    if effort:
+        cmd += ["--effort", effort]
+    env = {k: v for k, v in os.environ.items() if k not in ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN")}
+    t0 = time.time()
+    with tempfile.TemporaryDirectory() as cwd:
+        try:
+            proc = subprocess.run(cmd, input=prompt, capture_output=True, text=True,
+                                  cwd=cwd, env=env, timeout=900)
+        except subprocess.TimeoutExpired:
+            return LLMResult("api_error", error="CLI timeout", latency_s=time.time() - t0)
+    latency = time.time() - t0
+    blob = (proc.stdout or "") + (proc.stderr or "")
+    try:
+        envl = json.loads(proc.stdout)
+    except (json.JSONDecodeError, TypeError):
+        envl = None
+    if proc.returncode != 0 or envl is None or envl.get("is_error"):
+        msg = (envl or {}).get("result") or blob
+        if any(h in str(msg).lower() for h in _CLI_FATAL_HINTS):
+            raise FatalAPIError(f"claude CLI: {str(msg)[:300]}")
+        return LLMResult("api_error", error=f"claude CLI rc={proc.returncode}: {str(msg)[:800]}",
+                         latency_s=latency)
+    structured = envl.get("structured_output")
+    text = json.dumps(structured) if structured is not None else str(envl.get("result", ""))
+    usage = envl.get("usage") or {}
+    inp = sum(int(usage.get(k, 0) or 0) for k in
+              ("input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens"))
+    base = dict(raw_response=text, stop_reason=str(envl.get("subtype", "")), input_tokens=inp,
+                output_tokens=int(usage.get("output_tokens", 0) or 0), cost_usd=0.0,
+                model_served=cfg.model_id, request_id=str(envl.get("session_id", "")),
+                latency_s=latency)
+    if envl.get("subtype") not in (None, "success"):
+        return LLMResult("parse_fail", error=f"CLI subtype {envl.get('subtype')}", **base)
+    status, idx, conf, rat, err = parse_match_json(text, n_candidates)
+    return LLMResult(status, idx, conf, rat, error=err, **base)
+
+
+_CALLERS = {"anthropic": _call_anthropic, "openai": _call_openai,
+            "openai_compatible": _call_openai_compatible, "claude_cli": _call_claude_cli}
 
 
 def call_model(cfg: ModelConfig, prompt: str, n_candidates: int, effort: Optional[str] = None) -> LLMResult:
     """Single structured call. `effort` overrides the model default; pass "" to send none."""
     eff = cfg.effort if effort is None else (effort or None)
-    if cfg.provider == "anthropic" and eff == "none":
+    if cfg.provider in ("anthropic", "claude_cli") and eff == "none":
         raise FatalAPIError("Claude 5.5 models cannot run with effort 'none' (thinking cannot be "
                             "disabled); use 'low' as the minimum-reasoning condition")
     return _CALLERS[cfg.provider](cfg, prompt, eff, n_candidates)
