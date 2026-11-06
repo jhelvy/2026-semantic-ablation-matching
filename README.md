@@ -88,8 +88,8 @@ Larger/stronger models score slightly higher on clean text but are *no more robu
 |---|---|---|
 | GPT-4o-mini (primary) | 0.928 | 0.822 |
 | GPT-4o | 0.955 | 0.904 |
-| Claude Haiku 3.5 | 0.961 | 0.895 |
-| Claude Sonnet 3.5 | 0.954 | -- (run abandoned, billing) |
+| Claude Haiku 4.5 | 0.961 | 0.895 |
+| Claude Sonnet 4.6 | 0.954 | -- (run abandoned, billing) |
 
 ### Prompt sensitivity (token-fallback prompt)
 
@@ -103,9 +103,9 @@ A prompt that explicitly instructs the model to match on identifier tokens gives
 | Model | Cost | Wall time |
 |---|---|---|
 | GPT-4o-mini | <$1 (~$0.50 Abt-Buy, ~$1.00 Amazon-Google) | 30-80 min |
-| Claude Haiku 3.5 | $3-9 | hours |
+| Claude Haiku 4.5 | $3-9 | hours |
 | GPT-4o | $7-22 | 1-6 h |
-| Claude Sonnet 3.5 | $10-13 | 1-6 h |
+| Claude Sonnet 4.6 | $10-13 | 1-6 h |
 | All non-LLM methods | $0 | seconds |
 
 The cost-benefit case for LLM matching is narrow: it is justified only on clean, description-rich text where the modest F1 gain (0.928 vs 0.761) outweighs orders-of-magnitude differences in cost and latency.
@@ -131,7 +131,7 @@ The cost-benefit case for LLM matching is narrow: it is justified only on clean,
 
 ### Large Language Model
 - **GPT-4o-mini** (primary): TF-IDF blocking (top-50 candidates), temperature = 0
-- Additional models tested for robustness: GPT-4o, Claude Sonnet 3.5, Claude Haiku 3.5
+- Additional models tested for robustness: GPT-4o, Claude Sonnet 4.6, Claude Haiku 4.5
 
 ---
 
@@ -217,6 +217,57 @@ Rscript scripts/charts.R
 Produces PNG plots in `results/plots/`. Requires the Roboto Condensed font; use `ragg::agg_png` or run in RStudio if headless rendering fails.
 
 ---
+
+## Harness v2 (LLM rerun, set up 2026-11)
+
+The v1 LLM results (`llm`, `llm_haiku*`, `llm_claude*`, `llm_gpt4o*`) parsed free-text answers by line prefix and stored API errors and unparseable answers as blank "no match" rows. An audit on 2026-11-06 found these blank rows throughout the ablation conditions (for example, every Haiku token-fallback Scrambled row failed at $0 cost). Harness v2 replaces that pipeline for all new LLM runs. The v1 code and results are left untouched for reference.
+
+What changed:
+
+- **One code path for every model** (`scripts/llm_clients.py`, `scripts/llm_runner.py`) with structured JSON output (`match`, `confidence`, `rationale`) instead of line parsing.
+- **Row-level `status`**: `ok`, `no_match`, `parse_fail`, `truncated`, `refusal`, `api_error`. Raw responses, stop reasons, token counts, cost, served model and request ids are saved for every row.
+- **Fails loudly**: a bad key, missing credit, or unknown model aborts at once. Five consecutive API errors, or more than 1% of calls, also abort the run. A run with unresolved API errors is never written to `results/`. Partial progress goes to `checkpoints/`, and rerunning the same command resumes it.
+- **No sampling parameters.** Current Claude models reject `temperature`, so run-to-run variance is measured with `--repeat`.
+- **Instance-level diagnostics** on every row: the rank of the true match among the blocked candidates, the candidate ids, and the prompt size.
+
+Models (`llm_clients.MODELS`; prices checked 2026-11-06, re-check before budgeting):
+
+| Method | Model ID | Role | Default run |
+|---|---|---|---|
+| `llm_haiku55` | `claude-haiku-5-5` | small | full |
+| `llm_sonnet55` | `claude-sonnet-5-5` | mid | full |
+| `llm_opus55` | `claude-opus-5-5` | flagship | `--sample-frac` required |
+| `llm_luna` | `gpt-6-luna` | small | full |
+| `llm_sol` | `gpt-6.1-sol` | mid | full |
+| `llm_astra` | `gpt-6-astra` | flagship | `--sample-frac` required |
+| `llm_gpt4omini` | `gpt-4o-mini` | bridge to the TKDE submission | full |
+| `llm_openweight` | any OpenAI-compatible server | open-weight | full |
+
+Each method also has a token-fallback variant with a `_tf` suffix (for example `llm_haiku55_tf`). All reasoning models default to effort `medium`. Claude 5.5 models always think; effort is the only control.
+
+Setup and checks (none of these call an API):
+
+```bash
+cp .env.example .env            # then fill in keys
+pip install -r requirements.txt # anthropic==2.6.0, openai==3.46.0
+python scripts/test_llm_harness.py      # offline tests with fake clients
+python scripts/llm_cost_estimate.py     # prices one pass from locally built prompts
+```
+
+Running (these do call APIs and cost money):
+
+```bash
+# 1. Pilot: cheap models, two conditions, to check the pipeline and calibrate the cost estimate
+python scripts/run_experiments.py --dataset abt-buy --methods llm_haiku55,llm_luna \
+    --transformations original,ciphered_words
+# 2. Full grid for small and mid models
+python scripts/run_experiments.py --dataset all --methods llm_haiku55,llm_luna,llm_sonnet55,llm_sol,llm_gpt4omini
+# 3. Flagships on a fixed 20% subsample (the same query records for every model and condition)
+python scripts/run_experiments.py --dataset all --methods llm_opus55,llm_astra --sample-frac 0.2
+# Options: --effort low|high, --repeat N, --shuffle-candidates, --top-k K, --workers N
+```
+
+Non-default options are appended to the result directory name (for example `results/abt-buy/llm_opus55__sample0.2/`), so runs never overwrite each other. `cv_threshold.py` and `analyze_results.py` pick up the new directories automatically.
 
 ## Project Structure
 

@@ -17,3 +17,6 @@ __pycache__/
 .Rhistory
 
 CLAUDE.md
+
+# Harness-v2 LLM checkpoints (partial runs; final results go to results/)
+checkpoints/

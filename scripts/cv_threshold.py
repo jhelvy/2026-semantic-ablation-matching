@@ -10,8 +10,9 @@ from collections import defaultdict
 from scipy.sparse import identity, csr_matrix
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-RES = Path("/Users/jhelvy/gh/research/fuzzy-join-llm/results")
-DATA = Path("/Users/jhelvy/gh/research/fuzzy-join-llm/data")
+_ROOT = Path(__file__).resolve().parent.parent      # repo root (was a hard-coded path to the old fuzzy-join-llm repo)
+RES = _ROOT / "results"
+DATA = _ROOT / "data"
 CFG = {
  "abt-buy": dict(left="abt", right="buy", mp="abt-buy/data_original/abt_buy_perfect_mapping.csv"),
  "amazon-google": dict(left="amazon", right="google", mp="amazon-google/data_original/amazon_googleproducts_perfectmapping.csv"),

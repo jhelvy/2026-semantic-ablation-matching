@@ -6,6 +6,16 @@ Runs methods with threshold optimization and proper output schema.
 Usage:
     python scripts/run_experiments.py --dataset abt-buy
     python scripts/run_experiments.py --dataset abt-buy --methods jaro_winkler,tfidf
+
+Harness-v2 LLM methods (see scripts/llm_runner.py; `python scripts/llm_cost_estimate.py`
+prices a run without calling any API):
+    python scripts/run_experiments.py --dataset abt-buy --methods llm_haiku55,llm_luna
+    python scripts/run_experiments.py --dataset all --methods llm_opus55 --sample-frac 0.2
+    python scripts/run_experiments.py --dataset abt-buy --methods llm_sonnet55 --effort high
+    python scripts/run_experiments.py --dataset abt-buy --methods llm_haiku55 --repeat 2
+
+Non-default options are appended to the result directory name, e.g.
+results/abt-buy/llm_opus55__sample0.2/original.parquet, so runs never overwrite each other.
 """
 
 import pandas as pd
@@ -15,7 +25,10 @@ import sys
 from datetime import datetime
 
 sys.path.append(str(Path(__file__).parent))
-from methods import METHODS
+from methods import METHODS as _V1_METHODS
+from llm_runner import LLM_METHODS
+
+METHODS = {**_V1_METHODS, **LLM_METHODS}
 
 # Dataset configurations
 DATASETS = {
@@ -93,7 +106,24 @@ def load_dataset(dataset_name, transformation):
     
     return df_left, df_right, df_mapping
 
-def run_single_experiment(dataset_name, transformation, method_name, method_func):
+def run_label(method_name, llm_options):
+    """Result-directory name: method plus any non-default harness-v2 options."""
+    o = llm_options or {}
+    parts = [method_name]
+    if o.get("effort") is not None:
+        parts.append(f"effort-{o['effort']}")
+    if o.get("sample_frac"):
+        parts.append(f"sample{o['sample_frac']}")
+    if o.get("shuffle_candidates"):
+        parts.append(f"shuffle{o.get('shuffle_seed', 0)}")
+    if o.get("top_k"):
+        parts.append(f"k{o['top_k']}")
+    if o.get("repeat"):
+        parts.append(f"rep{o['repeat']}")
+    return "__".join(parts)
+
+
+def run_single_experiment(dataset_name, transformation, method_name, method_func, llm_options=None):
     """Run single method on single transformation"""
     
     print(f"\n{'='*80}")
@@ -109,19 +139,25 @@ def run_single_experiment(dataset_name, transformation, method_name, method_func
         print(f"  Ground truth: {len(df_mapping)} matches")
         
         # Run method (includes threshold optimization)
-        output_dir = Path(f"results/{dataset_name}/{method_name}")
+        import inspect
+        accepts_llm_options = 'llm_options' in inspect.signature(method_func).parameters
+        label = run_label(method_name, llm_options) if accepts_llm_options else method_name
+        output_dir = Path(f"results/{dataset_name}/{label}")
         output_dir.mkdir(parents=True, exist_ok=True)
         output_file = output_dir / f"{transformation}.parquet"
 
         print(f"\nRunning {method_name}...")
-        import inspect
-        if 'output_path' in inspect.signature(method_func).parameters:
+        if accepts_llm_options:
+            opts = {k: v for k, v in (llm_options or {}).items() if k != "repeat"}
+            results_df = method_func(df_left, df_right, df_mapping, output_path=str(output_file),
+                                     llm_options=opts)
+        elif 'output_path' in inspect.signature(method_func).parameters:
             results_df = method_func(df_left, df_right, df_mapping, output_path=str(output_file))
         else:
             results_df = method_func(df_left, df_right, df_mapping)
         
         # Add metadata
-        results_df['method'] = method_name
+        results_df['method'] = label
         results_df['transformation'] = transformation
         results_df['dataset'] = dataset_name
         results_df['timestamp'] = datetime.now().isoformat()
@@ -157,8 +193,29 @@ def main():
                        help='Comma-separated methods or "all"')
     parser.add_argument('--transformations', type=str, default='all',
                        help='Comma-separated transformations or "all"')
+    # Harness-v2 LLM options (ignored by non-LLM and v1 methods)
+    parser.add_argument('--effort', type=str, default=None,
+                        help='Reasoning effort override (low/medium/high/xhigh/max; OpenAI Luna/Terra also accept "none")')
+    parser.add_argument('--sample-frac', type=float, default=None,
+                        help='Run on a fixed random subsample of query records (seed 42)')
+    parser.add_argument('--workers', type=int, default=8, help='Parallel API requests')
+    parser.add_argument('--shuffle-candidates', action='store_true',
+                        help='Shuffle blocked candidate order (ordering-effect control)')
+    parser.add_argument('--shuffle-seed', type=int, default=0)
+    parser.add_argument('--top-k', type=int, default=None, help='Override blocking top-k')
+    parser.add_argument('--repeat', type=int, default=None,
+                        help='Repeat index for run-to-run variance (separate result dir)')
     
     args = parser.parse_args()
+    llm_options = {
+        "effort": args.effort,
+        "sample_frac": args.sample_frac,
+        "workers": args.workers,
+        "shuffle_candidates": args.shuffle_candidates,
+        "shuffle_seed": args.shuffle_seed,
+        "top_k": args.top_k,
+        "repeat": args.repeat,
+    }
     
     # Determine what to run
     if args.dataset == 'all':
@@ -196,7 +253,8 @@ def main():
             method_func = METHODS[method_name]
             
             for transformation in transformations_to_run:
-                success = run_single_experiment(dataset, transformation, method_name, method_func)
+                success = run_single_experiment(dataset, transformation, method_name, method_func,
+                                                llm_options=llm_options)
                 results_summary.append({
                     'dataset': dataset,
                     'method': method_name,
