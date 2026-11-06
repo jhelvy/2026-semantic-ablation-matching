@@ -60,6 +60,13 @@ DATASETS = {
 }
 
 TRANSFORMATIONS = ['original', 'ciphered_letters', 'ciphered_words', 'scrambled']
+# 2x2 descriptive-words x identifiers cells (scripts/prepare_factorial.py); 'original' is the 4th cell.
+# Not part of "all": select with --transformations factorial (or list cells explicitly).
+FACTORIAL_CELLS = ['desc_ciphered', 'ids_ciphered', 'all_ciphered']
+TRANSFORMATION_GROUPS = {
+    'all': TRANSFORMATIONS,
+    'factorial': ['original'] + FACTORIAL_CELLS,
+}
 
 def load_dataset(dataset_name, transformation):
     """Load dataset files"""
@@ -193,7 +200,8 @@ def main():
     parser.add_argument('--methods', type=str, default='all',
                        help='Comma-separated methods or "all"')
     parser.add_argument('--transformations', type=str, default='all',
-                       help='Comma-separated transformations or "all"')
+                       help='Comma-separated transformations and/or groups: "all" (v1 four), '
+                            '"factorial" (original + desc_ciphered, ids_ciphered, all_ciphered)')
     # Harness-v2 LLM options (ignored by non-LLM and v1 methods)
     parser.add_argument('--effort', type=str, default=None,
                         help='Reasoning effort override (low/medium/high/xhigh/max; OpenAI Luna/Terra also accept "none")')
@@ -229,10 +237,11 @@ def main():
     else:
         methods_to_run = [m.strip() for m in args.methods.split(',')]
     
-    if args.transformations == 'all':
-        transformations_to_run = TRANSFORMATIONS
-    else:
-        transformations_to_run = [t.strip() for t in args.transformations.split(',')]
+    transformations_to_run = []
+    for t in (t.strip() for t in args.transformations.split(',')):
+        for name in TRANSFORMATION_GROUPS.get(t, [t]):
+            if name not in transformations_to_run:
+                transformations_to_run.append(name)
     
     print("="*80)
     print("ENTITY MATCHING EXPERIMENT RUNNER")

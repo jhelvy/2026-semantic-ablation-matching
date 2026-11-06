@@ -17,7 +17,8 @@ CFG = {
  "abt-buy": dict(left="abt", right="buy", mp="abt-buy/data_original/abt_buy_perfect_mapping.csv"),
  "amazon-google": dict(left="amazon", right="google", mp="amazon-google/data_original/amazon_googleproducts_perfectmapping.csv"),
 }
-TRANS = ["original", "ciphered_letters", "ciphered_words", "scrambled"]
+TRANS = ["original", "ciphered_letters", "ciphered_words", "scrambled",
+         "desc_ciphered", "ids_ciphered", "all_ciphered"]   # factorial cells: used only if generated
 GRID = np.round(np.arange(0.05, 0.96, 0.05), 2)
 SEED, K = 42, 5
 
@@ -104,6 +105,7 @@ for ds in CFG:
             m,s,P,R=cv(true,score); out.append((ds,mdir.name,t,m,s,P,R))
             print(f"{ds:14s}{mdir.name:20s}{t:16s}{m:9.3f}{s:7.3f}{P:7.3f}{R:7.3f}")
     for t in TRANS:
+        if t!="original" and not (DATA/ds/"data_test"/f"{CFG[ds]['left']}_{t}.csv").exists(): continue
         score,lid,pid=soft_tfidf_scores(ds,t)
         true=np.array([(lid[i],pid[i]) in truth for i in range(len(lid))])
         m,s,P,R=cv(true,score); out.append((ds,"soft_tfidf",t,m,s,P,R))

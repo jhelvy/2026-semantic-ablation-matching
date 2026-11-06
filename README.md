@@ -180,6 +180,34 @@ python scripts/prepare_datasets.py --dataset all
 
 Creates `data/{dataset}/data_test/` with ciphered_letters, ciphered_words, and scrambled variants.
 
+### Step 1b: 2x2 factorial transforms (descriptive words x identifiers)
+
+```bash
+python scripts/prepare_factorial.py --dataset all --verify
+python scripts/test_factorial.py        # offline unit tests
+```
+
+This step adds three cells next to Original:
+
+|                      | identifiers intact | identifiers ciphered |
+|---|---|---|
+| **descriptions intact**   | `original`         | `ids_ciphered`       |
+| **descriptions ciphered** | `desc_ciphered`    | `all_ciphered`       |
+
+- **Identifiers** are model numbers and SKUs: pieces that contain both a letter and a digit (`w55`, `pslx350h`), plus short non-English prefixes attached to them (`dsc` in `dsc-w55`). Quantities (`4gb`, `1080p`, `1024x768`) are not identifiers. Neither are pieces that appear in more than 20 records.
+- **Descriptive words** are everything else, including brand names.
+- Digits and single characters are never changed.
+- **Ciphers.**
+  - Descriptive words become pronounceable nonce words of the same length that are not English words. Unlike v1 Ciphered Words, this brings in no new meanings.
+  - Identifiers become random codes of the same shape: a letter for each letter, a digit for each digit.
+- Both maps are global and injective, and they never produce an original token. Exact token identity across the two catalogs is therefore unchanged. `--verify` checks that the TF-IDF score matrices are identical in every cell (to 1e-9).
+- F1 can still move in the third decimal, because floating-point summation order breaks exact ties between candidates.
+- Each dataset gets a `factorial_manifest.json` with class counts, the full maps, and identifier coverage.
+- Identifier coverage at seed 42:
+  - On Abt-Buy, 50% of true pairs share an identifier piece, and 43% share one that occurs in no other record.
+  - On Amazon-Google, the figures are 4% and 0.8%. The identifier factor mainly matters on Abt-Buy.
+- Run the cells with `--transformations factorial`, which runs Original plus the three new cells. They are not part of `all`.
+
 ### Step 2: Run experiments
 
 ```bash
@@ -265,6 +293,8 @@ Reported runs (these call APIs and cost money; about $65-150 per pass of the sta
 ```bash
 python scripts/run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini   # full grid
 python scripts/run_experiments.py --dataset all --methods llm_sonnet55,llm_kimik3     # 30% subsample
+python scripts/run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini \
+    --transformations factorial                                                       # 2x2 cells (about +$50 for all 4 models)
 # Options: --effort low|high, --repeat N, --shuffle-candidates, --top-k K, --workers N
 ```
 
