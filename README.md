@@ -294,9 +294,22 @@ Reported runs (these call APIs and cost money; about $65-150 per pass of the sta
 python scripts/run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini   # full grid
 python scripts/run_experiments.py --dataset all --methods llm_sonnet55,llm_kimik3     # 30% subsample
 python scripts/run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini \
-    --transformations factorial                                                       # 2x2 cells (about +$50 for all 4 models)
+    --transformations factorial                                                       # 2x2 cells; repeat with
+                                                                                      # llm_sonnet55,llm_kimik3 (about +$50 for all 4)
 # Options: --effort low|high, --repeat N, --shuffle-candidates, --top-k K, --workers N
 ```
+
+Robustness to the candidate-list design (reviewer objection to showing 50 candidates per query). The main design is rank-then-select: TF-IDF ranks every candidate for free, and the LLM picks the best of the top 50, listed in rank order. That is how a practical LLM matcher would be built. The shortlist is identical in every condition, because TF-IDF does not change under the ciphers. Two checks, both on Haiku and GPT-4o-mini over Original plus the three v1 ablations, about $10-15 together:
+
+```bash
+python scripts/run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini \
+    --transformations original,ciphered_letters,ciphered_words,scrambled --shuffle-candidates             # rank-order hint removed
+python scripts/run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini \
+    --transformations original,ciphered_letters,ciphered_words,scrambled --shuffle-candidates --top-k 10  # short list
+python scripts/llm_cost_estimate.py --models haiku55,gpt4omini --top-k 10                                 # price the k=10 run
+```
+
+Results go to `llm_<model>__shuffle0` and `llm_<model>__shuffle0__k10`. Pairwise yes/no prompting (one call per query-candidate pair) is deliberately not run. It is not the rank-then-select setting studied here, and it multiplies token cost. The paper states this as a limitation.
 
 Non-default options are appended to the result directory name (for example `results/abt-buy/llm_haiku55__effort-high/`), so runs never overwrite each other. `cv_threshold.py` and `analyze_results.py` pick up the new directories automatically.
 

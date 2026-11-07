@@ -39,6 +39,8 @@ def main():
     ap.add_argument("--transformations", default=",".join(TRANSFORMATIONS))
     ap.add_argument("--models", default=",".join(k for k, c in MODELS.items() if c.provider != "claude_cli"))
     ap.add_argument("--prompt", default="standard", choices=["standard", "token_fallback"])
+    ap.add_argument("--top-k", type=int, default=None,
+                    help="Candidates per query (default: the runner's adaptive top-k, 50 here)")
     ap.add_argument("--out-tokens", type=int, default=600,
                     help="Assumed output tokens per call incl. thinking (reasoning models)")
     ap.add_argument("--cpt-original", type=float, default=4.0,
@@ -51,7 +53,7 @@ def main():
     for ds in args.datasets.split(","):
         for t in args.transformations.split(","):
             df_l, df_r, df_m = load_dataset(ds, t)
-            reqs, top_k = build_requests(df_l, df_r, df_m, args.prompt)
+            reqs, top_k = build_requests(df_l, df_r, df_m, args.prompt, top_k=args.top_k)
             chars = sum(r["prompt_chars"] for r in reqs)
             cpt = args.cpt_original if t == "original" else args.cpt_transformed
             in_tok = chars / cpt
