@@ -1,7 +1,7 @@
 """
 Offline tests for harness v2 (no network, no API keys, no cost).
 
-    python scripts/test_llm_harness.py        # or: pytest scripts/test_llm_harness.py
+    python tests/test_llm_harness.py        # or: pytest tests/test_llm_harness.py
 """
 
 import json
@@ -11,7 +11,7 @@ import types
 from pathlib import Path
 from types import SimpleNamespace as NS
 
-sys.path.append(str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 
 # methods.py imports sentence_transformers at module load; stub it if absent so
 # these tests run in a light environment. (No embedding code is exercised here.)
@@ -22,9 +22,9 @@ except ImportError:
 
 import pandas as pd  # noqa: E402
 
-import llm_clients  # noqa: E402
-import llm_runner  # noqa: E402
-from llm_clients import MODELS, LLMResult, FatalAPIError, parse_match_json  # noqa: E402
+from lib import llm_clients  # noqa: E402
+from lib import llm_runner  # noqa: E402
+from lib.llm_clients import MODELS, LLMResult, FatalAPIError, parse_match_json  # noqa: E402
 
 
 # ---------------------------------------------------------------- parsing

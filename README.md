@@ -110,7 +110,7 @@ A prompt that explicitly instructs the model to match on identifier tokens gives
 
 The cost-benefit case for LLM matching is narrow: it is justified only on clean, description-rich text where the modest F1 gain (0.928 vs 0.761) outweighs orders-of-magnitude differences in cost and latency.
 
-> **Note on results:** earlier versions of this repo reported lower TF-IDF/Soft TF-IDF F1 because (a) the threshold sweep started at 0.50, which is above the optimal operating point for cosine/edit-distance methods, and (b) the "Soft TF-IDF" method lacked IDF weighting. Both are fixed (`scripts/methods.py`); the threshold sweep now runs the full 0.05-0.95 grid and Soft TF-IDF is the real IDF-weighted, Jaro-Winkler version.
+> **Note on results:** earlier versions of this repo reported lower TF-IDF/Soft TF-IDF F1 because (a) the threshold sweep started at 0.50, which is above the optimal operating point for cosine/edit-distance methods, and (b) the "Soft TF-IDF" method lacked IDF weighting. Both are fixed (`scripts/lib/methods.py`); the threshold sweep now runs the full 0.05-0.95 grid and Soft TF-IDF is the real IDF-weighted, Jaro-Winkler version.
 
 ---
 
@@ -175,7 +175,7 @@ export ANTHROPIC_API_KEY=...   # Claude Sonnet, Claude Haiku
 ### Step 1: Prepare transformed datasets
 
 ```bash
-python scripts/prepare_datasets.py --dataset all
+python scripts/01_prepare_datasets.py --dataset all
 ```
 
 Creates `data/{dataset}/data_test/` with ciphered_letters, ciphered_words, and scrambled variants.
@@ -183,8 +183,8 @@ Creates `data/{dataset}/data_test/` with ciphered_letters, ciphered_words, and s
 ### Step 1b: 2x2 factorial transforms (descriptive words x identifiers)
 
 ```bash
-python scripts/prepare_factorial.py --dataset all --verify
-python scripts/test_factorial.py        # offline unit tests
+python scripts/02_prepare_factorial.py --dataset all --verify
+python tests/test_factorial.py        # offline unit tests
 ```
 
 This step adds three cells next to Original:
@@ -212,18 +212,18 @@ This step adds three cells next to Original:
 
 ```bash
 # All methods on all transformations and datasets
-python scripts/run_experiments.py --dataset all --methods all --transformations all
+python scripts/04_run_experiments.py --dataset all --methods all --transformations all
 
 # Or run selectively
-python scripts/run_experiments.py --dataset abt-buy --methods llm,tfidf --transformations original
+python scripts/04_run_experiments.py --dataset abt-buy --methods llm,tfidf --transformations original
 ```
 
-Results are saved as parquet files in `results/{dataset}/{method}/`.
+Results are saved as parquet files in `results/{dataset}/{method}/`. The superseded v1 LLM results are in `results/v1_llm/{dataset}/{method}/`.
 
 ### Step 3: Cross-validate thresholds
 
 ```bash
-python scripts/cv_threshold.py
+python scripts/05_cv_threshold.py
 ```
 
 Produces `results/cv_results.csv` (F1 mean/std, precision, recall for all 128 configurations).
@@ -231,7 +231,7 @@ Produces `results/cv_results.csv` (F1 mean/std, precision, recall for all 128 co
 ### Step 4: Generate summary table
 
 ```bash
-python scripts/analyze_results.py
+python scripts/06_summarize_results.py
 ```
 
 Produces `results/summary.csv` with TP/FP/FN counts and (for LLM methods) cost and wall time.
@@ -239,10 +239,10 @@ Produces `results/summary.csv` with TP/FP/FN counts and (for LLM methods) cost a
 ### Step 5: Generate figures
 
 ```bash
-Rscript scripts/charts.R
+Rscript scripts/08_figures.R
 ```
 
-Produces PNG plots in `results/plots/`. Requires the Roboto Condensed font; use `ragg::agg_png` or run in RStudio if headless rendering fails.
+Produces PNG figures in `figs/`. Requires the Roboto Condensed font and the R packages tidyverse, cowplot, ggh4x, and ragg.
 
 ---
 
@@ -252,7 +252,7 @@ The v1 LLM results (`llm`, `llm_haiku*`, `llm_claude*`, `llm_gpt4o*`) parsed fre
 
 What changed:
 
-- **One code path for every model** (`scripts/llm_clients.py`, `scripts/llm_runner.py`) with structured JSON output (`match`, `confidence`, `rationale`) instead of line parsing.
+- **One code path for every model** (`scripts/lib/llm_clients.py`, `scripts/lib/llm_runner.py`) with structured JSON output (`match`, `confidence`, `rationale`) instead of line parsing.
 - **Row-level `status`**: `ok`, `no_match`, `parse_fail`, `truncated`, `refusal`, `api_error`. Raw responses, stop reasons, token counts, cost, served model and request ids are saved for every row.
 - **Fails loudly**: a bad key, missing credit, or unknown model aborts at once. Five consecutive API errors, or more than 1% of calls, also abort the run. A run with unresolved API errors is never written to `results/`. Partial progress goes to `checkpoints/`, and rerunning the same command resumes it.
 - **No sampling parameters.** Current Claude models reject `temperature`, so run-to-run variance is measured with `--repeat`.
@@ -277,23 +277,23 @@ Setup and checks (none of these call an API):
 ```bash
 cp .env.example .env            # then fill in keys
 pip install -r requirements.txt # anthropic==2.6.0, openai==3.46.0
-python scripts/test_llm_harness.py      # offline tests with fake clients
-python scripts/llm_cost_estimate.py     # prices one pass from locally built prompts
+python tests/test_llm_harness.py      # offline tests with fake clients
+python scripts/03_estimate_llm_cost.py     # prices one pass from locally built prompts
 ```
 
 Pilots (subscription; no API cost):
 
 ```bash
-python scripts/run_experiments.py --dataset abt-buy --methods llm_haiku55_cli \
+python scripts/04_run_experiments.py --dataset abt-buy --methods llm_haiku55_cli \
     --transformations original,ciphered_words --sample-frac 0.05 --workers 2
 ```
 
 Reported runs (these call APIs and cost money; about $65-150 per pass of the standard prompt on 2 datasets x 4 conditions):
 
 ```bash
-python scripts/run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini   # full grid
-python scripts/run_experiments.py --dataset all --methods llm_sonnet55,llm_kimik3     # 30% subsample
-python scripts/run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini \
+python scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini   # full grid
+python scripts/04_run_experiments.py --dataset all --methods llm_sonnet55,llm_kimik3     # 30% subsample
+python scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini \
     --transformations factorial                                                       # 2x2 cells; repeat with
                                                                                       # llm_sonnet55,llm_kimik3 (about +$50 for all 4)
 # Options: --effort low|high, --repeat N, --shuffle-candidates, --top-k K, --workers N
@@ -302,44 +302,57 @@ python scripts/run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4om
 Robustness to the candidate-list design (reviewer objection to showing 50 candidates per query). The main design is rank-then-select: TF-IDF ranks every candidate for free, and the LLM picks the best of the top 50, listed in rank order. That is how a practical LLM matcher would be built. The shortlist is identical in every condition, because TF-IDF does not change under the ciphers. Two checks, both on Haiku and GPT-4o-mini over Original plus the three v1 ablations, about $10-15 together:
 
 ```bash
-python scripts/run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini \
+python scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini \
     --transformations original,ciphered_letters,ciphered_words,scrambled --shuffle-candidates             # rank-order hint removed
-python scripts/run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini \
+python scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini \
     --transformations original,ciphered_letters,ciphered_words,scrambled --shuffle-candidates --top-k 10  # short list
-python scripts/llm_cost_estimate.py --models haiku55,gpt4omini --top-k 10                                 # price the k=10 run
+python scripts/03_estimate_llm_cost.py --models haiku55,gpt4omini --top-k 10                                 # price the k=10 run
 ```
 
 Results go to `llm_<model>__shuffle0` and `llm_<model>__shuffle0__k10`. Pairwise yes/no prompting (one call per query-candidate pair) is deliberately not run. It is not the rank-then-select setting studied here, and it multiplies token cost. The paper states this as a limitation.
 
-Non-default options are appended to the result directory name (for example `results/abt-buy/llm_haiku55__effort-high/`), so runs never overwrite each other. `cv_threshold.py` and `analyze_results.py` pick up the new directories automatically.
+Non-default options are appended to the result directory name (for example `results/abt-buy/llm_haiku55__effort-high/`), so runs never overwrite each other. `05_cv_threshold.py` and `06_summarize_results.py` pick up the new directories automatically.
 
 ## Project Structure
 
 ```
-fuzzy-join-llm/
+2026-semantic-ablation-matching/
 ├── data/
 │   ├── abt-buy/
 │   │   ├── data_original/           # Source CSVs + ground-truth mapping
-│   │   └── data_test/               # Transformed variants
+│   │   └── data_test/               # Transformed variants + factorial manifest
 │   └── amazon-google/
 │       ├── data_original/
 │       └── data_test/
 │
-├── scripts/
-│   ├── prepare_datasets.py          # Generate text transformations
-│   ├── methods.py                   # All 8 matching methods
-│   ├── run_experiments.py           # Main experiment runner
-│   ├── cv_threshold.py              # 5-fold cross-validated threshold selection
-│   ├── analyze_results.py           # Aggregate results + summary CSV
-│   ├── charts.R                     # Publication figures (ggplot2)
-│   └── diagnose_blocking.py         # Blocking quality analysis
+├── scripts/                         # numbered in run order
+│   ├── 01_prepare_datasets.py       # v1 transforms: ciphered_letters, ciphered_words, scrambled
+│   ├── 02_prepare_factorial.py      # 2x2 cells: desc_ciphered, ids_ciphered, all_ciphered
+│   ├── 03_estimate_llm_cost.py      # offline LLM cost estimate (no API calls)
+│   ├── 04_run_experiments.py        # all methods; LLMs through harness v2
+│   ├── 05_cv_threshold.py           # 5-fold CV thresholds -> results/cv_results.csv
+│   ├── 06_summarize_results.py      # summary table -> results/summary.csv
+│   ├── 08_figures.R                 # publication figures -> figs/
+│   └── lib/                         # shared code imported by the scripts
+│       ├── paths.py                 # repo-root-anchored paths
+│       ├── datasets.py              # dataset config and loading
+│       ├── transforms.py            # v1 transform functions
+│       ├── factorial.py             # 2x2 factorial transform
+│       ├── methods.py               # non-LLM methods + v1 LLM code (reference only)
+│       ├── llm_clients.py           # harness v2 model clients
+│       └── llm_runner.py            # harness v2 runner
+│
+├── tests/                           # offline tests (no API calls)
 │
 ├── results/
 │   ├── {dataset}/{method}/          # Per-method parquet files
+│   ├── v1_llm/{dataset}/{method}/   # Superseded v1 LLM results (contaminated; see Harness v2)
 │   ├── summary.csv                  # Fixed-threshold results with TP/FP/FN and cost
-│   ├── cv_results.csv               # Cross-validated F1 (authoritative for figures/tables)
-│   └── plots/                       # Generated figures
+│   └── cv_results.csv               # Cross-validated F1 (authoritative for figures/tables)
 │
+├── figs/                            # Generated figures
+├── checkpoints/                     # gitignored: partial harness-v2 runs
+├── pilot_results/                   # gitignored: subscription pilots, never reported
 └── README.md
 ```
 

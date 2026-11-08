@@ -1,7 +1,7 @@
 """
-Offline tests for prepare_factorial.py (no data files, no API).
+Offline tests for scripts/lib/factorial.py (no data files, no API).
 
-    python scripts/test_factorial.py
+    python tests/test_factorial.py
 """
 
 import random
@@ -10,8 +10,8 @@ from pathlib import Path
 
 import pandas as pd
 
-sys.path.append(str(Path(__file__).parent))
-import prepare_factorial as pf  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
+from lib import factorial as pf  # noqa: E402
 
 ENGLISH = {"sony", "camera", "black", "digital", "pixel", "year", "warranty", "with"}
 

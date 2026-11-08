@@ -4,15 +4,15 @@ held-out fold, report mean +/- std F1/P/R. Removes the 'threshold tuned on the t
 set' bias and yields error bars. No experiments re-run: 7 methods use saved per-record
 scores; Soft TF-IDF scores are recomputed (real IDF-weighted + Jaro-Winkler version).
 """
+import sys
 import numpy as np, pandas as pd, jellyfish
 from pathlib import Path
 from collections import defaultdict
 from scipy.sparse import identity, csr_matrix
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-_ROOT = Path(__file__).resolve().parent.parent      # repo root (was a hard-coded path to the old fuzzy-join-llm repo)
-RES = _ROOT / "results"
-DATA = _ROOT / "data"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from lib.paths import DATA, RESULTS as RES, V1_LLM_RESULTS  # noqa: E402
 CFG = {
  "abt-buy": dict(left="abt", right="buy", mp="abt-buy/data_original/abt_buy_perfect_mapping.csv"),
  "amazon-google": dict(left="amazon", right="google", mp="amazon-google/data_original/amazon_googleproducts_perfectmapping.csv"),
@@ -92,7 +92,9 @@ out=[]
 print(f"{'dataset':14s}{'method':20s}{'trans':16s}{'F1 mean':>9s}{'std':>7s}{'P':>7s}{'R':>7s}")
 for ds in CFG:
     truth=truth_set(ds)
-    for mdir in sorted((RES/ds).iterdir()):
+    # v2 + non-LLM method dirs, plus the superseded v1 LLM dirs (results/v1_llm/), in one name-sorted pass
+    mdirs=[d for root in (RES/ds, V1_LLM_RESULTS/ds) if root.exists() for d in root.iterdir()]
+    for mdir in sorted(mdirs, key=lambda d: d.name):
         if not mdir.is_dir() or mdir.name=="soft_tfidf": continue
         for t in TRANS:
             pq=mdir/f"{t}.parquet"
@@ -111,7 +113,7 @@ for ds in CFG:
         m,s,P,R=cv(true,score); out.append((ds,"soft_tfidf",t,m,s,P,R))
         print(f"{ds:14s}{'soft_tfidf':20s}{t:16s}{m:9.3f}{s:7.3f}{P:7.3f}{R:7.3f}")
 
-_out = Path(__file__).resolve().parent.parent / "results" / "cv_results.csv"
+_out = RES / "cv_results.csv"
 pd.DataFrame(out,columns=["dataset","method","transformation","f1_mean","f1_std","precision","recall"]).to_csv(
     _out, index=False)
 print(f"\nsaved -> {_out}")

@@ -11,9 +11,9 @@ conditions. Output tokens (thinking + JSON answer) are an assumption; check
 them against the first real run and re-estimate.
 
 Usage:
-    python scripts/llm_cost_estimate.py
-    python scripts/llm_cost_estimate.py --datasets abt-buy --models haiku55,gpt4omini
-    python scripts/llm_cost_estimate.py --out-tokens 1500 --cpt-original 1.8 --cpt-transformed 1.2
+    python scripts/03_estimate_llm_cost.py
+    python scripts/03_estimate_llm_cost.py --datasets abt-buy --models haiku55,gpt4omini
+    python scripts/03_estimate_llm_cost.py --out-tokens 1500 --cpt-original 1.8 --cpt-transformed 1.2
 """
 
 import argparse
@@ -22,10 +22,10 @@ from pathlib import Path
 
 import pandas as pd
 
-sys.path.append(str(Path(__file__).parent))
-from llm_clients import MODELS                       # noqa: E402
-from llm_runner import build_requests                # noqa: E402
-from run_experiments import TRANSFORMATIONS, load_dataset   # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from lib.datasets import TRANSFORMATIONS, load_dataset   # noqa: E402
+from lib.llm_clients import MODELS                       # noqa: E402
+from lib.llm_runner import build_requests                # noqa: E402
 
 # Defaults are optimistic heuristics. v1 billing for Haiku 4.5 on Abt-Buy implies
 # roughly 2-2.5x more input tokens than chars/4, so pass lower values (e.g.

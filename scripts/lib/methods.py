@@ -41,6 +41,8 @@ from openai import OpenAI
 import os
 from dotenv import load_dotenv
 
+from .paths import ENV_FILE
+
 # Anthropic
 try:
     from anthropic import Anthropic
@@ -65,7 +67,7 @@ def get_sentence_model():
 def get_openai_client():
     global _openai_client
     if _openai_client is None:
-        load_dotenv()
+        load_dotenv(ENV_FILE)
         api_key = os.getenv('OPENAI_API_KEY')
         if not api_key:
             raise ValueError("OPENAI_API_KEY not found")
@@ -77,7 +79,7 @@ def get_anthropic_client():
     if _anthropic_client is None:
         if Anthropic is None:
             raise ImportError("anthropic package not installed. Run: pip install anthropic")
-        load_dotenv()
+        load_dotenv(ENV_FILE)
         api_key = os.getenv('ANTHROPIC_API_KEY')
         if not api_key:
             raise ValueError("ANTHROPIC_API_KEY not found in .env")

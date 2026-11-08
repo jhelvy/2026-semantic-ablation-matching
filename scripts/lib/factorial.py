@@ -54,10 +54,7 @@ anyway). Output: data/<dataset>/data_test/<side>_<cell>[_s<seed>].csv plus a
 manifest JSON with class counts, examples, identifier coverage of the
 ground-truth pairs, and the full mappings.
 
-Usage:
-    python scripts/prepare_factorial.py --dataset all
-    python scripts/prepare_factorial.py --dataset abt-buy --seed 7     # extra seed -> *_s7.csv
-    python scripts/prepare_factorial.py --dataset all --verify         # + TF-IDF invariance check
+Library code for scripts/02_prepare_factorial.py (see that file for usage).
 """
 
 import argparse
@@ -65,14 +62,12 @@ import json
 import random
 import re
 import string
-import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
 import pandas as pd
 
-sys.path.append(str(Path(__file__).parent))
-from prepare_datasets import DATASETS, get_text_columns, load_csv  # noqa: E402
+from .datasets import DATASETS, get_text_columns, load_csv
 
 CELLS = {  # cell -> (cipher descriptive pieces?, cipher identifier pieces?)
     "desc_ciphered": (True, False),
@@ -272,8 +267,8 @@ def identifier_coverage(df_left, df_right, mapping_df, id_pieces, record_df):
 def verify_tfidf(dataset, cells):
     """Check TF-IDF cosine scores are identical (to 1e-9) across cells, and run
     the v1 tfidf method on each; F1 can differ only through tie-breaking."""
-    from methods import prepare_text_column, tfidf  # heavy import, only when asked
-    from run_experiments import load_dataset
+    from .methods import prepare_text_column, tfidf  # heavy import, only when asked
+    from .datasets import load_dataset
     from sklearn.feature_extraction.text import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
 
@@ -310,7 +305,7 @@ def verify_tfidf(dataset, cells):
 
 def process(dataset, seed, max_id_df, verify):
     cfg = DATASETS[dataset]
-    base = Path(cfg["dir"])
+    base = cfg["dir"]
     df_l = load_csv(base / cfg["files"]["left"])
     df_r = load_csv(base / cfg["files"]["right"])
     print(f"\n=== {dataset}: {len(df_l)} left, {len(df_r)} right records")
@@ -338,9 +333,8 @@ def process(dataset, seed, max_id_df, verify):
             apply_cell(df, desc_map, id_map, cd, ci).to_csv(path, index=False)
         print(f"   wrote {cell}{suffix}")
 
-    # ground-truth identifier coverage (uses run_experiments' mapping file names)
-    from run_experiments import DATASETS as RUN_DATASETS
-    mp = pd.read_csv(base / RUN_DATASETS[dataset]["mapping_file"])
+    # ground-truth identifier coverage
+    mp = pd.read_csv(base / cfg["mapping_file"])
     coverage = identifier_coverage(df_l, df_r, mp, id_p, rdf)
     print(f"   ground-truth pairs sharing an identifier piece: {coverage['share_identifier']}, "
           f"sharing a piece unique to the pair: {coverage['share_unique_identifier']}")
@@ -364,22 +358,3 @@ def process(dataset, seed, max_id_df, verify):
         print(f"   TF-IDF F1 by cell: {manifest['tfidf_f1']}")
     (out_dir / f"factorial_manifest{suffix}.json").write_text(json.dumps(manifest, indent=1))
     print(f"   manifest: {out_dir / f'factorial_manifest{suffix}.json'}")
-
-
-def main():
-    ap = argparse.ArgumentParser(description="Generate the 2x2 descriptive-words x identifiers ablation")
-    ap.add_argument("--dataset", required=True, choices=list(DATASETS) + ["all"])
-    ap.add_argument("--seed", type=int, default=42, help="non-default seeds write *_s<seed>.csv")
-    ap.add_argument("--max-id-df", type=int, default=20,
-                    help="max number of records an identifier piece may appear in")
-    ap.add_argument("--verify", action="store_true", help="also run v1 TF-IDF on every cell")
-    args = ap.parse_args()
-    for ds in (DATASETS if args.dataset == "all" else [args.dataset]):
-        if not (Path(DATASETS[ds]["dir"]) / DATASETS[ds]["files"]["left"]).exists():
-            print(f"skip {ds}: data not present")
-            continue
-        process(ds, args.seed, args.max_id_df, args.verify)
-
-
-if __name__ == "__main__":
-    main()

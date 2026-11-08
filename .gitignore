@@ -23,3 +23,7 @@ checkpoints/
 
 # Subscription (Claude Code CLI) pilot runs; never reported
 pilot_results/
+
+# Quarto render artifacts (README.qmd -> README.md)
+.quarto/
+README_files/

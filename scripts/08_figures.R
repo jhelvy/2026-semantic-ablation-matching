@@ -4,6 +4,23 @@ library(ggh4x)
 
 options(dplyr.width = Inf)
 
+# Paths are anchored to the repo root (this script lives in scripts/), so it
+# runs from any working directory. Reads results/cv_results.csv, writes figs/.
+script_arg <- grep('^--file=', commandArgs(trailingOnly = FALSE), value = TRUE)
+repo_root <- if (length(script_arg) == 1) {
+  normalizePath(file.path(dirname(sub('^--file=', '', script_arg)), '..'))
+} else {
+  getwd()
+}
+results_dir <- file.path(repo_root, 'results')
+figs_dir <- file.path(repo_root, 'figs')
+dir.create(figs_dir, showWarnings = FALSE)
+
+# Under Rscript the default device is pdf(), which rejects the Roboto Condensed
+# font when cowplot draws grobs ("invalid font type"). Draw on an off-screen
+# ragg device instead; ggsave() below also uses ragg.
+ragg::agg_png(tempfile(fileext = '.png'))
+
 font <- 'Roboto Condensed'
 
 # Shared label cleaning ------------------------------------------------------
@@ -51,7 +68,7 @@ llm_methods_raw <- c(
 # Plot 1: F1 by transformation, with 5-fold CV error bars (mean +/- 1 SD).
 # Excludes expensive models (Sonnet, GPT-4o) — those are in a separate chart.
 # ---------------------------------------------------------------------------
-cv <- read_csv(file.path('results', 'cv_results.csv')) %>%
+cv <- read_csv(file.path(results_dir, 'cv_results.csv')) %>%
   filter(!method %in% expensive_methods) %>%
   mutate(
     method_group = if_else(
@@ -210,7 +227,8 @@ plot_grid(
 )
 
 ggsave(
-  filename = file.path('results', 'plots', 'f1_comparison.png'),
+  device = ragg::agg_png, # base png() device fails on the Roboto Condensed font
+  filename = file.path(figs_dir, 'f1_comparison.png'),
   width = 8,
   height = 11.5
 )
@@ -220,7 +238,7 @@ ggsave(
 # operating point from cv_results.csv, consistent with the F1 figure and
 # Tables S1-S4). Excludes expensive models.
 # ---------------------------------------------------------------------------
-df <- read_csv(file.path('results', 'cv_results.csv')) %>%
+df <- read_csv(file.path(results_dir, 'cv_results.csv')) %>%
   rename(f1 = f1_mean) %>%
   filter(!method %in% expensive_methods) %>%
   mutate(
@@ -289,7 +307,8 @@ plot_grid(
 )
 
 ggsave(
-  filename = file.path('results', 'plots', 'precision_recall_scatter.png'),
+  device = ragg::agg_png, # base png() device fails on the Roboto Condensed font
+  filename = file.path(figs_dir, 'precision_recall_scatter.png'),
   width = 8,
   height = 13
 )
@@ -304,7 +323,7 @@ robustness_lookup <- tribble(
   'llm_gpt4o' , 'GPT-4o'      ,
 )
 
-cv_robustness <- read_csv(file.path('results', 'cv_results.csv')) %>%
+cv_robustness <- read_csv(file.path(results_dir, 'cv_results.csv')) %>%
   inner_join(robustness_lookup, by = 'method') %>%
   filter(dataset == 'amazon-google') %>%
   mutate(
@@ -393,7 +412,8 @@ robustness_ablations %>%
   panel_border()
 
 ggsave(
-  filename = file.path('results', 'plots', 'llm_robustness.png'),
+  device = ragg::agg_png, # base png() device fails on the Roboto Condensed font
+  filename = file.path(figs_dir, 'llm_robustness.png'),
   width = 8,
   height = 6
 )
@@ -405,7 +425,7 @@ ggsave(
 # reference line.
 # ---------------------------------------------------------------------------
 
-cv_raw <- read_csv(file.path('results', 'cv_results.csv'))
+cv_raw <- read_csv(file.path(results_dir, 'cv_results.csv'))
 
 # Map raw method names to model family + prompt variant
 llm_lookup <- tribble(
@@ -506,7 +526,8 @@ llm_ablations %>%
   panel_border()
 
 ggsave(
-  filename = file.path('results', 'plots', 'llm_prompt_comparison.png'),
+  device = ragg::agg_png, # base png() device fails on the Roboto Condensed font
+  filename = file.path(figs_dir, 'llm_prompt_comparison.png'),
   width = 8,
   height = 6
 )

@@ -17,7 +17,7 @@ Differences from the v1 pipeline in methods.py (`llm`, `_run_llm_method`):
   * diagnostics for instance-level analysis: rank of the true match in the
     blocked candidate list, candidate ids, prompt size.
 
-Output keeps the v1 columns used by analyze_results.py / cv_threshold.py
+Output keeps the v1 columns used by 06_summarize_results.py / 05_cv_threshold.py
 (id_left, true_id_right, pred_id_right, similarity_score, predicted_match,
 is_correct, total_cost_usd, wall_time_seconds).
 """
@@ -35,9 +35,10 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from llm_clients import MODELS, FatalAPIError, call_model
-from methods import (TITLE_ONLY_MODE, create_ground_truth_set, get_display_column,
-                     prepare_text_column)
+from .llm_clients import MODELS, FatalAPIError, call_model
+from .methods import (TITLE_ONLY_MODE, create_ground_truth_set, get_display_column,
+                      prepare_text_column)
+from .paths import CHECKPOINTS, PILOT_RESULTS, RESULTS
 
 # =============================================================================
 # PROMPTS
@@ -162,6 +163,11 @@ def build_requests(df_left, df_right, df_mapping, prompt_key="standard", top_k=N
 def checkpoint_path_for(output_path):
     """results/... -> checkpoints/...; pilot_results/... -> checkpoints/pilot/..."""
     p = Path(output_path)
+    # Paths under the repo's results trees map into the repo's checkpoints/ tree.
+    for root, ck in ((RESULTS, CHECKPOINTS), (PILOT_RESULTS, CHECKPOINTS / "pilot")):
+        if p.is_absolute() and p.is_relative_to(root):
+            return ck / p.relative_to(root)
+    # Any other path: swap the first "results"/"pilot_results" component.
     parts = list(p.parts)
     for root, repl in (("results", ["checkpoints"]), ("pilot_results", ["checkpoints", "pilot"])):
         if root in parts:
@@ -313,7 +319,7 @@ def run_llm(df_left, df_right, df_mapping, model_key, prompt_key="standard", out
 
 
 # =============================================================================
-# METHOD REGISTRY (merged into run_experiments' METHODS)
+# METHOD REGISTRY (merged into 04_run_experiments' METHODS)
 # =============================================================================
 
 def make_llm_method(model_key, prompt_key):

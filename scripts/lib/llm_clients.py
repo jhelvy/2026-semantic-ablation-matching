@@ -43,6 +43,8 @@ from typing import Optional
 
 from dotenv import load_dotenv
 
+from .paths import ENV_FILE
+
 # =============================================================================
 # STRUCTURED OUTPUT SCHEMA
 # =============================================================================
@@ -225,7 +227,7 @@ _clients = {}
 def _client(provider: str):
     if provider in _clients:
         return _clients[provider]
-    load_dotenv()
+    load_dotenv(ENV_FILE)
     if provider == "anthropic":
         import anthropic
         if not os.getenv("ANTHROPIC_API_KEY"):

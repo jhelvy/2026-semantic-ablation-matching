@@ -1,88 +1,25 @@
 """
-MASTER DATASET TRANSFORMATION GENERATOR
-========================================
-Generates ALL three transformations for any dataset:
+v1 dataset transformations (library code for scripts/01_prepare_datasets.py):
 1. Ciphered Letters (character substitution)
 2. Ciphered Words (word replacement)
 3. Scrambled (letter scrambling within words)
 
-Usage:
-    python generate_all_transformations.py --dataset abt-buy
-    python generate_all_transformations.py --dataset amazon-google
-    python generate_all_transformations.py --dataset dblp-acm
-    python generate_all_transformations.py --dataset dblp-scholar
-    python generate_all_transformations.py --dataset all  # Generate for all datasets
+Importing this module seeds Python's global `random` with 42, as the original
+prepare_datasets.py did. Ciphered Words builds its map by iterating over a
+Python set, so its output depends on PYTHONHASHSEED; the committed CSVs in
+data/*/data_test/ are the only copy of the map the paper used. Do not
+regenerate them as a check.
 """
 
 import pandas as pd
 import random
 import re
-import argparse
 from pathlib import Path
 from collections import defaultdict
 
+from .datasets import DATASETS, get_text_columns, load_csv  # noqa: F401  (re-exported)
+
 random.seed(42)
-
-# ============================================================================
-# CONFIGURATION
-# ============================================================================
-
-DATASETS = {
-    'abt-buy': {
-        'dir': 'data/abt-buy',
-        'files': {
-            'left': 'data_original/abt.csv',
-            'right': 'data_original/buy.csv'
-        },
-        'left_name': 'abt',
-        'right_name': 'buy'
-    },
-    'amazon-google': {
-        'dir': 'data/amazon-google',
-        'files': {
-            'left': 'data_original/amazon.csv',
-            'right': 'data_original/google.csv'
-        },
-        'left_name': 'amazon',
-        'right_name': 'google'
-    },
-    'dblp-acm': {
-        'dir': 'data/dblp-acm',
-        'files': {
-            'left': 'data_original/dblp.csv',
-            'right': 'data_original/acm.csv'
-        },
-        'left_name': 'dblp',
-        'right_name': 'acm'
-    },
-    'dblp-scholar': {
-        'dir': 'data/dblp-scholar',
-        'files': {
-            'left': 'data_original/dblp.csv',
-            'right': 'data_original/scholar.csv'
-        },
-        'left_name': 'dblp',
-        'right_name': 'scholar'
-    }
-}
-
-# ============================================================================
-# UTILITY FUNCTIONS
-# ============================================================================
-
-def load_csv(filepath):
-    """Load CSV with encoding detection"""
-    for enc in ['utf-8', 'latin-1', 'iso-8859-1', 'cp1252']:
-        try:
-            return pd.read_csv(filepath, encoding=enc)
-        except:
-            continue
-    raise ValueError(f"Cannot load {filepath}")
-
-def get_text_columns(df):
-    """Get text columns for transformation"""
-    common_cols = ['name', 'title', 'description', 'manufacturer', 'authors', 'venue', 'year']
-    return [col for col in common_cols if col in df.columns]
 
 # ============================================================================
 # TRANSFORMATION 1: CIPHERED LETTERS
@@ -399,7 +336,7 @@ def process_dataset(dataset_name):
     print("="*80)
     
     config = DATASETS[dataset_name]
-    base_dir = Path(config['dir'])
+    base_dir = config['dir']
     
     # Load original data
     print("\nLoading original data...")
@@ -446,47 +383,3 @@ def process_dataset(dataset_name):
     print("\n" + "="*80)
     print(f"All transformations generated for {dataset_name}")
     print("="*80)
-
-def main():
-    parser = argparse.ArgumentParser(
-        description='Generate all dataset transformations',
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  python generate_all_transformations.py --dataset abt-buy
-  python generate_all_transformations.py --dataset all
-        """
-    )
-    
-    parser.add_argument(
-        '--dataset',
-        type=str,
-        required=True,
-        choices=list(DATASETS.keys()) + ['all'],
-        help='Dataset to process (or "all" for all datasets)'
-    )
-    
-    args = parser.parse_args()
-    
-    print("="*80)
-    print("MASTER DATASET TRANSFORMATION GENERATOR")
-    print("="*80)
-    print("\nGenerates 3 transformations:")
-    print("  1. Ciphered Letters (character substitution)")
-    print("  2. Ciphered Words (word replacement)")
-    print("  3. Scrambled (letter scrambling)")
-    
-    if args.dataset == 'all':
-        print(f"\nProcessing ALL {len(DATASETS)} datasets...")
-        for dataset_name in DATASETS.keys():
-            process_dataset(dataset_name)
-    else:
-        print(f"\nProcessing dataset: {args.dataset}")
-        process_dataset(args.dataset)
-    
-    print("\n" + "="*80)
-    print("ALL DONE!")
-    print("="*80)
-
-if __name__ == "__main__":
-    main()

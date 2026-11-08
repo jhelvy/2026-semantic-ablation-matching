@@ -4,23 +4,22 @@ UNIFIED RESULTS ANALYSIS SCRIPT
 ✅ Loads Abt-Buy (unfiltered, all records)
 ✅ Loads Amazon-Google (filtered to 1113, title-only)
 ✅ Generates ONE summary.csv with both datasets
-✅ Creates plots for all experiments
+
+Figures are made by scripts/08_figures.R, not here.
 
 Usage:
-    python scripts/analyze_results.py
+    python scripts/06_summarize_results.py
 """
 
-import pandas as pd
+import sys
 from pathlib import Path
 
-try:
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    HAS_PLOT = True
-except ImportError:
-    HAS_PLOT = False
+import pandas as pd
 
-def load_all_results(results_dir='results'):
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from lib.paths import RESULTS  # noqa: E402
+
+def load_all_results(results_dir=RESULTS):
     """Load all parquet files into single dataframe"""
     results = []
     results_path = Path(results_dir)
@@ -138,73 +137,7 @@ def print_summary(metrics_df):
         
         print()
 
-def plot_results(metrics_df, output_dir='results/plots'):
-    """Create visualization plots"""
-    output_path = Path(output_dir)
-    output_path.mkdir(parents=True, exist_ok=True)
-    
-    sns.set_style("whitegrid")
-    
-    for dataset in sorted(metrics_df['dataset'].unique()):
-        df_dataset = metrics_df[metrics_df['dataset'] == dataset]
-        
-        # Determine if this is filtered or not for labeling
-        sample_count = df_dataset['total_records'].iloc[0]
-        if dataset == 'amazon-google' and sample_count == 1113:
-            label_suffix = " (Title-Only)"
-        else:
-            label_suffix = ""
-        
-        # Plot 1: F1 scores by method and transformation
-        fig, ax = plt.subplots(figsize=(12, 6))
-        
-        pivot = df_dataset.pivot_table(
-            index='method',
-            columns='transformation',
-            values='f1',
-            aggfunc='first'
-        )
-        
-        pivot.plot(kind='bar', ax=ax)
-        ax.set_title(f'F1 Scores: {dataset}{label_suffix}')
-        ax.set_xlabel('Method')
-        ax.set_ylabel('F1 Score')
-        ax.set_ylim(0, 1)
-        ax.legend(title='Transformation')
-        plt.xticks(rotation=45, ha='right')
-        plt.tight_layout()
-        
-        plt.savefig(output_path / f'{dataset}_f1_scores.png', dpi=300, bbox_inches='tight')
-        print(f"✅ Saved: {output_path / f'{dataset}_f1_scores.png'}")
-        plt.close()
-        
-        # Plot 2: Precision vs Recall
-        fig, ax = plt.subplots(figsize=(10, 8))
-        
-        for transformation in df_dataset['transformation'].unique():
-            df_trans = df_dataset[df_dataset['transformation'] == transformation]
-            ax.scatter(df_trans['recall'], df_trans['precision'], 
-                      label=transformation, s=100, alpha=0.6)
-            
-            for _, row in df_trans.iterrows():
-                ax.annotate(row['method'], 
-                          (row['recall'], row['precision']),
-                          fontsize=8, alpha=0.7)
-        
-        ax.set_xlabel('Recall')
-        ax.set_ylabel('Precision')
-        ax.set_title(f'Precision vs Recall: {dataset}{label_suffix}')
-        ax.set_xlim(0, 1)
-        ax.set_ylim(0, 1)
-        ax.legend()
-        ax.grid(True, alpha=0.3)
-        plt.tight_layout()
-        
-        plt.savefig(output_path / f'{dataset}_precision_recall.png', dpi=300, bbox_inches='tight')
-        print(f"✅ Saved: {output_path / f'{dataset}_precision_recall.png'}")
-        plt.close()
-
-def export_summary(metrics_df, output_file='results/summary.csv'):
+def export_summary(metrics_df, output_file=RESULTS / 'summary.csv'):
     """Export summary to CSV"""
     output_path = Path(output_file)
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -249,15 +182,8 @@ def main():
     # Print summary
     print_summary(metrics_df)
     
-    # Create plots
-    if HAS_PLOT:
-        print("\n3. Creating visualizations...")
-        plot_results(metrics_df)
-    else:
-        print("\n3. Skipping plots (matplotlib not installed)")
-    
     # Export
-    print("\n4. Exporting summary...")
+    print("\n3. Exporting summary...")
     export_summary(metrics_df)
     
     print("\n" + "="*80)
@@ -265,7 +191,6 @@ def main():
     print("="*80)
     print("\nOutputs:")
     print("  - results/summary.csv")
-    print("  - results/plots/*.png")
     
     print("\n" + "="*80)
     print("DATA VALIDATION")

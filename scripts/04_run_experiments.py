@@ -4,16 +4,16 @@ AUTOMATED ENTITY MATCHING EXPERIMENT RUNNER - CORRECTED
 Runs methods with threshold optimization and proper output schema.
 
 Usage:
-    python scripts/run_experiments.py --dataset abt-buy
-    python scripts/run_experiments.py --dataset abt-buy --methods jaro_winkler,tfidf
+    python scripts/04_run_experiments.py --dataset abt-buy
+    python scripts/04_run_experiments.py --dataset abt-buy --methods jaro_winkler,tfidf
 
-Harness-v2 LLM methods (see scripts/llm_runner.py; `python scripts/llm_cost_estimate.py`
+Harness-v2 LLM methods (see scripts/lib/llm_runner.py; `python scripts/03_estimate_llm_cost.py`
 prices a run without calling any API):
-    python scripts/run_experiments.py --dataset abt-buy --methods llm_haiku55,llm_gpt4omini
-    python scripts/run_experiments.py --dataset all --methods llm_sonnet55,llm_kimik3   # 30% subsample by default
-    python scripts/run_experiments.py --dataset abt-buy --methods llm_haiku55_cli --sample-frac 0.05 --workers 2   # subscription pilot -> pilot_results/
-    python scripts/run_experiments.py --dataset abt-buy --methods llm_sonnet55 --effort high
-    python scripts/run_experiments.py --dataset abt-buy --methods llm_haiku55 --repeat 2
+    python scripts/04_run_experiments.py --dataset abt-buy --methods llm_haiku55,llm_gpt4omini
+    python scripts/04_run_experiments.py --dataset all --methods llm_sonnet55,llm_kimik3   # 30% subsample by default
+    python scripts/04_run_experiments.py --dataset abt-buy --methods llm_haiku55_cli --sample-frac 0.05 --workers 2   # subscription pilot -> pilot_results/
+    python scripts/04_run_experiments.py --dataset abt-buy --methods llm_sonnet55 --effort high
+    python scripts/04_run_experiments.py --dataset abt-buy --methods llm_haiku55 --repeat 2
 
 Non-default options are appended to the result directory name, e.g.
 results/abt-buy/llm_haiku55__effort-high/original.parquet, so runs never overwrite each other.
@@ -25,94 +25,13 @@ from pathlib import Path
 import sys
 from datetime import datetime
 
-sys.path.append(str(Path(__file__).parent))
-from methods import METHODS as _V1_METHODS
-from llm_runner import LLM_METHODS
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from lib.datasets import DATASETS, TRANSFORMATION_GROUPS, load_dataset  # noqa: E402
+from lib.llm_runner import LLM_METHODS  # noqa: E402
+from lib.methods import METHODS as _V1_METHODS  # noqa: E402
+from lib.paths import RESULT_ROOTS  # noqa: E402
 
 METHODS = {**_V1_METHODS, **LLM_METHODS}
-
-# Dataset configurations
-DATASETS = {
-    'abt-buy': {
-        'dir': 'data/abt-buy',
-        'left_name': 'abt',
-        'right_name': 'buy',
-        'mapping_file': 'data_original/abt_buy_perfect_mapping.csv'
-    },
-    'amazon-google': {
-        'dir': 'data/amazon-google',
-        'left_name': 'amazon',
-        'right_name': 'google',
-        'mapping_file': 'data_original/Amazon_GoogleProducts_perfectMapping.csv'
-    },
-    'dblp-acm': {
-        'dir': 'data/dblp-acm',
-        'left_name': 'dblp',
-        'right_name': 'acm',
-        'mapping_file': 'data_original/DBLP-ACM_perfectMapping.csv'
-    },
-    'dblp-scholar': {
-        'dir': 'data/dblp-scholar',
-        'left_name': 'dblp1',
-        'right_name': 'scholar',
-        'mapping_file': 'data_original/DBLP-Scholar_perfectMapping.csv'
-    }
-}
-
-TRANSFORMATIONS = ['original', 'ciphered_letters', 'ciphered_words', 'scrambled']
-# 2x2 descriptive-words x identifiers cells (scripts/prepare_factorial.py); 'original' is the 4th cell.
-# Not part of "all": select with --transformations factorial (or list cells explicitly).
-FACTORIAL_CELLS = ['desc_ciphered', 'ids_ciphered', 'all_ciphered']
-TRANSFORMATION_GROUPS = {
-    'all': TRANSFORMATIONS,
-    'factorial': ['original'] + FACTORIAL_CELLS,
-}
-
-def load_dataset(dataset_name, transformation):
-    """Load dataset files"""
-    config = DATASETS[dataset_name]
-    base_dir = Path(config['dir'])
-    
-    if transformation == 'original':
-        left_file = base_dir / f"data_original/{config['left_name']}.csv"
-        right_file = base_dir / f"data_original/{config['right_name']}.csv"
-    else:
-        left_file = base_dir / f"data_test/{config['left_name']}_{transformation}.csv"
-        right_file = base_dir / f"data_test/{config['right_name']}_{transformation}.csv"
-    
-    # Load with encoding detection
-    for enc in ['utf-8', 'latin-1', 'iso-8859-1']:
-        try:
-            df_left = pd.read_csv(left_file, encoding=enc)
-            df_right = pd.read_csv(right_file, encoding=enc)
-            break
-        except:
-            continue
-    
-    # Load ground truth
-    mapping_file = base_dir / config['mapping_file']
-    df_mapping = pd.read_csv(mapping_file)
-
-    # FILTER TO ONLY MATCHED RECORDS (Professor's requirement)
-    print(f"  Original: {len(df_left)} left, {len(df_right)} right")
-    
-    # Get column names
-    left_col = df_left.columns[0]
-    right_col = df_right.columns[0]
-    mapping_left_col = df_mapping.columns[0]
-    mapping_right_col = df_mapping.columns[1]
-    
-    # Get unique IDs from mapping
-    matched_left_ids = set(df_mapping[mapping_left_col].astype(str).unique())
-    matched_right_ids = set(df_mapping[mapping_right_col].astype(str).unique())
-    
-    # Filter datasets to only matched records
-    df_left = df_left[df_left[left_col].astype(str).isin(matched_left_ids)].copy()
-    df_right = df_right[df_right[right_col].astype(str).isin(matched_right_ids)].copy()
-    
-    print(f"  Filtered: {len(df_left)} left, {len(df_right)} right (only matched records)")
-    
-    return df_left, df_right, df_mapping
 
 def run_label(method_name, llm_options):
     """Result-directory name: method plus any non-default harness-v2 options."""
@@ -150,7 +69,7 @@ def run_single_experiment(dataset_name, transformation, method_name, method_func
         import inspect
         accepts_llm_options = 'llm_options' in inspect.signature(method_func).parameters
         label = run_label(method_name, llm_options) if accepts_llm_options else method_name
-        output_dir = Path(getattr(method_func, "result_root", "results")) / dataset_name / label
+        output_dir = RESULT_ROOTS[getattr(method_func, "result_root", "results")] / dataset_name / label
         output_dir.mkdir(parents=True, exist_ok=True)
         output_file = output_dir / f"{transformation}.parquet"
 
