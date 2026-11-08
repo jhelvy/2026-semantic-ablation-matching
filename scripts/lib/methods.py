@@ -54,8 +54,13 @@ _sentence_model = None
 _openai_client = None
 _anthropic_client = None
 
-# TITLE-ONLY MODE (set via environment variable)
+# TITLE-ONLY MODE. Scripts set it per dataset from lib.datasets.DATASETS[...]['title_only']
+# via set_title_only(); the TITLE_ONLY env var is only the default for direct library use.
 TITLE_ONLY_MODE = os.environ.get('TITLE_ONLY', 'false').lower() == 'true'
+
+def set_title_only(flag):
+    global TITLE_ONLY_MODE
+    TITLE_ONLY_MODE = bool(flag)
 
 def get_sentence_model():
     global _sentence_model
@@ -271,7 +276,7 @@ def find_best_threshold_with_details(df_left, df_right, similarity_func, true_ma
         name_a = row_a[name_col_left]
         
         # Find ALL true matches for this left (one-to-many)
-        true_matches_for_a = [right for (left, right) in true_matches_set if left == id_a]
+        true_matches_for_a = sorted([right for (left, right) in true_matches_set if left == id_a])  # sorted: first truth independent of PYTHONHASHSEED
         true_id_b = true_matches_for_a[0] if true_matches_for_a else None
         
         # Find best match
@@ -434,7 +439,7 @@ def soft_tfidf(df_left, df_right, df_mapping):
     for idx_a in tqdm(range(len(df_left)), desc="Soft TF-IDF matching"):
         id_a = str(df_left.iloc[idx_a][id_col_left])
         name_a = df_left.iloc[idx_a][name_col_left]
-        true_matches_for_a = [r for (l, r) in true_matches if l == id_a]
+        true_matches_for_a = sorted([r for (l, r) in true_matches if l == id_a])  # sorted: first truth independent of PYTHONHASHSEED
         true_id_b = true_matches_for_a[0] if true_matches_for_a else None
         best_idx_b = int(np.argmax(similarity_matrix[idx_a]))
         best_sim = float(similarity_matrix[idx_a, best_idx_b])
@@ -518,7 +523,7 @@ def tfidf(df_left, df_right, df_mapping):
         name_a = df_left.iloc[idx_a][name_col_left]
         
         # Get first true match for display
-        true_matches_for_a = [r for (l, r) in true_matches if l == id_a]
+        true_matches_for_a = sorted([r for (l, r) in true_matches if l == id_a])  # sorted: first truth independent of PYTHONHASHSEED
         true_id_b = true_matches_for_a[0] if true_matches_for_a else None
         
         best_idx_b = np.argmax(similarity_matrix[idx_a])
@@ -615,7 +620,7 @@ def sentence_transformer(df_left, df_right, df_mapping):
         id_a = str(df_left.iloc[idx_a][id_col_left])
         name_a = df_left.iloc[idx_a][name_col_left]
         
-        true_matches_for_a = [r for (l, r) in true_matches if l == id_a]
+        true_matches_for_a = sorted([r for (l, r) in true_matches if l == id_a])  # sorted: first truth independent of PYTHONHASHSEED
         true_id_b = true_matches_for_a[0] if true_matches_for_a else None
         
         best_idx_b = np.argmax(similarity_matrix[idx_a])
@@ -727,7 +732,7 @@ def openai_embeddings(df_left, df_right, df_mapping):
         id_a = str(df_left.iloc[idx_a][id_col_left])
         name_a = df_left.iloc[idx_a][name_col_left]
         
-        true_matches_for_a = [r for (l, r) in true_matches if l == id_a]
+        true_matches_for_a = sorted([r for (l, r) in true_matches if l == id_a])  # sorted: first truth independent of PYTHONHASHSEED
         true_id_b = true_matches_for_a[0] if true_matches_for_a else None
         
         best_idx_b = np.argmax(similarity_matrix[idx_a])

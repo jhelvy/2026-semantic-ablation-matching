@@ -13,9 +13,9 @@ Do not rerun this to check the committed CSVs: the Ciphered Words map depends on
 PYTHONHASHSEED, so a rerun overwrites the map the paper used.
 
 Usage:
-    python scripts/01_prepare_datasets.py --dataset abt-buy
-    python scripts/01_prepare_datasets.py --dataset amazon-google
-    python scripts/01_prepare_datasets.py --dataset all  # Generate for all datasets
+    uv run scripts/01_prepare_datasets.py --dataset abt-buy
+    uv run scripts/01_prepare_datasets.py --dataset amazon-google
+    uv run scripts/01_prepare_datasets.py --dataset all  # Generate for all datasets
 """
 
 import argparse
@@ -32,8 +32,8 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python scripts/01_prepare_datasets.py --dataset abt-buy
-  python scripts/01_prepare_datasets.py --dataset all
+  uv run scripts/01_prepare_datasets.py --dataset abt-buy
+  uv run scripts/01_prepare_datasets.py --dataset all
         """
     )
 

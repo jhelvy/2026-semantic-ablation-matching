@@ -36,8 +36,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 from .llm_clients import MODELS, FatalAPIError, call_model
-from .methods import (TITLE_ONLY_MODE, create_ground_truth_set, get_display_column,
-                      prepare_text_column)
+from . import methods as _methods          # read _methods.TITLE_ONLY_MODE at call time (set per dataset)
+from .methods import create_ground_truth_set, get_display_column, prepare_text_column
 from .paths import CHECKPOINTS, PILOT_RESULTS, RESULTS
 
 # =============================================================================
@@ -106,8 +106,8 @@ def build_requests(df_left, df_right, df_mapping, prompt_key="standard", top_k=N
                    max_text_length=2000, sample_frac=None, sample_seed=42,
                    shuffle_candidates=False, shuffle_seed=0):
     """Return (requests, top_k). One request per (sampled) left record."""
-    df_left = prepare_text_column(df_left.copy(), title_only=TITLE_ONLY_MODE)
-    df_right = prepare_text_column(df_right.copy(), title_only=TITLE_ONLY_MODE)
+    df_left = prepare_text_column(df_left.copy(), title_only=_methods.TITLE_ONLY_MODE)
+    df_right = prepare_text_column(df_right.copy(), title_only=_methods.TITLE_ONLY_MODE)
     id_l, id_r = df_left.columns[0], df_right.columns[0]
     name_l, name_r = get_display_column(df_left), get_display_column(df_right)
 
@@ -115,6 +115,8 @@ def build_requests(df_left, df_right, df_mapping, prompt_key="standard", top_k=N
     truth_by_left = {}
     for la, rb in true_matches:
         truth_by_left.setdefault(la, []).append(rb)
+    for v in truth_by_left.values():
+        v.sort()                                   # first truth independent of PYTHONHASHSEED
 
     if sample_frac:
         rng = np.random.default_rng(sample_seed)

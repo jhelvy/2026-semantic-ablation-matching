@@ -11,9 +11,9 @@ conditions. Output tokens (thinking + JSON answer) are an assumption; check
 them against the first real run and re-estimate.
 
 Usage:
-    python scripts/03_estimate_llm_cost.py
-    python scripts/03_estimate_llm_cost.py --datasets abt-buy --models haiku55,gpt4omini
-    python scripts/03_estimate_llm_cost.py --out-tokens 1500 --cpt-original 1.8 --cpt-transformed 1.2
+    uv run scripts/03_estimate_llm_cost.py
+    uv run scripts/03_estimate_llm_cost.py --datasets abt-buy --models haiku55,gpt4omini
+    uv run scripts/03_estimate_llm_cost.py --out-tokens 1500 --cpt-original 1.8 --cpt-transformed 1.2
 """
 
 import argparse
@@ -23,9 +23,10 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lib.datasets import TRANSFORMATIONS, load_dataset   # noqa: E402
+from lib.datasets import DATASETS, TRANSFORMATIONS, load_dataset   # noqa: E402
 from lib.llm_clients import MODELS                       # noqa: E402
 from lib.llm_runner import build_requests                # noqa: E402
+from lib.methods import set_title_only                   # noqa: E402
 
 # Defaults are optimistic heuristics. v1 billing for Haiku 4.5 on Abt-Buy implies
 # roughly 2-2.5x more input tokens than chars/4, so pass lower values (e.g.
@@ -51,6 +52,7 @@ def main():
 
     rows = []
     for ds in args.datasets.split(","):
+        set_title_only(DATASETS[ds]["title_only"])
         for t in args.transformations.split(","):
             df_l, df_r, df_m = load_dataset(ds, t)
             reqs, top_k = build_requests(df_l, df_r, df_m, args.prompt, top_k=args.top_k)

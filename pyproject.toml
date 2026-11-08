@@ -1,0 +1,30 @@
+[project]
+name = "semantic-ablation-matching"
+version = "0.1.0"
+description = "Experiments for 'Matching Without Meaning': LLM entity matchers under semantic ablation"
+readme = "README.md"
+requires-python = ">=3.10,<3.11"
+# Direct dependencies only, pinned to the versions used for the paper.
+# uv.lock pins the full tree (torch, transformers, ...). Set up with: uv sync
+dependencies = [
+    "anthropic==2.6.0",
+    "jellyfish==1.0.3",
+    "numpy==2.0.2",
+    "openai==3.46.0",
+    "pandas==2.2.3",
+    "pyarrow==18.1.0",
+    "python-dotenv==1.0.1",
+    "scikit-learn==1.6.1",
+    "scipy==1.15.1",
+    "sentence-transformers==3.3.1",
+    "tqdm==4.67.1",
+]
+
+[dependency-groups]
+dev = [
+    "httpx2",   # imported directly by tests/test_llm_harness.py (also pulled in by anthropic)
+    "pytest",
+]
+
+[tool.uv]
+package = false   # a collection of scripts, not an installable package

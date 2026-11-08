@@ -6,9 +6,9 @@ to data/<dataset>/data_test/. Design, token classes, and substitution rules are
 documented in scripts/lib/factorial.py.
 
 Usage:
-    python scripts/02_prepare_factorial.py --dataset all
-    python scripts/02_prepare_factorial.py --dataset abt-buy --seed 7     # extra seed -> *_s7.csv
-    python scripts/02_prepare_factorial.py --dataset all --verify         # + TF-IDF invariance check
+    uv run scripts/02_prepare_factorial.py --dataset all
+    uv run scripts/02_prepare_factorial.py --dataset abt-buy --seed 7     # extra seed -> *_s7.csv
+    uv run scripts/02_prepare_factorial.py --dataset all --verify         # + TF-IDF invariance check
 """
 
 import argparse

@@ -6,6 +6,10 @@ Merges the two DATASETS dicts that used to live in prepare_datasets.py
 ('mapping_file' = ground truth). File names are kept exactly as before; some
 differ in case from the files on disk (e.g. amazon.csv vs Amazon.csv), which
 works on case-insensitive file systems (macOS default) only.
+
+'title_only' sets which text every method sees. Scripts apply it per dataset
+with lib.methods.set_title_only(); it replaces the old TITLE_ONLY env var,
+which had to be remembered for every Amazon-Google run.
 """
 
 import pandas as pd
@@ -21,6 +25,7 @@ DATASETS = {
         },
         'left_name': 'abt',
         'right_name': 'buy',
+        'title_only': False,        # name + description
         'mapping_file': 'data_original/abt_buy_perfect_mapping.csv'
     },
     'amazon-google': {
@@ -31,6 +36,7 @@ DATASETS = {
         },
         'left_name': 'amazon',
         'right_name': 'google',
+        'title_only': True,         # title/name column only (as in the paper)
         'mapping_file': 'data_original/Amazon_GoogleProducts_perfectMapping.csv'
     },
     # The two DBLP datasets are configured but their data is not in this repo.
@@ -42,6 +48,7 @@ DATASETS = {
         },
         'left_name': 'dblp',
         'right_name': 'acm',
+        'title_only': False,
         'mapping_file': 'data_original/DBLP-ACM_perfectMapping.csv'
     },
     'dblp-scholar': {
@@ -54,6 +61,7 @@ DATASETS = {
         # so the runner finds the files the transforms write.
         'left_name': 'dblp1',
         'right_name': 'scholar',
+        'title_only': False,
         'mapping_file': 'data_original/DBLP-Scholar_perfectMapping.csv'
     }
 }

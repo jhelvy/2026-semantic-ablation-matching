@@ -2,13 +2,23 @@
 
 Written 2026-11-08 for the revision of "Matching Without Meaning" after the TKDE reject (TKDE-2026-06-2289). The full revision plan, including the manuscript edits and venue strategy, is in the paper folder (`llm-fuzzy-joins/1/plan.md`). This file covers only the changes to this repo: how it is organized, how the README is built, and what we will run.
 
+**Two plans, kept in sync.** The paper plan is `/Users/jhelvy/sync/00_current/llm-fuzzy-joins/1/plan.md` (argument, manuscript edits, venue). When John says "update the plan", update both files in the same sitting, and keep shared decisions consistent: lineup, figures, run order, and status. For script names and commands, this file is the source of truth.
+
 Branch: `harness-v2`. No API calls have been made yet. Do not run any paid API call until keys and credit are confirmed.
+
+**Commits: John makes every commit.** Claude does not run `git commit` (or push). At each natural commit point, Claude stops, summarizes what changed and how it was checked, proposes a commit message, and waits. John reviews the diff and commits. Wherever this plan says "commit", read it as "stop and flag a commit point".
 
 ## The claim the experiments must support
 
 LLM entity matchers lean on semantics. When meaning is removed but the lexical evidence that identifies a match is kept, they do not fall back on that evidence, even though that evidence alone solves the task. TF-IDF is the control that proves the evidence is still there: it does not change under any of the transforms.
 
 This is a proof of concept, not a model survey. Keep the lineup small and spend the effort on the controls.
+
+### Method lineup (decided 2026-11-08)
+
+- **Semantic methods (the object of study):** the LLMs (C.1) and the two embedding models (`sentence_transformer`, `openai_embeddings`). These are the methods whose sensitivity to semantics the paper measures.
+- **One lexical control in the main text: TF-IDF.** It is invariant by construction, and it also produces the LLM's shortlist. It appears as a reference in every main figure (a dashed or differently colored line in F1 plots, a colored point in precision-recall plots). It is not presented as a competitor, and the text does not say lexical methods "overtake" the LLM.
+- **Other lexical methods go to the appendix:** Soft TF-IDF, Levenshtein, Jaro-Winkler, Monge-Elkan. Their only role is to show that lexical methods are robust to the transforms, which is true by design. Still run them (they cost nothing), so the appendix and the README can show them, and the main text points to the appendix once.
 
 ## Order of work
 
@@ -61,7 +71,7 @@ tests/
 Rules for the move:
 
 - **One source of truth for paths.** `lib/paths.py` anchors every path to the repo root, so scripts work from any working directory. Remove the `sys.path.append(Path(__file__).parent)` lines and the scattered `Path(__file__).resolve().parent.parent` constructions. The numbered scripts add `scripts/` to the path once and use `from lib import ...`.
-- **Pure moves first, then fixes.** Use `git mv` so history follows the files. Commit the moves in a separate commit from any code change, so the diff is reviewable.
+- **Pure moves first, then fixes.** Use `git mv` so history follows the files. Keep the moves in a separate commit from any code change, so the diff is reviewable. (Done 2026-11-08: `078ab3d` moves, `f687214` fixes; made before the no-commit rule above.)
 - **Drop `diagnose_blocking.py`.** Its job (is the true match in the TF-IDF top-k?) is covered by `07_instance_analysis.py`, which computes shortlist recall for each k from TF-IDF alone, at no cost. Its hard-coded filename guessing goes away with it.
 - **Remove the matplotlib plots from `06_summarize_results.py`.** Those plots (`{dataset}_f1_scores.png`, `{dataset}_precision_recall.png`) are not used anywhere. All figures come from `08_figures.R`.
 - **Keep the CLI flags unchanged** (`--dataset`, `--methods`, `--transformations`, `--shuffle-candidates`, `--top-k`, and so on), so the commands in this plan only change by script name.
@@ -72,6 +82,18 @@ Rules for the move:
 - Change every `ggsave(file.path('results', 'plots', ...))` in `08_figures.R` to `file.path('figs', ...)`.
 - Keep the figure file names stable (`f1_comparison.png`, `precision_recall_scatter.png`, `llm_robustness.png`, `llm_prompt_comparison.png`), so the paper's `\includegraphics` paths only change by folder. New figures for the factorial and robustness runs get descriptive names, such as `factorial_2x2.png` and `candidate_list_robustness.png`.
 - `08_figures.R` also needs labels for the new methods (`llm_haiku55`, `llm_sonnet55`, `llm_gpt4omini`, `llm_kimik3`) and for the factorial cells.
+- **Split the two overview figures into a main figure and an appendix figure** (see "Method lineup" above). Each one is currently a stacked cowplot with semantic methods on top and lexical methods below; the halves become separate files.
+
+  | File | Goes in | Rows / points | TF-IDF shown as |
+  |---|---|---|---|
+  | `f1_comparison.png` | main text | semantic methods only (LLMs, embeddings) | a dashed, differently colored vertical reference line at TF-IDF's F1 in each dataset panel, labeled "TF-IDF" |
+  | `f1_comparison_lexical.png` | appendix | lexical methods (TF-IDF, Soft TF-IDF, Monge-Elkan, Levenshtein, Jaro-Winkler) | an ordinary row |
+  | `precision_recall_scatter.png` | main text | semantic methods only | one distinctly colored point per dataset and condition, labeled "TF-IDF" |
+  | `precision_recall_scatter_lexical.png` | appendix | lexical methods | ordinary points |
+
+  - TF-IDF is invariant to within about 0.01 F1, so one reference line per dataset (its Original F1) is enough in the F1 figure. If a factorial or seed run ever moves it more than that, draw it per condition instead.
+  - Keep the main figures' file names, so the paper's `\includegraphics` paths still work. The legend or caption names the TF-IDF reference as the lexical control.
+  - The other figures (`llm_robustness.png`, `llm_prompt_comparison.png`, and the new factorial and robustness figures) also get the TF-IDF reference line, so every main figure uses the same convention.
 
 ### A.3 Results layout
 
@@ -90,17 +112,19 @@ Rules for the move:
 
 - Fix the README project tree, which still says `fuzzy-join-llm/`.
 - Add `.quarto/` and `README_files/` to `.gitignore`.
-- Update `requirements.txt` if the move changes any imports. Add an R requirements note for `08_figures.R` and `README.qmd` (tidyverse, cowplot, ggh4x, knitr, jsonlite).
+- **Manage Python with uv.** `pyproject.toml` pins the direct dependencies, `uv.lock` pins the full tree, `.python-version` pins 3.10, and `uv sync` builds `.venv/`. Run every script with `uv run`. `requirements.txt` is generated from the lock (`uv export --frozen --no-hashes --no-dev --format requirements-txt -o requirements.txt`) for pip users; regenerate it after any `uv lock`.
+- Add an R requirements note for `08_figures.R` and `README.qmd` (tidyverse, cowplot, ggh4x, ragg, knitr, jsonlite).
 
 ### A.5 Checks that the reorg changed nothing
 
 Run all of these before committing the reorg. None of them call an API.
 
-- `python tests/test_llm_harness.py` and `python tests/test_factorial.py` pass (15 + 3 tests today).
-- `python scripts/02_prepare_factorial.py --dataset all --verify` regenerates the factorial CSVs, and `git diff --stat data/` shows no change. The TF-IDF equality check passes.
+- `uv run tests/test_llm_harness.py` and `uv run tests/test_factorial.py` pass (15 + 3 tests today).
+- `uv run scripts/02_prepare_factorial.py --dataset all --verify` regenerates the factorial CSVs, and `git diff --stat data/` shows no change. The TF-IDF equality check passes.
 - Do **not** rerun `01_prepare_datasets.py` as a check. Its Ciphered Words map is built by iterating over a Python `set`, so it changes with `PYTHONHASHSEED`. The committed CSVs are the only copy of the map the paper used (see C.3, item 5).
-- `python scripts/05_cv_threshold.py` reproduces the committed `results/cv_results.csv` for every non-LLM method. The v1 LLM rows can be re-produced from `results/v1_llm/` once the CV script is pointed there.
-- `python scripts/03_estimate_llm_cost.py --models haiku55,gpt4omini` gives the same estimate as before ($6.48 for shuffled k=50 over the 4 v1 conditions).
+- `uv run scripts/05_cv_threshold.py` reproduces the committed `results/cv_results.csv` for every non-LLM method. The v1 LLM rows can be re-produced from `results/v1_llm/` once the CV script is pointed there.
+  - Result (2026-11-08): it does, row for row, except Soft TF-IDF. Those committed rows came from an older version of the CV script. But the committed non-LLM parquets themselves do not reproduce from the current `methods.py`. So the free non-LLM methods were rerun (`all,factorial`, both datasets), with a per-dataset `title_only` setting in `lib/datasets.py` (Amazon-Google: title only). `05` now reads Soft TF-IDF from its parquets like every other method. `openai_embeddings` waits for keys (C.4 step 2). The rerun is deterministic (identical under a different `PYTHONHASHSEED`). Amazon-Google results are unchanged except Soft TF-IDF. Abt-Buy is lower for every rerun method (TF-IDF 0.760 → 0.697) and is now flat across conditions; the paper plan, Step 0 item 4, has the details.
+- `uv run scripts/03_estimate_llm_cost.py --models haiku55,gpt4omini` gives the same estimate as before ($6.48 for shuffled k=50 over the 4 v1 conditions).
 - `Rscript scripts/08_figures.R` writes to `figs/`, and nothing is written to `results/plots/`.
 
 ---
@@ -137,8 +161,9 @@ Run all of these before committing the reorg. None of them call an API.
 | README section | Source |
 |---|---|
 | Research question, transforms, 2x2 design | text (no numbers) |
-| F1 by method and condition, both datasets | `results/cv_results.csv` |
-| Precision / recall / F1 on Original | `results/cv_results.csv` |
+| F1 by method and condition, both datasets: semantic methods + TF-IDF | `results/cv_results.csv` |
+| Precision / recall / F1 on Original: semantic methods + TF-IDF | `results/cv_results.csv` |
+| Lexical methods, all conditions (separate section, mirrors the paper's appendix) | `results/cv_results.csv` |
 | 2x2 factorial table (F1 per cell, per model) | `results/cv_results.csv` |
 | Candidate-list robustness (ordered k=50, shuffled k=50, shuffled k=10) | `results/cv_results.csv` (method suffixes `__shuffle0`, `__shuffle0__k10`) |
 | LLM output status rates (parse failures, truncation, refusals) | `results/llm_status.csv` |
@@ -211,7 +236,7 @@ IDs and prices were verified 2026-11-06. Re-check them before running.
    - regenerate the CSVs, and then rerun every non-LLM method for this condition.
 
    The factorial `all_ciphered` cell is the cleaner replacement either way.
-6. **`08_figures.R`.** Labels for the new methods and cells, plus a factorial figure and a robustness figure.
+6. **`08_figures.R`.** Labels for the new methods and cells; split `f1_comparison.png` and `precision_recall_scatter.png` into main (semantic methods + TF-IDF reference) and appendix (`*_lexical.png`) figures (A.2); add a factorial figure and a robustness figure, both with the TF-IDF reference line.
 
 Optional for this paper: an `--include-unmatched` flag for full catalogs (R2 D3), and a Batch API mode, which would save roughly $15–30 per Claude pass.
 
@@ -219,8 +244,8 @@ Optional for this paper: an `--include-unmatched` flag for full catalogs (R2 D3)
 
 Script names below are the post-reorg names.
 
-1. `cp .env.example .env` and fill in `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, and `KIMI_API_KEY`. Then run `pip install -r requirements.txt` and the tests.
-2. Rerun `05_cv_threshold.py` and confirm it reproduces `cv_results.csv` (A.5).
+1. `cp .env.example .env` and fill in `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, and `KIMI_API_KEY`. Then run `uv sync` and the tests.
+2. **Rerun `openai_embeddings`** (paid, but only a few cents: embeddings for about 2,200 records per condition) on both datasets with `--transformations all,factorial`, so every semantic method comes from the current code. The free non-LLM methods were rerun on 2026-11-08 (the committed parquets did not reproduce from the current code). Then rerun `05_cv_threshold.py`.
 3. **Subscription pilot (free).** `llm_haiku55_cli` on Abt-Buy `original,ciphered_words` with `--sample-frac 0.05 --workers 2`. Check the CLI output parsing and the isolation, and iterate on the prompt here if needed.
 4. **API pilot (about $1).** `llm_haiku55,llm_gpt4omini,llm_kimik3` on Abt-Buy `original` with `--sample-frac 0.05`. Check the status counts and that Kimi accepts `json_schema`. Then recalibrate `03_estimate_llm_cost.py` with `--cpt-*` and `--out-tokens` from the logged tokens.
 5. **Main grid.** Run `llm_haiku55,llm_gpt4omini` on the full grid first: does the v1 GPT-4o-mini collapse survive the fixed harness? Then run `llm_sonnet55,llm_kimik3` on their 30% subsample. Budget: about $65–150 per pass.

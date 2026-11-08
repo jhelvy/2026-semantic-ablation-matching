@@ -8,7 +8,7 @@ UNIFIED RESULTS ANALYSIS SCRIPT
 Figures are made by scripts/08_figures.R, not here.
 
 Usage:
-    python scripts/06_summarize_results.py
+    uv run scripts/06_summarize_results.py
 """
 
 import sys

@@ -1,7 +1,7 @@
 """
 Offline tests for scripts/lib/factorial.py (no data files, no API).
 
-    python tests/test_factorial.py
+    uv run tests/test_factorial.py
 """
 
 import random

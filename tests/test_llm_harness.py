@@ -1,7 +1,7 @@
 """
 Offline tests for harness v2 (no network, no API keys, no cost).
 
-    python tests/test_llm_harness.py        # or: pytest tests/test_llm_harness.py
+    uv run tests/test_llm_harness.py        # or: uv run pytest tests/test_llm_harness.py
 """
 
 import json

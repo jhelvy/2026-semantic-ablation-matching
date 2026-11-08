@@ -4,16 +4,16 @@ AUTOMATED ENTITY MATCHING EXPERIMENT RUNNER - CORRECTED
 Runs methods with threshold optimization and proper output schema.
 
 Usage:
-    python scripts/04_run_experiments.py --dataset abt-buy
-    python scripts/04_run_experiments.py --dataset abt-buy --methods jaro_winkler,tfidf
+    uv run scripts/04_run_experiments.py --dataset abt-buy
+    uv run scripts/04_run_experiments.py --dataset abt-buy --methods jaro_winkler,tfidf
 
-Harness-v2 LLM methods (see scripts/lib/llm_runner.py; `python scripts/03_estimate_llm_cost.py`
+Harness-v2 LLM methods (see scripts/lib/llm_runner.py; `uv run scripts/03_estimate_llm_cost.py`
 prices a run without calling any API):
-    python scripts/04_run_experiments.py --dataset abt-buy --methods llm_haiku55,llm_gpt4omini
-    python scripts/04_run_experiments.py --dataset all --methods llm_sonnet55,llm_kimik3   # 30% subsample by default
-    python scripts/04_run_experiments.py --dataset abt-buy --methods llm_haiku55_cli --sample-frac 0.05 --workers 2   # subscription pilot -> pilot_results/
-    python scripts/04_run_experiments.py --dataset abt-buy --methods llm_sonnet55 --effort high
-    python scripts/04_run_experiments.py --dataset abt-buy --methods llm_haiku55 --repeat 2
+    uv run scripts/04_run_experiments.py --dataset abt-buy --methods llm_haiku55,llm_gpt4omini
+    uv run scripts/04_run_experiments.py --dataset all --methods llm_sonnet55,llm_kimik3   # 30% subsample by default
+    uv run scripts/04_run_experiments.py --dataset abt-buy --methods llm_haiku55_cli --sample-frac 0.05 --workers 2   # subscription pilot -> pilot_results/
+    uv run scripts/04_run_experiments.py --dataset abt-buy --methods llm_sonnet55 --effort high
+    uv run scripts/04_run_experiments.py --dataset abt-buy --methods llm_haiku55 --repeat 2
 
 Non-default options are appended to the result directory name, e.g.
 results/abt-buy/llm_haiku55__effort-high/original.parquet, so runs never overwrite each other.
@@ -28,7 +28,7 @@ from datetime import datetime
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lib.datasets import DATASETS, TRANSFORMATION_GROUPS, load_dataset  # noqa: E402
 from lib.llm_runner import LLM_METHODS  # noqa: E402
-from lib.methods import METHODS as _V1_METHODS  # noqa: E402
+from lib.methods import METHODS as _V1_METHODS, set_title_only  # noqa: E402
 from lib.paths import RESULT_ROOTS  # noqa: E402
 
 METHODS = {**_V1_METHODS, **LLM_METHODS}
@@ -59,7 +59,8 @@ def run_single_experiment(dataset_name, transformation, method_name, method_func
     
     try:
         # Load data
-        print("Loading data...")
+        set_title_only(DATASETS[dataset_name]['title_only'])
+        print(f"Loading data... (title_only={DATASETS[dataset_name]['title_only']})")
         df_left, df_right, df_mapping = load_dataset(dataset_name, transformation)
         print(f"  Left: {len(df_left)} records")
         print(f"  Right: {len(df_right)} records")
