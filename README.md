@@ -20,7 +20,10 @@ task.
 >   on all seven conditions.
 > - `openai_embeddings` has not been rerun yet (it is a paid call), so
 >   its rows still come from the earlier code.
-> - Harness v2 LLM runs: not yet run.
+> - Harness v2 LLM runs: not yet run. The main results use the small
+>   models (Claude Haiku 5.5, GPT-6 Luna). Claude Sonnet 5.5 is a scale
+>   check, reported in [its own appendix
+>   section](#appendix-scale-check-claude-sonnet-55).
 > - The v1 LLM results from the TKDE submission are superseded. They
 >   appear in the figures labeled “(v1)” and in [their own
 >   section](#v1-llm-results-superseded).
@@ -186,6 +189,27 @@ Harness v2 LLM runs only.
 
 *Not yet run.*
 
+## Appendix: scale check (Claude Sonnet 5.5)
+
+The main results use small models, because those are what people deploy
+for matching at scale. Claude Sonnet 5.5, a mid-size model, tests
+whether a stronger model reads the preserved identifiers that the small
+models miss. Sonnet runs on a fixed 30% of the queries, so here Haiku
+5.5, GPT-6 Luna, and TF-IDF are scored on those same queries (“same
+queries”), not on the full set used in the main tables. Sonnet moves
+into the main results only if it clearly beats both small models on the
+transformed conditions (PLAN.md, “Method lineup”).
+
+*Not yet run.*
+
+**Abt-Buy:**
+
+*Not yet run.*
+
+**Amazon-Google:**
+
+*Not yet run.*
+
 ## Appendix: lexical methods
 
 Soft TF-IDF, Levenshtein, Jaro-Winkler, and Monge-Elkan appear only
@@ -251,9 +275,10 @@ Scrambled row failed. Harness v2 replaces them.
 ## Methods evaluated
 
 - **LLMs (harness v2):** Claude Haiku 5.5 and GPT-6 Luna (small models)
-  on the full grid; Claude Sonnet 5.5 (mid-size) on a fixed 30%
-  subsample of query records. All three reason at effort `medium`. Each
-  query sees the TF-IDF top-50 candidates and returns structured JSON.
+  on the full grid; these are the main results. Claude Sonnet 5.5
+  (mid-size) runs on a fixed 30% subsample of query records as a scale
+  check (appendix). All three reason at effort `medium`. Each query sees
+  the TF-IDF top-50 candidates and returns structured JSON.
 - **Embeddings:** SentenceTransformer (all-MiniLM-L6-v2) and OpenAI
   Embeddings (text-embedding-3-small).
 - **Lexical control:** TF-IDF, cosine similarity on term-frequency
@@ -388,14 +413,16 @@ budgeting):
 
 | Method | Model | Run | Notes |
 |----|----|----|----|
-| `llm_haiku55` | `claude-haiku-5-5` | full grid | reported; small |
-| `llm_gpt6luna` | `gpt-6-luna` | full grid | reported; small |
-| `llm_sonnet55` | `claude-sonnet-5-5` | fixed 30% subsample | reported; mid-size |
+| `llm_haiku55` | `claude-haiku-5-5` | full grid | main results; small |
+| `llm_gpt6luna` | `gpt-6-luna` | full grid | main results; small |
+| `llm_sonnet55` | `claude-sonnet-5-5` | fixed 30% subsample | scale check (appendix); mid-size |
 | `llm_haiku55_cli`, `llm_sonnet55_cli` | Claude Code CLI on a subscription | any | **pilots only**; written to `pilot_results/` |
 
 Each method also has a token-fallback variant with a `_tf` suffix.
 Sonnet’s 30% subsample is a fixed set of query records, so it is a
-subset of the Haiku and Luna runs. All three models run at reasoning
+subset of the Haiku and Luna runs; `05_cv_threshold.py` also scores
+Haiku, Luna, and TF-IDF on exactly those queries (rows suffixed
+`__sonnet30` in `cv_results.csv`). All three models run at reasoning
 effort `medium`; Claude’s thinking is adaptive and cannot be turned off.
 
 Subscription pilots run `claude -p` from an empty temporary directory,
@@ -477,7 +504,7 @@ rank-then-select setting studied here, and it multiplies token cost.
     │   ├── cv_results.csv               # cross-validated F1/precision/recall (source of every reported F1)
     │   └── summary.csv                  # fixed-threshold TP/FP/FN, cost, wall time
     │
-    ├── figs/                            # generated figures (main + *_lexical appendix figures)
+    ├── figs/                            # generated figures (main + appendix: *_lexical, llm_scale_check)
     ├── checkpoints/                     # gitignored: partial harness-v2 runs
     ├── pilot_results/                   # gitignored: subscription pilots, never reported
     ├── README.qmd                       # source of this README

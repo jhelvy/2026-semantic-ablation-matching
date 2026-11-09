@@ -35,8 +35,14 @@ manifest <- function(ds) {
 
 not_run <- '*Not yet run.*'
 
-# Method groups and display labels (PLAN.md, "Method lineup").
+# Method groups and display labels (PLAN.md, "Method lineup"). The main
+# results use the small models; Sonnet 5.5 is a scale check, in its own
+# appendix section, compared with the small models on its 30% of queries.
 v2_llms <- c('llm_haiku55', 'llm_gpt6luna', 'llm_sonnet55')
+small_llms <- c('llm_haiku55', 'llm_gpt6luna')
+scale_methods <- c(
+  'llm_sonnet55', 'llm_haiku55__sonnet30', 'llm_gpt6luna__sonnet30', 'tfidf__sonnet30'
+)
 embeddings <- c('openai_embeddings', 'sentence_transformer')
 lexical <- c('tfidf', 'soft_tfidf', 'monge_elkan', 'levenshtein', 'jaro_winkler')
 v1_llms <- c(
@@ -48,6 +54,9 @@ method_labels <- c(
   llm_haiku55 = 'Claude Haiku 5.5',
   llm_gpt6luna = 'GPT-6 Luna',
   llm_sonnet55 = 'Claude Sonnet 5.5',
+  llm_haiku55__sonnet30 = 'Claude Haiku 5.5 (same queries)',
+  llm_gpt6luna__sonnet30 = 'GPT-6 Luna (same queries)',
+  tfidf__sonnet30 = 'TF-IDF (same queries)',
   openai_embeddings = 'OpenAI Embeddings',
   sentence_transformer = 'SentenceTransformer',
   tfidf = 'TF-IDF',
@@ -134,9 +143,9 @@ prf_table <- function(ds, methods, cond = 'original') {
     kable(align = 'lrrrr')
 }
 
-# Methods in the main tables: the v2 LLMs, the embeddings, and TF-IDF last as
-# the lexical control.
-main_methods <- c(v2_llms, embeddings, 'tfidf')
+# Methods in the main tables: the small v2 LLMs, the embeddings, and TF-IDF
+# last as the lexical control.
+main_methods <- c(small_llms, embeddings, 'tfidf')
 
 n_pairs <- function(ds) {
   files <- c(
@@ -172,7 +181,7 @@ LLM entity matchers lean on semantics. We test what happens when meaning is remo
 >
 > - The non-LLM methods were rerun on 2026-11-08 with the current code, on all seven conditions.
 > - `openai_embeddings` has not been rerun yet (it is a paid call), so its rows still come from the earlier code.
-> - Harness v2 LLM runs: `r if (has_v2) "some results are in (see below)" else "not yet run"`.
+> - Harness v2 LLM runs: `r if (has_v2) "some results are in (see below)" else "not yet run"`. The main results use the small models (Claude Haiku 5.5, GPT-6 Luna). Claude Sonnet 5.5 is a scale check, reported in [its own appendix section](#appendix-scale-check-claude-sonnet-55).
 > - The v1 LLM results from the TKDE submission are superseded. They appear in the figures labeled "(v1)" and in [their own section](#v1-llm-results-superseded).
 
 ## Research question
@@ -280,7 +289,7 @@ if (length(robust_methods) == 0) {
   asis_output(not_run)
 } else {
   cv |>
-    filter(method %in% c(v2_llms, robust_methods), transformation %in% v1_conditions) |>
+    filter(method %in% c(small_llms, robust_methods), transformation %in% v1_conditions) |>
     transmute(
       Dataset = dataset_labels[dataset],
       Method = method,
@@ -337,6 +346,31 @@ if (is.null(v2_cost) || nrow(v2_cost) == 0) {
 }
 ```
 
+## Appendix: scale check (Claude Sonnet 5.5)
+
+The main results use small models, because those are what people deploy for matching at scale. Claude Sonnet 5.5, a mid-size model, tests whether a stronger model reads the preserved identifiers that the small models miss. Sonnet runs on a fixed 30% of the queries, so here Haiku 5.5, GPT-6 Luna, and TF-IDF are scored on those same queries ("same queries"), not on the full set used in the main tables. Sonnet moves into the main results only if it clearly beats both small models on the transformed conditions (PLAN.md, "Method lineup").
+
+```{r}
+#| results: asis
+if (file.exists('figs/llm_scale_check.png')) {
+  cat('![Scale check: Sonnet 5.5 vs the small models on the same queries](figs/llm_scale_check.png)\n')
+} else {
+  cat(not_run, '\n')
+}
+```
+
+**Abt-Buy:**
+
+```{r}
+f1_table('abt-buy', scale_methods, names(condition_labels))
+```
+
+**Amazon-Google:**
+
+```{r}
+f1_table('amazon-google', scale_methods, names(condition_labels))
+```
+
 ## Appendix: lexical methods
 
 Soft TF-IDF, Levenshtein, Jaro-Winkler, and Monge-Elkan appear only here. Their role is to show that lexical methods are robust to the transforms, which holds by design.
@@ -375,7 +409,7 @@ f1_table('amazon-google', v1_llms, v1_conditions)
 
 ## Methods evaluated
 
-- **LLMs (harness v2):** Claude Haiku 5.5 and GPT-6 Luna (small models) on the full grid; Claude Sonnet 5.5 (mid-size) on a fixed 30% subsample of query records. All three reason at effort `medium`. Each query sees the TF-IDF top-50 candidates and returns structured JSON.
+- **LLMs (harness v2):** Claude Haiku 5.5 and GPT-6 Luna (small models) on the full grid; these are the main results. Claude Sonnet 5.5 (mid-size) runs on a fixed 30% subsample of query records as a scale check (appendix). All three reason at effort `medium`. Each query sees the TF-IDF top-50 candidates and returns structured JSON.
 - **Embeddings:** SentenceTransformer (all-MiniLM-L6-v2) and OpenAI Embeddings (text-embedding-3-small).
 - **Lexical control:** TF-IDF, cosine similarity on term-frequency vectors.
 - **Other lexical methods (appendix):** Soft TF-IDF (IDF-weighted, with Jaro-Winkler fuzzy token matching at 0.9 or above), Monge-Elkan (token-level Jaro-Winkler averaging), Levenshtein, and Jaro-Winkler.
@@ -473,12 +507,12 @@ Models (`llm_clients.MODELS`; prices checked 2026-11-09, re-check before budgeti
 
 | Method | Model | Run | Notes |
 |---|---|---|---|
-| `llm_haiku55` | `claude-haiku-5-5` | full grid | reported; small |
-| `llm_gpt6luna` | `gpt-6-luna` | full grid | reported; small |
-| `llm_sonnet55` | `claude-sonnet-5-5` | fixed 30% subsample | reported; mid-size |
+| `llm_haiku55` | `claude-haiku-5-5` | full grid | main results; small |
+| `llm_gpt6luna` | `gpt-6-luna` | full grid | main results; small |
+| `llm_sonnet55` | `claude-sonnet-5-5` | fixed 30% subsample | scale check (appendix); mid-size |
 | `llm_haiku55_cli`, `llm_sonnet55_cli` | Claude Code CLI on a subscription | any | **pilots only**; written to `pilot_results/` |
 
-Each method also has a token-fallback variant with a `_tf` suffix. Sonnet's 30% subsample is a fixed set of query records, so it is a subset of the Haiku and Luna runs. All three models run at reasoning effort `medium`; Claude's thinking is adaptive and cannot be turned off.
+Each method also has a token-fallback variant with a `_tf` suffix. Sonnet's 30% subsample is a fixed set of query records, so it is a subset of the Haiku and Luna runs; `05_cv_threshold.py` also scores Haiku, Luna, and TF-IDF on exactly those queries (rows suffixed `__sonnet30` in `cv_results.csv`). All three models run at reasoning effort `medium`; Claude's thinking is adaptive and cannot be turned off.
 
 Subscription pilots run `claude -p` from an empty temporary directory, with no tools, no MCP servers, only project-level settings, and a replaced system prompt. `ANTHROPIC_API_KEY` is removed from their environment, so they can never bill the API. Use `--workers 2` or so, to stay inside subscription limits.
 
@@ -547,7 +581,7 @@ Non-default options are appended to the result directory name (for example `resu
 │   ├── cv_results.csv               # cross-validated F1/precision/recall (source of every reported F1)
 │   └── summary.csv                  # fixed-threshold TP/FP/FN, cost, wall time
 │
-├── figs/                            # generated figures (main + *_lexical appendix figures)
+├── figs/                            # generated figures (main + appendix: *_lexical, llm_scale_check)
 ├── checkpoints/                     # gitignored: partial harness-v2 runs
 ├── pilot_results/                   # gitignored: subscription pilots, never reported
 ├── README.qmd                       # source of this README

@@ -42,9 +42,36 @@ ablation_levels <- c('Scrambled', 'Ciphered Words', 'Ciphered Letters')
 # Method lineup (PLAN.md, "Method lineup"): semantic methods are the object of
 # study and go in the main figures; TF-IDF is the lexical control, drawn there
 # as a reference. All lexical methods go in the appendix (*_lexical.png).
-# The v1 LLM runs (results/v1_llm/) are superseded and labeled "(v1)".
-semantic_methods <- c('llm', 'llm_haiku', 'openai_embeddings', 'sentence_transformer')
+# The main figures show the small LLMs (Haiku 5.5, GPT-6 Luna). Sonnet 5.5 is
+# a scale check and appears only in the appendix figure llm_scale_check.png.
+# Until the v2 small models have run, the superseded v1 LLM runs
+# (results/v1_llm/) stand in, labeled "(v1)".
+v2_small_llms <- c('llm_haiku55', 'llm_gpt6luna')
+v1_main_llms <- c('llm', 'llm_haiku')
+embedding_methods <- c('openai_embeddings', 'sentence_transformer')
 lexical_methods <- c('tfidf', 'soft_tfidf', 'monge_elkan', 'levenshtein', 'jaro_winkler')
+
+# Scale check: every model scored on Sonnet's fixed 30% of queries
+# (05_cv_threshold.py writes the small models and TF-IDF as "*__sonnet30").
+scale_methods <- c(
+  'llm_haiku55__sonnet30' = 'Claude Haiku 5.5',
+  'llm_gpt6luna__sonnet30' = 'GPT-6 Luna',
+  'llm_sonnet55' = 'Claude Sonnet 5.5'
+)
+scale_colors <- c(
+  'Claude Haiku 5.5' = 'grey65',
+  'GPT-6 Luna' = 'grey30',
+  'Claude Sonnet 5.5' = '#2166ac'
+)
+all_conditions <- c(
+  original = 'Original',
+  ciphered_letters = 'Ciphered Letters',
+  ciphered_words = 'Ciphered Words',
+  scrambled = 'Scrambled',
+  desc_ciphered = 'Descriptions ciphered',
+  ids_ciphered = 'Identifiers ciphered',
+  all_ciphered = 'Both ciphered'
+)
 
 # Shared label cleaning --------------------------------------------------------
 
@@ -106,6 +133,9 @@ save_fig <- function(name, width, height) {
 # Data -------------------------------------------------------------------------
 
 cv_raw <- read_csv(file.path(results_dir, 'cv_results.csv'), show_col_types = FALSE)
+
+main_llms <- if (any(cv_raw$method %in% v2_small_llms)) v2_small_llms else v1_main_llms
+semantic_methods <- c(main_llms, embedding_methods)
 
 cv_v1 <- cv_raw |>
   filter(transformation %in% v1_conditions) |>
@@ -479,3 +509,91 @@ llm_ablations |>
   panel_border()
 
 save_fig('llm_prompt_comparison.png', width = 8, height = 6)
+
+# Plot 5 (appendix): scale check — Sonnet 5.5 vs the small models ---------------
+# All three models on the same queries: Sonnet's fixed 30% subsample. Every
+# condition, v1 transforms and 2x2 factorial cells. TF-IDF (dashed) is scored on
+# the same queries. Drawn only once Sonnet results exist.
+
+cv_scale <- cv_raw |>
+  filter(method %in% names(scale_methods), transformation %in% names(all_conditions))
+
+if (!any(cv_scale$method == 'llm_sonnet55')) {
+  message('llm_scale_check.png skipped: no llm_sonnet55 results yet')
+} else {
+  cv_scale <- cv_scale |>
+    mutate(
+      model = factor(scale_methods[method], levels = scale_methods),
+      dataset = str_replace_all(dataset, "-", " ") |> str_to_title(),
+      group = case_when(
+        transformation == 'original' ~ 'Baseline',
+        transformation %in% v1_conditions ~ 'v1 transforms',
+        .default = '2x2 factorial'
+      ),
+      group = factor(group, levels = c('Baseline', 'v1 transforms', '2x2 factorial')),
+      # Reversed, so Original sits at the top of each panel.
+      transformation = factor(all_conditions[transformation], levels = rev(all_conditions))
+    )
+
+  tfidf_scale_ref <- cv_raw |>
+    filter(method == 'tfidf__sonnet30', transformation == 'original') |>
+    mutate(dataset = str_replace_all(dataset, "-", " ") |> str_to_title()) |>
+    select(dataset, tfidf_f1 = f1_mean)
+  tfidf_scale_label <- tfidf_scale_ref |>
+    mutate(group = factor('Baseline', levels = levels(cv_scale$group)))
+
+  dodge <- position_dodge(width = 0.7, orientation = 'y', reverse = TRUE)
+
+  cv_scale |>
+    ggplot(aes(x = f1_mean, y = transformation, color = model)) +
+    geom_vline(
+      data = tfidf_scale_ref,
+      aes(xintercept = tfidf_f1),
+      color = tfidf_color,
+      linetype = 'dashed',
+      linewidth = 0.6
+    ) +
+    geom_text(
+      data = tfidf_scale_label,
+      inherit.aes = FALSE,
+      aes(x = tfidf_f1, y = Inf, label = 'TF-IDF'),
+      color = tfidf_color,
+      family = font,
+      size = 3.5,
+      hjust = 1.1,
+      vjust = 1.3
+    ) +
+    geom_errorbar(
+      orientation = 'y',
+      aes(xmin = f1_mean - f1_std, xmax = f1_mean + f1_std),
+      width = 0.4,
+      linewidth = 0.5,
+      position = dodge
+    ) +
+    geom_point(size = 2.2, position = dodge) +
+    facet_grid(group ~ dataset, scales = 'free_y', space = 'free_y') +
+    scale_color_manual(values = scale_colors) +
+    scale_x_continuous(breaks = seq(0, 1, 0.2), limits = c(0, 1)) +
+    labs(
+      x = 'F1 Score',
+      y = NULL,
+      color = NULL,
+      caption = paste(
+        "All models scored on the same queries: Sonnet's fixed 30% subsample.",
+        'Error bars: \u00b1 1 SD across 5 CV folds.\nDashed red line: TF-IDF (lexical control) F1 on Original, same queries.'
+      )
+    ) +
+    theme_minimal_vgrid(font_family = font, font_size = 14) +
+    theme(
+      strip.background = element_rect(fill = 'grey80', color = NA),
+      panel.grid.minor = element_blank(),
+      plot.caption.position = 'plot',
+      plot.caption = element_text(hjust = 0),
+      legend.position = 'bottom',
+      panel.background = element_rect(fill = 'white', color = NA),
+      plot.background = element_rect(fill = 'white', color = NA)
+    ) +
+    panel_border()
+
+  save_fig('llm_scale_check.png', width = 8, height = 7)
+}
