@@ -154,8 +154,8 @@ F1 in each cell of the descriptive-words x identifiers design.
 ### Candidate-list robustness
 
 The main design shows the LLM the TF-IDF top 50 candidates in rank
-order. Two checks remove the rank-order hint (`__shuffle0`) and shorten
-the list to 10 (`__shuffle0__k10`).
+order. One check shortens the list to the top 10, still in rank order
+(`__k10`), to test whether list length explains the drop.
 
 *Not yet run.*
 
@@ -250,10 +250,10 @@ Scrambled row failed. Harness v2 replaces them.
 
 ## Methods evaluated
 
-- **LLMs (harness v2):** Claude Haiku 5.5 and GPT-4o-mini on the full
-  grid; Claude Sonnet 5.5 and Kimi K3 on a fixed 30% subsample of query
-  records. Each query sees the TF-IDF top-50 candidates and returns
-  structured JSON.
+- **LLMs (harness v2):** Claude Haiku 5.5 and GPT-6 Luna (small models)
+  on the full grid; Claude Sonnet 5.5 (mid-size) on a fixed 30%
+  subsample of query records. All three reason at effort `medium`. Each
+  query sees the TF-IDF top-50 candidates and returns structured JSON.
 - **Embeddings:** SentenceTransformer (all-MiniLM-L6-v2) and OpenAI
   Embeddings (text-embedding-3-small).
 - **Lexical control:** TF-IDF, cosine similarity on term-frequency
@@ -313,7 +313,7 @@ API keys for the LLM and embedding methods go in `.env` (see
 `.env.example`):
 
 ``` bash
-cp .env.example .env           # then fill in OPENAI_API_KEY, ANTHROPIC_API_KEY, KIMI_API_KEY
+cp .env.example .env           # then fill in OPENAI_API_KEY and ANTHROPIC_API_KEY
 ```
 
 ### Step 1: Transformed datasets
@@ -383,23 +383,20 @@ replaces it for all new LLM runs.
   match among the shortlisted candidates, the candidate ids, and the
   prompt size.
 
-Models (`llm_clients.MODELS`; prices checked 2026-11-06, re-check before
+Models (`llm_clients.MODELS`; prices checked 2026-11-09, re-check before
 budgeting):
 
 | Method | Model | Run | Notes |
 |----|----|----|----|
-| `llm_haiku55` | `claude-haiku-5-5` | full grid | reported |
-| `llm_sonnet55` | `claude-sonnet-5-5` | fixed 30% subsample | reported |
-| `llm_gpt4omini` | `gpt-4o-mini` | full grid | reported; bridge to the TKDE submission |
-| `llm_kimik3` | Kimi K3 (`moonshotai/kimi-k3` on OpenRouter, pinned to the Moonshot AI provider) | fixed 30% subsample | reported; open weights, hosted |
+| `llm_haiku55` | `claude-haiku-5-5` | full grid | reported; small |
+| `llm_gpt6luna` | `gpt-6-luna` | full grid | reported; small |
+| `llm_sonnet55` | `claude-sonnet-5-5` | fixed 30% subsample | reported; mid-size |
 | `llm_haiku55_cli`, `llm_sonnet55_cli` | Claude Code CLI on a subscription | any | **pilots only**; written to `pilot_results/` |
 
 Each method also has a token-fallback variant with a `_tf` suffix.
-Sonnet and Kimi use the same seed, so they see the same 30% of query
-records, and those records are also part of the Haiku and GPT-4o-mini
-runs. Claude models run at effort `medium` with adaptive thinking, which
-cannot be turned off. GPT-4o-mini is not a reasoning model. Kimi K3 runs
-at its provider’s default reasoning setting.
+Sonnet’s 30% subsample is a fixed set of query records, so it is a
+subset of the Haiku and Luna runs. All three models run at reasoning
+effort `medium`; Claude’s thinking is adaptive and cannot be turned off.
 
 Subscription pilots run `claude -p` from an empty temporary directory,
 with no tools, no MCP servers, only project-level settings, and a
@@ -425,28 +422,30 @@ Reported runs (these call paid APIs; `03_estimate_llm_cost.py` prices
 them first):
 
 ``` bash
-uv run scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini   # full grid
-uv run scripts/04_run_experiments.py --dataset all --methods llm_sonnet55,llm_kimik3     # 30% subsample
-uv run scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini \
-    --transformations factorial                                                       # 2x2 cells
+uv run scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt6luna   # full grid
+uv run scripts/04_run_experiments.py --dataset all --methods llm_sonnet55               # 30% subsample
+uv run scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt6luna,llm_sonnet55 \
+    --transformations factorial                                                      # 2x2 cells
 # Options: --effort low|high, --repeat N, --shuffle-candidates, --top-k K, --workers N
 ```
 
-Candidate-list robustness, on Haiku and GPT-4o-mini over the four v1
-conditions:
+Candidate-list robustness (short list, rank order kept), on Haiku and
+Luna over the four v1 conditions:
 
 ``` bash
-uv run scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini \
-    --transformations original,ciphered_letters,ciphered_words,scrambled --shuffle-candidates             # rank-order hint removed
-uv run scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini \
-    --transformations original,ciphered_letters,ciphered_words,scrambled --shuffle-candidates --top-k 10  # short list
+uv run scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt6luna \
+    --transformations original,ciphered_letters,ciphered_words,scrambled --top-k 10
 ```
 
+The rank order is not shuffled in any reported run. Ordering hands the
+LLM a free lexical hint (TF-IDF’s top pick), which can only work against
+our finding, so removing it is not needed to support the claim.
+
 Non-default options are appended to the result directory name (for
-example `results/abt-buy/llm_haiku55__shuffle0/`), so runs never
-overwrite each other. `05_cv_threshold.py` and `06_summarize_results.py`
-pick up new directories automatically. Pairwise yes/no prompting (one
-call per query-candidate pair) is deliberately not run: it is not the
+example `results/abt-buy/llm_haiku55__k10/`), so runs never overwrite
+each other. `05_cv_threshold.py` and `06_summarize_results.py` pick up
+new directories automatically. Pairwise yes/no prompting (one call per
+query-candidate pair) is deliberately not run: it is not the
 rank-then-select setting studied here, and it multiplies token cost.
 
 ## Project structure

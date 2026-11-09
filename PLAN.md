@@ -16,7 +16,8 @@ This is a proof of concept, not a model survey. Keep the lineup small and spend 
 
 ### Method lineup (decided 2026-11-08)
 
-- **Semantic methods (the object of study):** the LLMs (C.1) and the two embedding models (`sentence_transformer`, `openai_embeddings`). These are the methods whose sensitivity to semantics the paper measures.
+- **Semantic methods (the object of study):** the LLMs (C.1: Haiku 5.5, GPT-6 Luna, Sonnet 5.5) and the two embedding models (`sentence_transformer`, `openai_embeddings`). These are the methods whose sensitivity to semantics the paper measures.
+- **Main results use the small models (decided 2026-11-09).** Haiku 5.5 and GPT-6 Luna are what people deploy for matching at scale, so the key figures and core results show them, the embedding models, and the TF-IDF reference. Sonnet 5.5 is a scale check: it answers "a stronger model would read the identifiers". Its results go in a separate supplementary figure, next to the lexical ones. Move Sonnet into the main figures only if it clearly recovers on the transformed conditions: on the same 30% queries, its F1 beats both small models' by more than the paired 95% CI. Otherwise it stays in the supplement, and the text cites it once: a larger model does not fix the failure.
 - **One lexical control in the main text: TF-IDF.** It is invariant by construction, and it also produces the LLM's shortlist. It appears as a reference in every main figure (a dashed or differently colored line in F1 plots, a colored point in precision-recall plots). It is not presented as a competitor, and the text does not say lexical methods "overtake" the LLM.
 - **Other lexical methods go to the appendix:** Soft TF-IDF, Levenshtein, Jaro-Winkler, Monge-Elkan. Their only role is to show that lexical methods are robust to the transforms, which is true by design. Still run them (they cost nothing), so the appendix and the README can show them, and the main text points to the appendix once.
 
@@ -81,7 +82,8 @@ Rules for the move:
 - Create `figs/` at the repo root, and `git mv results/plots/*.png figs/`.
 - Change every `ggsave(file.path('results', 'plots', ...))` in `08_figures.R` to `file.path('figs', ...)`.
 - Keep the figure file names stable (`f1_comparison.png`, `precision_recall_scatter.png`, `llm_robustness.png`, `llm_prompt_comparison.png`), so the paper's `\includegraphics` paths only change by folder. New figures for the factorial and robustness runs get descriptive names, such as `factorial_2x2.png` and `candidate_list_robustness.png`.
-- `08_figures.R` also needs labels for the new methods (`llm_haiku55`, `llm_sonnet55`, `llm_gpt4omini`, `llm_kimik3`) and for the factorial cells.
+- `08_figures.R` also needs labels for the new methods (`llm_haiku55`, `llm_gpt6luna`, `llm_sonnet55`) and for the factorial cells.
+- `llm_sonnet55` stays out of every main figure. The scale-check figure compares the models on the same queries, so the small models' rows are restricted to Sonnet's 30% subsample. Their full-grid numbers are not used in this figure.
 - **Split the two overview figures into a main figure and an appendix figure** (see "Method lineup" above). Each one is currently a stacked cowplot with semantic methods on top and lexical methods below; the halves become separate files.
 
   | File | Goes in | Rows / points | TF-IDF shown as |
@@ -90,6 +92,7 @@ Rules for the move:
   | `f1_comparison_lexical.png` | appendix | lexical methods (TF-IDF, Soft TF-IDF, Monge-Elkan, Levenshtein, Jaro-Winkler) | an ordinary row |
   | `precision_recall_scatter.png` | main text | semantic methods only | one distinctly colored point per dataset and condition, labeled "TF-IDF" |
   | `precision_recall_scatter_lexical.png` | appendix | lexical methods | ordinary points |
+  | `llm_scale_check.png` | appendix | Sonnet 5.5 vs Haiku 5.5 and GPT-6 Luna, all on Sonnet's 30% queries, every condition (v1 four + factorial cells) | the dashed reference line, also computed on the 30% queries |
 
   - TF-IDF is invariant to within about 0.01 F1, so one reference line per dataset (its Original F1) is enough in the F1 figure. If a factorial or seed run ever moves it more than that, draw it per condition instead.
   - Keep the main figures' file names, so the paper's `\includegraphics` paths still work. The legend or caption names the TF-IDF reference as the lexical control.
@@ -97,7 +100,7 @@ Rules for the move:
 
 ### A.3 Results layout
 
-- `results/{dataset}/{method}/{transformation}.parquet` stays as it is. Non-default flags already add a suffix to the method directory (`llm_haiku55__shuffle0`, `llm_haiku55__shuffle0__k10`).
+- `results/{dataset}/{method}/{transformation}.parquet` stays as it is. Non-default flags already add a suffix to the method directory (`llm_haiku55__k10`, `llm_haiku55__rep1`).
 - **Move the v1 LLM results out of the main tree** to `results/v1_llm/{dataset}/{method}/`. These are `llm`, `llm_haiku`, `llm_haiku_token_fallback`, `llm_claude`, `llm_gpt4o`, and `llm_gpt4o_mini_token_fallback`. The 2026-11-06 audit found them contaminated by blank rows from parse failures and API errors. Keeping them in the main tree risks mixing them into v2 tables, because `05_cv_threshold.py` and `06_summarize_results.py` scan every method directory. Keep them, because the paper may report the v1-to-v2 comparison for GPT-4o-mini.
 - The non-LLM method results (`tfidf`, `soft_tfidf`, `levenshtein`, `jaro_winkler`, `monge_elkan`, `sentence_transformer`, `openai_embeddings`) stay where they are.
 - The derived tables live at the top of `results/`, one CSV per topic, so the README can read them directly:
@@ -164,8 +167,9 @@ Run all of these before committing the reorg. None of them call an API.
 | F1 by method and condition, both datasets: semantic methods + TF-IDF | `results/cv_results.csv` |
 | Precision / recall / F1 on Original: semantic methods + TF-IDF | `results/cv_results.csv` |
 | Lexical methods, all conditions (separate section, mirrors the paper's appendix) | `results/cv_results.csv` |
+| Scale check: Sonnet 5.5 vs the small models on the 30% queries (separate section, mirrors the paper's appendix) | `results/cv_results.csv` (small-model rows recomputed on the 30% queries) |
 | 2x2 factorial table (F1 per cell, per model) | `results/cv_results.csv` |
-| Candidate-list robustness (ordered k=50, shuffled k=50, shuffled k=10) | `results/cv_results.csv` (method suffixes `__shuffle0`, `__shuffle0__k10`) |
+| Candidate-list robustness (ordered k=50 vs ordered k=10) | `results/cv_results.csv` (method suffix `__k10`) |
 | LLM output status rates (parse failures, truncation, refusals) | `results/llm_status.csv` |
 | Shortlist recall by k | `results/shortlist_recall.csv` |
 | Identifier coverage and class counts for the factorial | `data/{dataset}/data_test/factorial_manifest.json` |
@@ -187,17 +191,19 @@ Run all of these before committing the reorg. None of them call an API.
 
 ### C.1 Model lineup (reported results)
 
-IDs and prices were verified 2026-11-06. Re-check them before running.
+Revised 2026-11-09: the latest small and mid-size models from each provider. GPT-4o-mini (2024) is replaced by GPT-6 Luna, OpenAI's current small model, at the same price as Haiku 5.5. Kimi K3 is dropped: it only added breadth and was the most expensive model. IDs and prices were verified 2026-11-09 (OpenAI) and 2026-11-06 (Anthropic). Re-check them before running.
 
-| Method | Model | $/1M in/out | Run |
-|---|---|---|---|
-| `llm_haiku55` | `claude-haiku-5-5` | 0.10 / 0.50 | full grid |
-| `llm_sonnet55` | `claude-sonnet-5-5` | 2 / 10 | fixed 30% subsample |
-| `llm_gpt4omini` | `gpt-4o-mini` | 0.15 / 0.60 | full grid; bridge to the TKDE version |
-| `llm_kimik3` | Kimi K3 (`moonshotai/kimi-k3` on OpenRouter, pinned to Moonshot AI, fallbacks off) | 3 / 15 | fixed 30% subsample |
+| Method | Model | Size | $/1M in/out | Run |
+|---|---|---|---|---|
+| `llm_haiku55` | `claude-haiku-5-5` | small | 0.10 / 0.50 | full grid |
+| `llm_gpt6luna` | `gpt-6-luna` | small | 0.10 / 0.50 | full grid |
+| `llm_sonnet55` | `claude-sonnet-5-5` | mid | 2 / 10 | fixed 30% subsample |
 
-- Sonnet and Kimi share a seed, so they see the same 30% of query records. Those records are also in the Haiku and GPT-4o-mini runs, so all four models can be compared on the common subset.
-- Claude models run at effort `medium` with adaptive thinking. GPT-4o-mini does not reason. Kimi K3 runs at its provider's default.
+- **Roles.** Haiku 5.5 and Luna are the reported models: main figures and core results. Sonnet 5.5 is a scale check, reported in the supplement (`llm_scale_check.png`). See "Method lineup" for the rule that would move it into the main results.
+- Sonnet's 30% subsample is a fixed set of query records (one seed), so it is a subset of the Haiku and Luna runs, and all three models can be compared on it.
+- All three models reason at effort `medium` (Claude: adaptive thinking, which cannot be turned off; Luna: `reasoning.effort`).
+- No v1 model is rerun as a bridge to the TKDE submission. The v1 numbers are contaminated, and the paper goes to a new venue, so the bridge has no use.
+- Not in the lineup: an OpenAI mid-size model (`gpt-6.1-terra` at $1/$5, or `gpt-6.1-sol` at $2/$10). Add one only if a reviewer asks for a second mid-size model.
 - Subscription pilots (`llm_haiku55_cli`, `llm_sonnet55_cli`) write to `pilot_results/` and are never reported.
 - Test-set sizes stay as they are: 1,081 Abt-Buy and 1,113 Amazon-Google queries. The 95% CI is about ±2 points at F1 ≈ 0.9 on the full set and about ±3.5 points on the 30% subsample. Paired comparisons across conditions are tighter.
 
@@ -208,16 +214,17 @@ IDs and prices were verified 2026-11-06. Re-check them before running.
    - Descriptive words become non-English nonce words, and identifiers become random codes of the same shape. Both maps are global and injective. The TF-IDF score matrices are identical across cells (to 1e-9).
    - The key contrast is `desc_ciphered` on Abt-Buy. There, 43% of true pairs share an identifier found in no other record. If the LLM used the preserved evidence, F1 would stay close to Original.
    - On Amazon-Google, identifiers cover only 4% of true pairs, so the factorial there mainly checks that the nonce cipher behaves like v1 Ciphered Words.
-3. **Candidate-list robustness (R2's objection to 50 candidates).** Haiku and GPT-4o-mini, full grid, Original plus the three v1 ablations:
+3. **Candidate-list robustness (R2's objection to 50 candidates).** Haiku and Luna, full grid, Original plus the three v1 ablations:
 
    | Run | Flags | What it rules out | Cost |
    |---|---|---|---|
    | ordered, k=50 | (default) | none; the realistic pipeline | in the main budget |
-   | shuffled, k=50 | `--shuffle-candidates` | the rank-order hint | about $6.50 |
-   | shuffled, k=10 | `--shuffle-candidates --top-k 10` | long-list difficulty | about $4.50 |
+   | ordered, k=10 | `--top-k 10` | long-list difficulty | about $6 |
 
+   - The k=10 run keeps the rank order, so it differs from the main run only in list length.
+   - **Shuffled k=50 is cut (decided 2026-11-09).** The rank order hands the LLM a free lexical hint (TF-IDF's top pick), which can only work against our finding. The paper says this in one sentence. The instance analysis adds free evidence: how often the LLM misses when the true match is TF-IDF's top candidate. `--shuffle-candidates` stays in the code.
    - Report F1 both overall and only on queries whose true match made the shortlist, because k=10 has lower shortlist recall.
-   - Optionally add the factorial `desc_ciphered` cell to these runs.
+   - Optionally add the factorial `desc_ciphered` cell to this run.
 4. **Not run: pairwise yes/no prompting.** It needs one call per candidate pair, so it multiplies token cost. It is also not the rank-then-select setting this paper studies. The paper states this as a limitation and leaves it to future work.
 
 ### C.3 Still to build (no API cost), in priority order
@@ -238,21 +245,31 @@ IDs and prices were verified 2026-11-06. Re-check them before running.
    The factorial `all_ciphered` cell is the cleaner replacement either way.
 6. **`08_figures.R`.** Labels for the new methods and cells; split `f1_comparison.png` and `precision_recall_scatter.png` into main (semantic methods + TF-IDF reference) and appendix (`*_lexical.png`) figures (A.2); add a factorial figure and a robustness figure, both with the TF-IDF reference line.
    - Split done 2026-11-08. Main figures show the semantic methods (v1 LLMs labeled "(v1)" until v2 replaces them) with TF-IDF as a dashed red line (F1) or red diamonds (precision-recall). `llm_robustness.png` and `llm_prompt_comparison.png` also carry the TF-IDF line. The overview figures show the four v1 conditions only. Still to add: the factorial and robustness figures, once LLM results exist.
+   - Still to do (decided 2026-11-09): drop `llm_sonnet55` from `semantic_methods` and the main figures, and add `llm_scale_check.png` (A.2). It needs the 30% query IDs to recompute the small models' F1 on Sonnet's queries. In `README.qmd`, move Sonnet out of the main tables into a scale-check section.
 
-Optional for this paper: an `--include-unmatched` flag for full catalogs (R2 D3), and a Batch API mode, which would save roughly $15–30 per Claude pass.
+Optional for this paper: an `--include-unmatched` flag for full catalogs (R2 D3), and a Batch API mode, which would roughly halve the cost of every pass.
 
 ### C.4 Run order (once keys and credit are in place)
 
 Script names below are the post-reorg names.
 
-1. `cp .env.example .env` and fill in `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, and `KIMI_API_KEY`. Then run `uv sync` and the tests.
+Budget (offline estimate from `03_estimate_llm_cost.py`, 2026-11-09; the conservative figure is about 2.3× the optimistic one): about $85 optimistic and $195 conservative for steps 2–8.
+
+| Step | Runs | Optimistic |
+|---|---|---|
+| 5 | Haiku + Luna full grid; Sonnet 30%; 4 v1 conditions | $31 (Haiku $4, Luna $4, Sonnet $23) |
+| 6 | all three models, 3 factorial cells | $24 (Sonnet $18) |
+| 7 | Haiku + Luna, k=10 | $6 |
+| 8 | Haiku + Luna, token-fallback prompt; `--repeat 1..2` | $8 + $15 |
+
+1. `cp .env.example .env` and fill in `ANTHROPIC_API_KEY` and `OPENAI_API_KEY`. Then run `uv sync` and the tests.
 2. **Rerun `openai_embeddings`** (paid, but only a few cents: embeddings for about 2,200 records per condition) on both datasets with `--transformations all,factorial`, so every semantic method comes from the current code. The free non-LLM methods were rerun on 2026-11-08 (the committed parquets did not reproduce from the current code). Then rerun `05_cv_threshold.py`.
 3. **Subscription pilot (free).** `llm_haiku55_cli` on Abt-Buy `original,ciphered_words` with `--sample-frac 0.05 --workers 2`. Check the CLI output parsing and the isolation, and iterate on the prompt here if needed.
-4. **API pilot (about $1).** `llm_haiku55,llm_gpt4omini,llm_kimik3` on Abt-Buy `original` with `--sample-frac 0.05`. Check the status counts and that Kimi accepts `json_schema`. Then recalibrate `03_estimate_llm_cost.py` with `--cpt-*` and `--out-tokens` from the logged tokens.
-5. **Main grid.** Run `llm_haiku55,llm_gpt4omini` on the full grid first: does the v1 GPT-4o-mini collapse survive the fixed harness? Then run `llm_sonnet55,llm_kimik3` on their 30% subsample. Budget: about $65–150 per pass.
-6. **Factorial.** Run all four models with `--transformations factorial`. Original resumes from `checkpoints/` with no new calls, so only the three new cells cost money: about $50.
-7. **Robustness.** Run `--shuffle-candidates`, then `--shuffle-candidates --top-k 10`, both on Haiku and GPT-4o-mini: about $11 together.
-8. **Prompt and variance checks.** Run the token-fallback `_tf` variants and `--repeat 1..2` on Haiku and GPT-4o-mini only, at about $7–14 per extra pass.
+4. **API pilot (about $1).** `llm_haiku55,llm_gpt6luna,llm_sonnet55` on Abt-Buy `original` with `--sample-frac 0.05`. Check the status counts and Luna's reasoning-token use. Then recalibrate `03_estimate_llm_cost.py` with `--cpt-*` and `--out-tokens` from the logged tokens.
+5. **Main grid.** Run `llm_haiku55,llm_gpt6luna` on the full grid first, then `llm_sonnet55` on its 30% subsample. About $31–70.
+6. **Factorial.** Run all three models with `--transformations factorial`. Original resumes from `checkpoints/` with no new calls, so only the three new cells cost money: about $24–55.
+7. **Robustness.** `--top-k 10` (rank order kept) on Haiku and Luna: about $6–14.
+8. **Prompt and variance checks.** Run the token-fallback `_tf` variants and `--repeat 1..2` on Haiku and Luna only: about $8–18 per extra pass.
 9. **Outputs.** After each batch:
    - run `05_cv_threshold.py`, `06_summarize_results.py`, `07_instance_analysis.py`, and `08_figures.R`;
    - then `quarto render README.qmd`.

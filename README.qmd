@@ -36,7 +36,7 @@ manifest <- function(ds) {
 not_run <- '*Not yet run.*'
 
 # Method groups and display labels (PLAN.md, "Method lineup").
-v2_llms <- c('llm_haiku55', 'llm_sonnet55', 'llm_gpt4omini', 'llm_kimik3')
+v2_llms <- c('llm_haiku55', 'llm_gpt6luna', 'llm_sonnet55')
 embeddings <- c('openai_embeddings', 'sentence_transformer')
 lexical <- c('tfidf', 'soft_tfidf', 'monge_elkan', 'levenshtein', 'jaro_winkler')
 v1_llms <- c(
@@ -46,9 +46,8 @@ v1_llms <- c(
 
 method_labels <- c(
   llm_haiku55 = 'Claude Haiku 5.5',
+  llm_gpt6luna = 'GPT-6 Luna',
   llm_sonnet55 = 'Claude Sonnet 5.5',
-  llm_gpt4omini = 'GPT-4o-mini',
-  llm_kimik3 = 'Kimi K3',
   openai_embeddings = 'OpenAI Embeddings',
   sentence_transformer = 'SentenceTransformer',
   tfidf = 'TF-IDF',
@@ -156,7 +155,7 @@ n_records <- function(ds) {
   if (length(x) == 0) 'not yet run' else format(x, big.mark = ',')
 }
 
-# Strip run-label suffixes (__shuffle0, __k10, ...) and the _tf prompt suffix.
+# Strip run-label suffixes (__k10, __rep1, ...) and the _tf prompt suffix.
 base_method <- function(m) sub('_tf$', '', sub('__.*$', '', m))
 has_v2 <- !is.null(cv) && any(base_method(cv$method) %in% v2_llms)
 ```
@@ -272,11 +271,11 @@ f1_table('amazon-google', main_methods, factorial_conditions)
 
 ### Candidate-list robustness
 
-The main design shows the LLM the TF-IDF top 50 candidates in rank order. Two checks remove the rank-order hint (`__shuffle0`) and shorten the list to 10 (`__shuffle0__k10`).
+The main design shows the LLM the TF-IDF top 50 candidates in rank order. One check shortens the list to the top 10, still in rank order (`__k10`), to test whether list length explains the drop.
 
 ```{r}
 robust_methods <- if (is.null(cv)) character(0) else
-  sort(unique(cv$method[grepl('__shuffle0', cv$method)]))
+  sort(unique(cv$method[grepl('__k10', cv$method)]))
 if (length(robust_methods) == 0) {
   asis_output(not_run)
 } else {
@@ -376,7 +375,7 @@ f1_table('amazon-google', v1_llms, v1_conditions)
 
 ## Methods evaluated
 
-- **LLMs (harness v2):** Claude Haiku 5.5 and GPT-4o-mini on the full grid; Claude Sonnet 5.5 and Kimi K3 on a fixed 30% subsample of query records. Each query sees the TF-IDF top-50 candidates and returns structured JSON.
+- **LLMs (harness v2):** Claude Haiku 5.5 and GPT-6 Luna (small models) on the full grid; Claude Sonnet 5.5 (mid-size) on a fixed 30% subsample of query records. All three reason at effort `medium`. Each query sees the TF-IDF top-50 candidates and returns structured JSON.
 - **Embeddings:** SentenceTransformer (all-MiniLM-L6-v2) and OpenAI Embeddings (text-embedding-3-small).
 - **Lexical control:** TF-IDF, cosine similarity on term-frequency vectors.
 - **Other lexical methods (appendix):** Soft TF-IDF (IDF-weighted, with Jaro-Winkler fuzzy token matching at 0.9 or above), Monge-Elkan (token-level Jaro-Winkler averaging), Levenshtein, and Jaro-Winkler.
@@ -417,7 +416,7 @@ install.packages(c("tidyverse", "cowplot", "ggh4x", "ragg", "knitr", "rmarkdown"
 API keys for the LLM and embedding methods go in `.env` (see `.env.example`):
 
 ```bash
-cp .env.example .env           # then fill in OPENAI_API_KEY, ANTHROPIC_API_KEY, KIMI_API_KEY
+cp .env.example .env           # then fill in OPENAI_API_KEY and ANTHROPIC_API_KEY
 ```
 
 ### Step 1: Transformed datasets
@@ -470,17 +469,16 @@ The v1 LLM pipeline parsed free-text answers by line prefix and stored API error
 - **No sampling parameters.** Current Claude models reject `temperature`, so run-to-run variance is measured with `--repeat`.
 - **Instance-level diagnostics** on every row: the rank of the true match among the shortlisted candidates, the candidate ids, and the prompt size.
 
-Models (`llm_clients.MODELS`; prices checked 2026-11-06, re-check before budgeting):
+Models (`llm_clients.MODELS`; prices checked 2026-11-09, re-check before budgeting):
 
 | Method | Model | Run | Notes |
 |---|---|---|---|
-| `llm_haiku55` | `claude-haiku-5-5` | full grid | reported |
-| `llm_sonnet55` | `claude-sonnet-5-5` | fixed 30% subsample | reported |
-| `llm_gpt4omini` | `gpt-4o-mini` | full grid | reported; bridge to the TKDE submission |
-| `llm_kimik3` | Kimi K3 (`moonshotai/kimi-k3` on OpenRouter, pinned to the Moonshot AI provider) | fixed 30% subsample | reported; open weights, hosted |
+| `llm_haiku55` | `claude-haiku-5-5` | full grid | reported; small |
+| `llm_gpt6luna` | `gpt-6-luna` | full grid | reported; small |
+| `llm_sonnet55` | `claude-sonnet-5-5` | fixed 30% subsample | reported; mid-size |
 | `llm_haiku55_cli`, `llm_sonnet55_cli` | Claude Code CLI on a subscription | any | **pilots only**; written to `pilot_results/` |
 
-Each method also has a token-fallback variant with a `_tf` suffix. Sonnet and Kimi use the same seed, so they see the same 30% of query records, and those records are also part of the Haiku and GPT-4o-mini runs. Claude models run at effort `medium` with adaptive thinking, which cannot be turned off. GPT-4o-mini is not a reasoning model. Kimi K3 runs at its provider's default reasoning setting.
+Each method also has a token-fallback variant with a `_tf` suffix. Sonnet's 30% subsample is a fixed set of query records, so it is a subset of the Haiku and Luna runs. All three models run at reasoning effort `medium`; Claude's thinking is adaptive and cannot be turned off.
 
 Subscription pilots run `claude -p` from an empty temporary directory, with no tools, no MCP servers, only project-level settings, and a replaced system prompt. `ANTHROPIC_API_KEY` is removed from their environment, so they can never bill the API. Use `--workers 2` or so, to stay inside subscription limits.
 
@@ -501,23 +499,23 @@ uv run scripts/04_run_experiments.py --dataset abt-buy --methods llm_haiku55_cli
 Reported runs (these call paid APIs; `03_estimate_llm_cost.py` prices them first):
 
 ```bash
-uv run scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini   # full grid
-uv run scripts/04_run_experiments.py --dataset all --methods llm_sonnet55,llm_kimik3     # 30% subsample
-uv run scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini \
-    --transformations factorial                                                       # 2x2 cells
+uv run scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt6luna   # full grid
+uv run scripts/04_run_experiments.py --dataset all --methods llm_sonnet55               # 30% subsample
+uv run scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt6luna,llm_sonnet55 \
+    --transformations factorial                                                      # 2x2 cells
 # Options: --effort low|high, --repeat N, --shuffle-candidates, --top-k K, --workers N
 ```
 
-Candidate-list robustness, on Haiku and GPT-4o-mini over the four v1 conditions:
+Candidate-list robustness (short list, rank order kept), on Haiku and Luna over the four v1 conditions:
 
 ```bash
-uv run scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini \
-    --transformations original,ciphered_letters,ciphered_words,scrambled --shuffle-candidates             # rank-order hint removed
-uv run scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini \
-    --transformations original,ciphered_letters,ciphered_words,scrambled --shuffle-candidates --top-k 10  # short list
+uv run scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt6luna \
+    --transformations original,ciphered_letters,ciphered_words,scrambled --top-k 10
 ```
 
-Non-default options are appended to the result directory name (for example `results/abt-buy/llm_haiku55__shuffle0/`), so runs never overwrite each other. `05_cv_threshold.py` and `06_summarize_results.py` pick up new directories automatically. Pairwise yes/no prompting (one call per query-candidate pair) is deliberately not run: it is not the rank-then-select setting studied here, and it multiplies token cost.
+The rank order is not shuffled in any reported run. Ordering hands the LLM a free lexical hint (TF-IDF's top pick), which can only work against our finding, so removing it is not needed to support the claim.
+
+Non-default options are appended to the result directory name (for example `results/abt-buy/llm_haiku55__k10/`), so runs never overwrite each other. `05_cv_threshold.py` and `06_summarize_results.py` pick up new directories automatically. Pairwise yes/no prompting (one call per query-candidate pair) is deliberately not run: it is not the rank-then-select setting studied here, and it multiplies token cost.
 
 ## Project structure
 

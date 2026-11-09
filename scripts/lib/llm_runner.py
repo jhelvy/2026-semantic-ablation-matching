@@ -220,7 +220,7 @@ def run_llm(df_left, df_right, df_mapping, model_key, prompt_key="standard", out
             shuffle_candidates=False, shuffle_seed=0, top_k=None, max_text_length=2000):
     cfg = MODELS[model_key]
     if sample_frac is None:
-        sample_frac = cfg.default_sample_frac      # e.g. Sonnet / Kimi: fixed 30% subsample
+        sample_frac = cfg.default_sample_frac      # e.g. Sonnet: fixed 30% subsample
     eff = cfg.effort if effort is None else (effort or None)
     print(f"\n{cfg.label} [{cfg.model_id}] prompt={prompt_key} effort={eff} "
           f"sample_frac={sample_frac} workers={workers}")

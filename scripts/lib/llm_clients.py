@@ -22,8 +22,9 @@ Fatal account-level errors (bad key, no credit, unknown model) raise
 FatalAPIError so a run stops instead of writing thousands of blank rows.
 
 Providers: Anthropic Messages API, OpenAI Responses API, any OpenAI-compatible
-Chat Completions server (Kimi K3 via OpenRouter or Moonshot), and the Claude
-Code CLI on a subscription (pilots only).
+Chat Completions server (no model in the current lineup uses it; it was built
+for Kimi K3, dropped 2026-11-09), and the Claude Code CLI on a subscription
+(pilots only).
 
 Sampling parameters (temperature etc.) are NOT sent: current Claude models
 reject them, and current OpenAI reasoning models do not support them.
@@ -72,14 +73,14 @@ MATCH_SCHEMA = {
 # =============================================================================
 # MODEL REGISTRY
 # =============================================================================
-# Lineup for the reported results (decided 2026-11-06; proof of concept, not a
-# model survey):
-#   haiku55   - Claude Haiku 5.5, full grid
-#   sonnet55  - Claude Sonnet 5.5, fixed 30% subsample
-#   gpt4omini - GPT-4o-mini, full grid (bridge to the TKDE submission)
-#   kimik3    - Kimi K3 (open weights, hosted), fixed 30% subsample
-# Subsampled models share one seed, so Sonnet and Kimi see the same query
-# records, which are also a subset of the Haiku / GPT-4o-mini runs.
+# Lineup for the reported results (proof of concept, not a model survey;
+# revised 2026-11-09: GPT-4o-mini replaced by GPT-6 Luna, Kimi K3 dropped):
+#   haiku55  - Claude Haiku 5.5, full grid (small)
+#   gpt6luna - GPT-6 Luna, full grid (small; same price tier as Haiku 5.5)
+#   sonnet55 - Claude Sonnet 5.5, fixed 30% subsample (mid)
+# The subsample is a fixed set of query records (one seed), so Sonnet's
+# records are a subset of the Haiku / Luna runs. All three reason at effort
+# "medium" by default.
 #
 # *_cli entries run through the Claude Code CLI on a Claude subscription. They
 # are for pilots and prompt iteration only and write to pilot_results/, never
@@ -87,8 +88,7 @@ MATCH_SCHEMA = {
 #
 # Prices are USD per 1M tokens, checked 2026-11-06; re-check before budgeting.
 #   Claude: claude-api skill model table (cached 2026-10-06)
-#   OpenAI: https://developers.openai.com/api/docs/pricing
-#   Kimi K3: https://openrouter.ai/moonshotai/kimi-k3 (Moonshot AI provider)
+#   OpenAI: https://developers.openai.com/api/docs/pricing (gpt-6-luna re-checked 2026-11-09)
 # Output tokens include thinking/reasoning tokens.
 
 SUBSAMPLE_FRAC = 0.3
@@ -104,7 +104,7 @@ class ModelConfig:
     output_price: float      # $ / 1M output tokens
     effort: Optional[str]    # default reasoning effort; None = do not send
     max_output_tokens: int   # cap incl. thinking tokens
-    tier: str                # "small" | "mid" | "bridge" | "open" | "pilot"
+    tier: str                # "small" | "mid" | "pilot"
     default_sample_frac: Optional[float] = None   # None = full grid
     base_url: Optional[str] = None                # openai_compatible only
     api_key_env: Optional[str] = None             # openai_compatible only
@@ -112,31 +112,15 @@ class ModelConfig:
     response_format: str = "json_schema"          # openai_compatible: json_schema | json_object | none
 
 
-_KIMI_BASE_URL = os.environ.get("KIMI_BASE_URL", "https://openrouter.ai/api/v1")
-_KIMI_ON_OPENROUTER = "openrouter.ai" in _KIMI_BASE_URL
-
 MODELS = {
     # --- Anthropic. Thinking is adaptive by default on the 5.5 family.
     "haiku55": ModelConfig("haiku55", "anthropic", "claude-haiku-5-5", "Claude Haiku 5.5",
                            0.10, 0.50, "medium", 8000, "small"),
     "sonnet55": ModelConfig("sonnet55", "anthropic", "claude-sonnet-5-5", "Claude Sonnet 5.5",
                             2.00, 10.00, "medium", 8000, "mid", default_sample_frac=SUBSAMPLE_FRAC),
-    # --- Bridge to the TKDE submission: same model, fixed harness.
-    "gpt4omini": ModelConfig("gpt4omini", "openai", "gpt-4o-mini", "GPT-4o-mini (harness v2)",
-                             0.15, 0.60, None, 1024, "bridge"),
-    # --- Kimi K3 (Moonshot AI open weights), hosted. Default: OpenRouter pinned to
-    # the Moonshot AI provider with fallbacks off, so every call hits the same
-    # deployment (OpenRouter otherwise routes across ~20 hosts with different
-    # serving stacks). For Moonshot's own API set KIMI_BASE_URL=https://api.moonshot.ai/v1
-    # and KIMI_MODEL=kimi-k3. Effort is left at the provider default (not sent).
-    "kimik3": ModelConfig("kimik3", "openai_compatible",
-                          os.environ.get("KIMI_MODEL", "moonshotai/kimi-k3" if _KIMI_ON_OPENROUTER else "kimi-k3"),
-                          "Kimi K3", 3.00, 15.00, None, 16000, "open",
-                          default_sample_frac=SUBSAMPLE_FRAC, base_url=_KIMI_BASE_URL,
-                          api_key_env="KIMI_API_KEY",
-                          extra_body=({"provider": {"order": ["moonshotai"], "allow_fallbacks": False}}
-                                      if _KIMI_ON_OPENROUTER else None),
-                          response_format=os.environ.get("KIMI_RESPONSE_FORMAT", "json_schema")),
+    # --- OpenAI small model. Reasoning effort matches the Claude models.
+    "gpt6luna": ModelConfig("gpt6luna", "openai", "gpt-6-luna", "GPT-6 Luna",
+                            0.10, 0.50, "medium", 8000, "small"),
     # --- Pilot-only: Claude Code CLI on a subscription (no API billing). Same
     # prompts and schema, but a different harness (CLI system prompt, CLI
     # defaults), so these numbers are never reported.

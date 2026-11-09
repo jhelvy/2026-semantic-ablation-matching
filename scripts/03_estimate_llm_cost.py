@@ -12,7 +12,7 @@ them against the first real run and re-estimate.
 
 Usage:
     uv run scripts/03_estimate_llm_cost.py
-    uv run scripts/03_estimate_llm_cost.py --datasets abt-buy --models haiku55,gpt4omini
+    uv run scripts/03_estimate_llm_cost.py --datasets abt-buy --models haiku55,gpt6luna
     uv run scripts/03_estimate_llm_cost.py --out-tokens 1500 --cpt-original 1.8 --cpt-transformed 1.2
 """
 
@@ -62,8 +62,7 @@ def main():
             for mk in args.models.split(","):
                 cfg = MODELS[mk]
                 frac = cfg.default_sample_frac or 1.0
-                # gpt-4o-mini is the only non-reasoning model; Kimi K3 reasons by default
-                out_per_call = 150 if cfg.key == "gpt4omini" else args.out_tokens
+                out_per_call = args.out_tokens          # every model in the lineup reasons
                 n = len(reqs) * frac
                 cost = (in_tok * frac) / 1e6 * cfg.input_price + n * out_per_call / 1e6 * cfg.output_price
                 rows.append(dict(dataset=ds, transformation=t, model=mk, queries=int(n),

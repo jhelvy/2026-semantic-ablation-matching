@@ -110,26 +110,27 @@ def _openai_resp(text, status="completed", reason=None, refusal=False):
     part = NS(type="refusal", refusal="no") if refusal else NS(type="output_text", text=text)
     return NS(output=[NS(type="message", content=[part])], output_text=text, status=status,
               incomplete_details=NS(reason=reason) if reason else None,
-              usage=NS(input_tokens=1000, output_tokens=300), model="gpt-4o-mini", id="resp_1")
+              usage=NS(input_tokens=1000, output_tokens=300), model="gpt-6-luna", id="resp_1")
 
 
 def test_openai_request_shape_and_statuses():
     fake = _FakeResponses(_openai_resp('{"match": 0, "confidence": 0.6, "rationale": "none"}'))
     llm_clients._clients["openai"] = NS(responses=fake)
-    r = llm_clients.call_model(MODELS["gpt4omini"], "p", 50)
+    r = llm_clients.call_model(MODELS["gpt6luna"], "p", 50)
     assert r.status == "no_match"
     assert fake.kwargs["text"]["format"]["strict"] is True
-    assert "reasoning" not in fake.kwargs                        # non-reasoning bridge model
-    llm_clients.call_model(MODELS["gpt4omini"], "p", 50, effort="low")
+    assert fake.kwargs["reasoning"] == {"effort": "medium"}      # default matches the Claude models
+    assert abs(r.cost_usd - (1000 * 0.10 + 300 * 0.50) / 1e6) < 1e-12
+    llm_clients.call_model(MODELS["gpt6luna"], "p", 50, effort="low")
     assert fake.kwargs["reasoning"] == {"effort": "low"}         # explicit override is passed through
     llm_clients._clients["openai"] = NS(responses=_FakeResponses(
         _openai_resp("", "incomplete", "max_output_tokens")))
-    assert llm_clients.call_model(MODELS["gpt4omini"], "p", 50).status == "truncated"
+    assert llm_clients.call_model(MODELS["gpt6luna"], "p", 50).status == "truncated"
     llm_clients._clients["openai"] = NS(responses=_FakeResponses(_openai_resp("", refusal=True)))
-    assert llm_clients.call_model(MODELS["gpt4omini"], "p", 50).status == "refusal"
+    assert llm_clients.call_model(MODELS["gpt6luna"], "p", 50).status == "refusal"
 
 
-# ---------------------------------------------------------------- kimi (openai-compatible)
+# ---------------------------------------------------------------- openai-compatible adapter
 class _FakeChat:
     def __init__(self, resp):
         self.resp, self.kwargs = resp, None
@@ -142,19 +143,24 @@ class _FakeChat:
 
 def _chat_resp(text, finish="stop"):
     return NS(choices=[NS(message=NS(content=text, refusal=None), finish_reason=finish)],
-              usage=NS(prompt_tokens=2000, completion_tokens=900), model="moonshotai/kimi-k3", id="gen_1")
+              usage=NS(prompt_tokens=2000, completion_tokens=900), model="vendor/open-model", id="gen_1")
 
 
-def test_kimi_request_shape_and_statuses():
-    cfg = MODELS["kimik3"]
+def test_openai_compatible_request_shape_and_statuses():
+    # No model in the lineup uses this route since Kimi K3 was dropped; keep
+    # the adapter tested with a stand-in config (OpenRouter, provider pinned).
+    cfg = llm_clients.ModelConfig(
+        "openmodel", "openai_compatible", "vendor/open-model", "Open model", 3.00, 15.00, None,
+        16000, "mid", default_sample_frac=0.3, base_url="https://openrouter.ai/api/v1",
+        api_key_env="OPENROUTER_API_KEY",
+        extra_body={"provider": {"order": ["vendor"], "allow_fallbacks": False}})
     key = f"openai_compatible:|{cfg.base_url}|{cfg.api_key_env}"
     fake = _FakeChat(_chat_resp('{"match": 7, "confidence": 0.7, "rationale": "code"}'))
     llm_clients._clients[key] = NS(chat=fake)
     r = llm_clients.call_model(cfg, "p", 50)
     assert r.status == "ok" and r.match_index == 7
     assert fake.kwargs["response_format"]["type"] == "json_schema"
-    if "openrouter.ai" in cfg.base_url:                          # default: provider pinned, no fallback
-        assert fake.kwargs["extra_body"]["provider"] == {"order": ["moonshotai"], "allow_fallbacks": False}
+    assert fake.kwargs["extra_body"]["provider"] == {"order": ["vendor"], "allow_fallbacks": False}
     assert abs(r.cost_usd - (2000 * 3.0 + 900 * 15.0) / 1e6) < 1e-12
     assert cfg.default_sample_frac == 0.3
     llm_clients._clients[key] = NS(chat=_FakeChat(_chat_resp("", "length")))
@@ -299,7 +305,7 @@ def test_parse_fail_retried_once():
 
 
 def test_method_registry_and_default_subsample():
-    assert {"llm_haiku55", "llm_haiku55_tf", "llm_sonnet55", "llm_gpt4omini", "llm_kimik3",
+    assert {"llm_haiku55", "llm_haiku55_tf", "llm_sonnet55", "llm_gpt6luna",
             "llm_haiku55_cli", "llm_sonnet55_cli"} <= set(llm_runner.LLM_METHODS)
     with tempfile.TemporaryDirectory() as tmp:
         llm_runner.call_model = _fake_call(["ok"] * 30)

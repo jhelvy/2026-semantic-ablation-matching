@@ -9,8 +9,8 @@ Usage:
 
 Harness-v2 LLM methods (see scripts/lib/llm_runner.py; `uv run scripts/03_estimate_llm_cost.py`
 prices a run without calling any API):
-    uv run scripts/04_run_experiments.py --dataset abt-buy --methods llm_haiku55,llm_gpt4omini
-    uv run scripts/04_run_experiments.py --dataset all --methods llm_sonnet55,llm_kimik3   # 30% subsample by default
+    uv run scripts/04_run_experiments.py --dataset abt-buy --methods llm_haiku55,llm_gpt6luna
+    uv run scripts/04_run_experiments.py --dataset all --methods llm_sonnet55   # 30% subsample by default
     uv run scripts/04_run_experiments.py --dataset abt-buy --methods llm_haiku55_cli --sample-frac 0.05 --workers 2   # subscription pilot -> pilot_results/
     uv run scripts/04_run_experiments.py --dataset abt-buy --methods llm_sonnet55 --effort high
     uv run scripts/04_run_experiments.py --dataset abt-buy --methods llm_haiku55 --repeat 2
