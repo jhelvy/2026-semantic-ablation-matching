@@ -200,6 +200,12 @@ def test_claude_cli_adapter(monkeypatch=None):
             raise AssertionError("usage limit should be fatal")
         except FatalAPIError:
             pass
+        # Safety-classifier block: CLI exits rc=1 with an AUP message -> refusal, not api_error.
+        envelope.update(is_error=True, result="API Error: Haiku 5.5 can't help with this. Start a new "
+                        "session to continue.\n\nLearn more: https://www.anthropic.com/legal/aup\n\n"
+                        "Details: `[bio]`")
+        r = llm_clients.call_model(MODELS["haiku55_cli"], "PROMPT", 50)
+        assert r.status == "refusal" and "[bio]" in r.error
     finally:
         subprocess.run, shutil.which = orig_run, orig_which
         os.environ.pop("ANTHROPIC_API_KEY", None)

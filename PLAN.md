@@ -238,11 +238,9 @@ Revised 2026-11-09: the latest small and mid-size models from each provider. GPT
    - paired bootstrap CIs for the Original-to-ablation drop, per model and condition.
 3. **`llm_status.csv` from `06_summarize_results.py`.** Status rates by model and condition, so parse failures are reported as their own outcome and never hidden as "no match".
 4. **Transform-seed parameter.** Add `--seed N` to `01_prepare_datasets.py`, writing `*_sN.csv` the way `02_prepare_factorial.py` already does. Run 3–5 seeds for the non-LLM methods (R2 D6).
-5. **v1 Ciphered Words reproducibility.** Sort before mapping, so the map no longer depends on `PYTHONHASHSEED`. Decide between two options:
-   - keep the committed CSVs as canonical and describe the transform accurately (it also ciphers model codes, so Fig 1's "QRT-W55" example is wrong);
-   - regenerate the CSVs, and then rerun every non-LLM method for this condition.
-
-   The factorial `all_ciphered` cell is the cleaner replacement either way.
+5. **v1 Ciphered Words reproducibility. Decided 2026-11-09: keep the committed CSVs as canonical.** Do not regenerate them, and do not change the mapping code in `01_prepare_datasets.py`: sorting before mapping would give a different map, not the committed one. So the LLM runs on `ciphered_words` use the committed files, and nothing has to be rerun.
+   - The paper describes the transform accurately: it also ciphers model codes, so Fig 1's "QRT-W55" example is wrong. It also says the map is fixed in the released CSVs rather than regenerated from code.
+   - The factorial `all_ciphered` cell is the clean, reproducible version of the same manipulation and carries the identifier argument.
 6. **`08_figures.R`.** Labels for the new methods and cells; split `f1_comparison.png` and `precision_recall_scatter.png` into main (semantic methods + TF-IDF reference) and appendix (`*_lexical.png`) figures (A.2); add a factorial figure and a robustness figure, both with the TF-IDF reference line.
    - Split done 2026-11-08. Main figures show the semantic methods (v1 LLMs labeled "(v1)" until v2 replaces them) with TF-IDF as a dashed red line (F1) or red diamonds (precision-recall). `llm_robustness.png` and `llm_prompt_comparison.png` also carry the TF-IDF line. The overview figures show the four v1 conditions only. Still to add: the factorial and robustness figures, once LLM results exist.
    - Sonnet scale check done 2026-11-09. `05_cv_threshold.py` also scores Haiku, Luna, and TF-IDF on the query ids in Sonnet's parquet for each condition, as `*__sonnet30` rows. `08_figures.R` builds the main figures from the small v2 models (the v1 LLMs stand in until those exist) and draws `llm_scale_check.png` once Sonnet results exist. `README.qmd` has an "Appendix: scale check" section, and Sonnet is out of the main tables.

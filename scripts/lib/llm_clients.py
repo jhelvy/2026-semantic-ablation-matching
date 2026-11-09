@@ -381,6 +381,10 @@ def _call_openai_compatible(cfg: ModelConfig, prompt: str, effort: Optional[str]
 CLI_SYSTEM_PROMPT = "You are an expert at entity matching. Answer only in the requested JSON format."
 _CLI_FATAL_HINTS = ("usage limit", "rate limit", "limit reached", "not logged in", "please run /login",
                     "authentication", "invalid api key")
+# A safety-classifier block comes back as a CLI error, e.g. "API Error: Haiku 5.5 can't help
+# with this. ... https://www.anthropic.com/legal/aup ... Details: `[bio]`". It is a property
+# of the prompt (retries get the same answer), so it is a refusal, not an api_error.
+_CLI_REFUSAL_HINTS = ("can't help with this", "anthropic.com/legal/aup")
 
 
 def _call_claude_cli(cfg: ModelConfig, prompt: str, effort: Optional[str], n_candidates: int) -> LLMResult:
@@ -414,6 +418,9 @@ def _call_claude_cli(cfg: ModelConfig, prompt: str, effort: Optional[str], n_can
         msg = (envl or {}).get("result") or blob
         if any(h in str(msg).lower() for h in _CLI_FATAL_HINTS):
             raise FatalAPIError(f"claude CLI: {str(msg)[:300]}")
+        if any(h in str(msg).lower() for h in _CLI_REFUSAL_HINTS):
+            return LLMResult("refusal", error=f"claude CLI classifier block: {str(msg)[:800]}",
+                             model_served=cfg.model_id, latency_s=latency)
         return LLMResult("api_error", error=f"claude CLI rc={proc.returncode}: {str(msg)[:800]}",
                          latency_s=latency)
     structured = envl.get("structured_output")
