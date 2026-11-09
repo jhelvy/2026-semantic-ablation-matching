@@ -222,7 +222,7 @@ IDs and prices were verified 2026-11-06. Re-check them before running.
 
 ### C.3 Still to build (no API cost), in priority order
 
-1. **Part A and Part B above.**
+1. **Part A and Part B above.** Both done 2026-11-08: `README.qmd` renders with `quarto render README.qmd`, reads only CSV/JSON, and prints "not yet run" for missing results.
 2. **`07_instance_analysis.py`.** It reads the v2 LLM parquets, which already log the true match's rank, the candidate ids, and the prompt size for each row. It writes `results/shortlist_recall.csv` and `results/instance_analysis.csv` with:
    - shortlist recall for each k, from TF-IDF alone;
    - F1 limited to queries whose true match made the shortlist;
@@ -237,6 +237,7 @@ IDs and prices were verified 2026-11-06. Re-check them before running.
 
    The factorial `all_ciphered` cell is the cleaner replacement either way.
 6. **`08_figures.R`.** Labels for the new methods and cells; split `f1_comparison.png` and `precision_recall_scatter.png` into main (semantic methods + TF-IDF reference) and appendix (`*_lexical.png`) figures (A.2); add a factorial figure and a robustness figure, both with the TF-IDF reference line.
+   - Split done 2026-11-08. Main figures show the semantic methods (v1 LLMs labeled "(v1)" until v2 replaces them) with TF-IDF as a dashed red line (F1) or red diamonds (precision-recall). `llm_robustness.png` and `llm_prompt_comparison.png` also carry the TF-IDF line. The overview figures show the four v1 conditions only. Still to add: the factorial and robustness figures, once LLM results exist.
 
 Optional for this paper: an `--include-unmatched` flag for full catalogs (R2 D3), and a Batch API mode, which would save roughly $15–30 per Claude pass.
 

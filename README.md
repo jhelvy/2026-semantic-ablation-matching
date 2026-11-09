@@ -1,371 +1,485 @@
-# Matching Without Meaning: LLM Entity Matchers Rely on Non-Essential Semantic Priors
 
-**Systematic comparison of 8 entity matching methods across controlled semantic ablations**
 
----
+<!-- README.md is generated from README.qmd. Edit README.qmd, then run: quarto render README.qmd -->
 
-## Research Question
+# Matching Without Meaning
 
-**Does an LLM entity matcher rely on the features that actually distinguish entities, or on semantic priors the task does not require?**
+**Do LLM entity matchers fall back on lexical evidence when the meaning
+is removed?**
 
-We use *controlled semantic ablation*: structure-preserving transformations that remove meaning while keeping the discriminative tokens (and their cross-catalog identity) fully intact. If a method depends only on token distinctiveness, it should be unaffected; if it depends on meaning, it should collapse.
+LLM entity matchers lean on semantics. We test what happens when meaning
+is removed but the lexical evidence that identifies a match is kept.
+TF-IDF is the control: it sees the same evidence in every condition, so
+its F1 does not move, which shows that evidence alone still solves the
+task.
 
-1. **Original** - Baseline
-2. **Ciphered Letters** - Consistent character substitution applied to both catalogs (e.g., 'a'->'x'). Preserves token identity exactly.
-3. **Ciphered Words** - Consistent vocabulary replacement (e.g., 'Sony'->'Goat' in both catalogs).
-4. **Scrambled** - Deterministic per-word letter scrambling (first/last letter kept), identical across catalogs.
+> **Status.** This README is rendered from `README.qmd` and reads every
+> number from `results/` and `data/`.
+>
+> - The non-LLM methods were rerun on 2026-11-08 with the current code,
+>   on all seven conditions.
+> - `openai_embeddings` has not been rerun yet (it is a paid call), so
+>   its rows still come from the earlier code.
+> - Harness v2 LLM runs: not yet run.
+> - The v1 LLM results from the TKDE submission are superseded. They
+>   appear in the figures labeled “(v1)” and in [their own
+>   section](#v1-llm-results-superseded).
 
----
+## Research question
 
-## Key Findings
+Does an LLM entity matcher use the evidence that actually distinguishes
+entities, or does it depend on meaning the task does not require?
 
-**The LLM's clean-text advantage depends on semantic content the task does not require.** Once token-based methods are properly thresholded, the LLM's edge on clean data is modest (Abt-Buy) or negligible (Amazon-Google), and under ablation the LLM collapses while token methods stay flat. A method's fragility tracks how much it depends on pre-trained meaning, not its architecture or scale -- the smallest neural model (SentenceTransformer) is the *most* fragile, and the far larger LLM is no more robust.
+We use *controlled semantic ablation*: transforms that remove meaning
+while keeping each token’s identity across the two catalogs intact. A
+method that relies only on which tokens the two records share is
+unaffected. A method that relies on meaning degrades.
 
-### F1 by transformation (all 8 methods)
+### The v1 transforms
 
-**Abt-Buy** (rich title + description):
-| Method | Original | Ciphered Letters | Ciphered Words | Scrambled |
-|---|---|---|---|---|
-| LLM (GPT-4o-mini) | **0.928** | **0.779** | 0.511 | 0.603 |
-| OpenAI Embeddings | 0.799 | 0.409 | 0.422 | 0.508 |
-| TF-IDF | 0.761 | 0.747 | **0.751** | 0.746 |
-| Soft TF-IDF | 0.742 | 0.731 | 0.743 | **0.763** |
-| SentenceTransformer | 0.628 | 0.164 | 0.376 | 0.362 |
-| Monge-Elkan | 0.381 | 0.381 | 0.289 | 0.382 |
-| Levenshtein | 0.164 | 0.164 | 0.120 | 0.173 |
-| Jaro-Winkler | 0.085 | 0.085 | 0.052 | 0.080 |
+1.  **Original**: the baseline.
+2.  **Ciphered Letters**: one consistent character substitution applied
+    to both catalogs (for example ‘a’ becomes ‘x’).
+3.  **Ciphered Words**: one consistent word replacement applied to both
+    catalogs (for example ‘Sony’ becomes ‘Goat’).
+4.  **Scrambled**: a deterministic letter scramble within each word,
+    first and last letters kept, identical across catalogs.
 
-**Amazon-Google** (short title only):
-| Method | Original | Ciphered Letters | Ciphered Words | Scrambled |
-|---|---|---|---|---|
-| LLM (GPT-4o-mini) | **0.822** | 0.585 | 0.576 | 0.556 |
-| TF-IDF | 0.808 | **0.808** | **0.807** | **0.808** |
-| OpenAI Embeddings | 0.802 | 0.639 | 0.701 | 0.725 |
-| SentenceTransformer | 0.755 | 0.619 | 0.683 | 0.676 |
-| Monge-Elkan | 0.740 | 0.740 | 0.700 | 0.735 |
-| Soft TF-IDF | 0.650 | 0.650 | 0.678 | 0.683 |
-| Levenshtein | 0.563 | 0.563 | 0.535 | 0.569 |
-| Jaro-Winkler | 0.488 | 0.488 | 0.483 | 0.489 |
+### The 2x2 factorial: descriptive words x identifiers
 
-### Precision / Recall / F1 on original (clean) text
+|                           | identifiers intact | identifiers ciphered |
+|---------------------------|--------------------|----------------------|
+| **descriptions intact**   | `original`         | `ids_ciphered`       |
+| **descriptions ciphered** | `desc_ciphered`    | `all_ciphered`       |
+
+- **Identifiers** are model numbers and SKUs: pieces that contain both a
+  letter and a digit (`w55`, `pslx350h`), plus short non-English
+  prefixes attached to them (`dsc` in `dsc-w55`). Quantities (`4gb`,
+  `1080p`) are not identifiers, and neither are pieces that appear in
+  more than 20 records.
+- **Descriptive words** are everything else, including brand names.
+- Descriptive words become pronounceable nonce words of the same length
+  that are not English words. Identifiers become random codes of the
+  same shape. Both maps are global and injective, so TF-IDF scores are
+  identical in every cell (checked to 1e-9 by
+  `02_prepare_factorial.py --verify`).
+
+Identifier coverage (seed 42, from `factorial_manifest.json`): on
+Abt-Buy, 49.8% of true pairs share an identifier piece and 42.6% share
+one that occurs in no other record. On Amazon-Google the shares are 4.4%
+and 0.8%, so the identifier factor mainly matters on Abt-Buy.
+
+## Results
+
+All F1, precision, and recall values use 5-fold cross-validated
+thresholds (`results/cv_results.csv`).
+
+### Overview figures
+
+![F1 by transformation: semantic methods, with TF-IDF as the dashed
+reference line](figs/f1_comparison.png)
+
+*F1 under each v1 transform for the semantic methods. Solid line and
+grey band: the method’s own Original F1 (± 1 SD across folds). Dashed
+red line: TF-IDF F1 on Original, the lexical control. LLM rows labeled
+“(v1)” are the superseded TKDE runs; they will be replaced by the
+harness v2 runs.*
+
+![Precision and recall: semantic methods, with TF-IDF as the red
+diamonds](figs/precision_recall_scatter.png)
+
+*Precision and recall at the cross-validated threshold. Red diamonds:
+TF-IDF in each condition (they coincide, because TF-IDF is invariant).*
+
+### F1 by method and condition
+
+The semantic methods, with TF-IDF as the lexical control. Across all
+seven conditions, TF-IDF F1 ranges from 0.696 to 0.704 on Abt-Buy and
+from 0.807 to 0.808 on Amazon-Google.
+
+**Abt-Buy** (name + description):
+
+| Method              | Original | Ciphered Letters | Ciphered Words | Scrambled |
+|:--------------------|---------:|-----------------:|---------------:|----------:|
+| OpenAI Embeddings   |    0.797 |            0.404 |          0.422 |     0.507 |
+| SentenceTransformer |    0.583 |            0.149 |          0.348 |     0.359 |
+| TF-IDF              |    0.697 |            0.697 |          0.700 |     0.704 |
+
+**Amazon-Google** (title only):
+
+| Method              | Original | Ciphered Letters | Ciphered Words | Scrambled |
+|:--------------------|---------:|-----------------:|---------------:|----------:|
+| OpenAI Embeddings   |    0.802 |            0.639 |          0.700 |     0.723 |
+| SentenceTransformer |    0.755 |            0.617 |          0.683 |     0.675 |
+| TF-IDF              |    0.808 |            0.808 |          0.807 |     0.808 |
+
+### Precision, recall, and F1 on Original
 
 **Abt-Buy:**
-| Method | Precision | Recall | F1 |
-|---|---|---|---|
-| LLM (GPT-4o-mini) | 0.967 | 0.892 | **0.928** |
-| OpenAI Embeddings | 0.799 | 0.798 | 0.799 |
-| TF-IDF | 0.762 | 0.759 | 0.761 |
-| Soft TF-IDF | 0.742 | 0.742 | 0.742 |
-| SentenceTransformer | 0.629 | 0.628 | 0.628 |
-| Monge-Elkan | 0.525 | 0.299 | 0.381 |
-| Levenshtein | 0.171 | 0.156 | 0.164 |
-| Jaro-Winkler | 0.266 | 0.051 | 0.085 |
+
+| Method              | Precision | Recall |    F1 | F1 SD (5 folds) |
+|:--------------------|----------:|-------:|------:|----------------:|
+| OpenAI Embeddings   |     0.798 |  0.796 | 0.797 |           0.009 |
+| SentenceTransformer |     0.584 |  0.581 | 0.583 |           0.027 |
+| TF-IDF              |     0.705 |  0.689 | 0.697 |           0.025 |
 
 **Amazon-Google:**
-| Method | Precision | Recall | F1 |
-|---|---|---|---|
-| LLM (GPT-4o-mini) | 0.876 | 0.774 | **0.822** |
-| TF-IDF | 0.808 | 0.808 | 0.808 |
-| OpenAI Embeddings | 0.803 | 0.801 | 0.802 |
-| SentenceTransformer | 0.759 | 0.751 | 0.755 |
-| Monge-Elkan | 0.793 | 0.694 | 0.740 |
-| Soft TF-IDF | 0.650 | 0.650 | 0.650 |
-| Levenshtein | 0.684 | 0.478 | 0.563 |
-| Jaro-Winkler | 0.564 | 0.430 | 0.488 |
 
-### Failure is in reasoning, not retrieval
+| Method              | Precision | Recall |    F1 | F1 SD (5 folds) |
+|:--------------------|----------:|-------:|------:|----------------:|
+| OpenAI Embeddings   |     0.803 |  0.801 | 0.802 |           0.028 |
+| SentenceTransformer |     0.759 |  0.751 | 0.755 |           0.040 |
+| TF-IDF              |     0.808 |  0.808 | 0.808 |           0.030 |
 
-TF-IDF blocking keeps the true match in the candidate set for ~99% of records *even under corruption*, and a purely lexical scorer still solves those cases -- yet the LLM cannot.
+### 2x2 factorial
 
-- **Blocking recall** (top-50 candidates): Abt-Buy **99.7%** (1,078/1,081), Amazon-Google **99.0%** (1,102/1,113). Stays high under every ablation (99.5-99.7% / 98.5-99.0%). `k = 50` chosen by sweep (Abt-Buy: k=25 -> 97.2%, k=50 -> 99.7%, k=100 -> 99.8%).
-- **LLM recall under Ciphered Words** drops to **0.418** (Abt-Buy) and **0.456** (Amazon-Google) despite blocking recall staying near 0.99 -- the candidates are present; the LLM fails to select them once words are no longer meaningful.
+F1 in each cell of the descriptive-words x identifiers design.
 
-### Robustness holds across models (clean-text F1)
+**Abt-Buy:**
 
-Larger/stronger models score slightly higher on clean text but are *no more robust* under ablation.
+| Method | Original | Descriptions ciphered | Identifiers ciphered | Both ciphered |
+|:---|---:|---:|---:|---:|
+| OpenAI Embeddings | 0.797 | not run | not run | not run |
+| SentenceTransformer | 0.583 | 0.362 | 0.526 | 0.300 |
+| TF-IDF | 0.697 | 0.697 | 0.697 | 0.696 |
 
-| Model | Abt-Buy | Amazon-Google |
-|---|---|---|
-| GPT-4o-mini (primary) | 0.928 | 0.822 |
-| GPT-4o | 0.955 | 0.904 |
-| Claude Haiku 4.5 | 0.961 | 0.895 |
-| Claude Sonnet 4.6 | 0.954 | -- (run abandoned, billing) |
+**Amazon-Google:**
 
-### Prompt sensitivity (token-fallback prompt)
+| Method | Original | Descriptions ciphered | Identifiers ciphered | Both ciphered |
+|:---|---:|---:|---:|---:|
+| OpenAI Embeddings | 0.802 | not run | not run | not run |
+| SentenceTransformer | 0.755 | 0.671 | 0.742 | 0.665 |
+| TF-IDF | 0.808 | 0.808 | 0.808 | 0.808 |
 
-A prompt that explicitly instructs the model to match on identifier tokens gives mixed results and never closes the gap to TF-IDF:
-- **GPT-4o-mini** improves on short titles (Amazon-Google Scrambled 0.555 -> 0.707) and helps unevenly on Abt-Buy (Ciphered Words 0.510 -> 0.557, Scrambled 0.601 -> 0.632) but *hurts* under Ciphered Letters (0.779 -> 0.703).
-- **Claude Haiku** collapses to near-zero F1 on Ciphered Words/Scrambled under the token-fallback prompt.
-- Even the best case (GPT-4o-mini, 0.633-0.707) stays well below TF-IDF (0.807-0.808).
+### Candidate-list robustness
 
-### Cost & latency (per dataset)
+The main design shows the LLM the TF-IDF top 50 candidates in rank
+order. Two checks remove the rank-order hint (`__shuffle0`) and shorten
+the list to 10 (`__shuffle0__k10`).
 
-| Model | Cost | Wall time |
-|---|---|---|
-| GPT-4o-mini | <$1 (~$0.50 Abt-Buy, ~$1.00 Amazon-Google) | 30-80 min |
-| Claude Haiku 4.5 | $3-9 | hours |
-| GPT-4o | $7-22 | 1-6 h |
-| Claude Sonnet 4.6 | $10-13 | 1-6 h |
-| All non-LLM methods | $0 | seconds |
+*Not yet run.*
 
-The cost-benefit case for LLM matching is narrow: it is justified only on clean, description-rich text where the modest F1 gain (0.928 vs 0.761) outweighs orders-of-magnitude differences in cost and latency.
+### LLM output status
 
-> **Note on results:** earlier versions of this repo reported lower TF-IDF/Soft TF-IDF F1 because (a) the threshold sweep started at 0.50, which is above the optimal operating point for cosine/edit-distance methods, and (b) the "Soft TF-IDF" method lacked IDF weighting. Both are fixed (`scripts/lib/methods.py`); the threshold sweep now runs the full 0.05-0.95 grid and Soft TF-IDF is the real IDF-weighted, Jaro-Winkler version.
+Share of rows by status (`ok`, `no_match`, `parse_fail`, `truncated`,
+`refusal`, `api_error`). Parse failures are reported as their own
+outcome, never counted as “no match”.
 
----
+*Not yet run.*
 
-## Methods Evaluated
+### Shortlist recall
 
-### Character-Based
-- **Jaro-Winkler**: Edit distance with prefix weighting
-- **Levenshtein**: Minimum edit distance
-- **Monge-Elkan**: Token-level Jaro-Winkler averaging
+Share of queries whose true match is in the TF-IDF top-k shortlist.
 
-### Token-Based
-- **TF-IDF**: Cosine similarity on term frequency vectors
-- **Soft TF-IDF**: IDF-weighted TF-IDF with Jaro-Winkler fuzzy token matching (threshold >= 0.9)
+*Not yet run.*
 
-### Neural Embeddings
-- **SentenceTransformer**: all-MiniLM-L6-v2
-- **OpenAI Embeddings**: text-embedding-3-small
+### Instance-level analysis
 
-### Large Language Model
-- **GPT-4o-mini** (primary): TF-IDF blocking (top-50 candidates), temperature = 0
-- Additional models tested for robustness: GPT-4o, Claude Sonnet 4.6, Claude Haiku 4.5
+Including the share of LLM misses where the true pair shares an
+identifier piece that no other candidate has.
 
----
+*Not yet run.*
+
+### Cost and wall time
+
+Harness v2 LLM runs only.
+
+*Not yet run.*
+
+## Appendix: lexical methods
+
+Soft TF-IDF, Levenshtein, Jaro-Winkler, and Monge-Elkan appear only
+here. Their role is to show that lexical methods are robust to the
+transforms, which holds by design.
+
+![F1 by transformation: lexical methods](figs/f1_comparison_lexical.png)
+
+![Precision and recall: lexical
+methods](figs/precision_recall_scatter_lexical.png)
+
+**Abt-Buy:**
+
+| Method | Original | Ciphered Letters | Ciphered Words | Scrambled | Descriptions ciphered | Identifiers ciphered | Both ciphered |
+|:---|---:|---:|---:|---:|---:|---:|---:|
+| TF-IDF | 0.697 | 0.697 | 0.700 | 0.704 | 0.697 | 0.697 | 0.696 |
+| Soft TF-IDF | 0.692 | 0.692 | 0.669 | 0.687 | 0.693 | 0.687 | 0.691 |
+| Monge-Elkan | 0.287 | 0.287 | 0.191 | 0.273 | 0.271 | 0.242 | 0.252 |
+| Levenshtein | 0.058 | 0.058 | 0.033 | 0.072 | 0.070 | 0.057 | 0.064 |
+| Jaro-Winkler | 0.058 | 0.058 | 0.046 | 0.065 | 0.055 | 0.047 | 0.049 |
+
+**Amazon-Google:**
+
+| Method | Original | Ciphered Letters | Ciphered Words | Scrambled | Descriptions ciphered | Identifiers ciphered | Both ciphered |
+|:---|---:|---:|---:|---:|---:|---:|---:|
+| TF-IDF | 0.808 | 0.808 | 0.807 | 0.808 | 0.808 | 0.808 | 0.808 |
+| Soft TF-IDF | 0.803 | 0.803 | 0.800 | 0.807 | 0.808 | 0.805 | 0.808 |
+| Monge-Elkan | 0.740 | 0.740 | 0.700 | 0.735 | 0.701 | 0.736 | 0.699 |
+| Levenshtein | 0.555 | 0.555 | 0.532 | 0.569 | 0.551 | 0.554 | 0.549 |
+| Jaro-Winkler | 0.488 | 0.488 | 0.483 | 0.489 | 0.486 | 0.482 | 0.487 |
+
+## v1 LLM results (superseded)
+
+These are the LLM results from the TKDE submission, kept in
+`results/v1_llm/`. **Do not cite them.** The v1 harness parsed free-text
+answers by line prefix and stored API errors and unparseable answers as
+blank “no match” rows. An audit on 2026-11-06 found such rows throughout
+the ablation conditions; for example, every Claude Haiku token-fallback
+Scrambled row failed. Harness v2 replaces them.
+
+**Abt-Buy:**
+
+| Method | Original | Ciphered Letters | Ciphered Words | Scrambled |
+|:---|---:|---:|---:|---:|
+| GPT-4o-mini (v1) | 0.928 | 0.779 | 0.510 | 0.601 |
+| GPT-4o-mini, token fallback (v1) | not run | 0.703 | 0.557 | 0.632 |
+| Claude Haiku 4.5 (v1) | 0.961 | 0.656 | 0.209 | 0.636 |
+| Claude Haiku 4.5, token fallback (v1) | 0.944 | 0.067 | 0.007 | 0.000 |
+| GPT-4o (v1) | 0.955 | not run | not run | not run |
+| Claude Sonnet 4.6 (v1) | 0.954 | not run | not run | not run |
+
+**Amazon-Google:**
+
+| Method | Original | Ciphered Letters | Ciphered Words | Scrambled |
+|:---|---:|---:|---:|---:|
+| GPT-4o-mini (v1) | 0.821 | 0.582 | 0.576 | 0.555 |
+| GPT-4o-mini, token fallback (v1) | not run | 0.653 | 0.633 | 0.707 |
+| Claude Haiku 4.5 (v1) | 0.895 | 0.456 | 0.581 | 0.853 |
+| Claude Haiku 4.5, token fallback (v1) | 0.881 | 0.378 | 0.011 | 0.000 |
+| GPT-4o (v1) | 0.904 | 0.749 | 0.751 | 0.850 |
+| Claude Sonnet 4.6 (v1) | 0.843 | not run | not run | not run |
+
+## Methods evaluated
+
+- **LLMs (harness v2):** Claude Haiku 5.5 and GPT-4o-mini on the full
+  grid; Claude Sonnet 5.5 and Kimi K3 on a fixed 30% subsample of query
+  records. Each query sees the TF-IDF top-50 candidates and returns
+  structured JSON.
+- **Embeddings:** SentenceTransformer (all-MiniLM-L6-v2) and OpenAI
+  Embeddings (text-embedding-3-small).
+- **Lexical control:** TF-IDF, cosine similarity on term-frequency
+  vectors.
+- **Other lexical methods (appendix):** Soft TF-IDF (IDF-weighted, with
+  Jaro-Winkler fuzzy token matching at 0.9 or above), Monge-Elkan
+  (token-level Jaro-Winkler averaging), Levenshtein, and Jaro-Winkler.
 
 ## Datasets
 
-Both datasets are filtered to records with at least one ground-truth match, following standard benchmark practice.
+Both datasets are filtered to records with at least one ground-truth
+match, following standard benchmark practice.
 
-- **Abt-Buy** (1,081 matched pairs): Title + full product description. Rich, heterogeneous text.
-- **Amazon-Google** (1,113 matched pairs): Title only. Short, keyword-dense text.
+- **Abt-Buy**: 1,097 ground-truth pairs, 1,081 query records. Methods
+  see the name and the full description.
+- **Amazon-Google**: 1,300 ground-truth pairs, 1,113 query records.
+  Methods see the title only.
 
----
+## Evaluation protocol
 
-## Evaluation Protocol
+- **Thresholds.** Each method’s decision threshold is chosen by 5-fold
+  cross-validation over τ ∈ {0.05, 0.10, …, 0.95}: the threshold is
+  picked on four folds and scored on the fifth (seed 42).
+  `results/cv_results.csv` holds the mean and SD of F1 across folds.
+- **LLM shortlist.** TF-IDF ranks every candidate, and the LLM chooses
+  among the top 50. TF-IDF scores do not change under the transforms, so
+  every condition sees the same shortlist.
 
-- **Threshold optimization**: Each method's decision threshold is swept over tau in {0.05, 0.10, ..., 0.95}; the threshold maximizing F1 is reported.
-- **Cross-validation**: 5-fold CV confirms threshold selection does not overfit -- threshold is chosen on 4 training folds and evaluated on the held-out fold (seed = 42). Results are in `results/cv_results.csv` with mean and std columns.
-- **LLM blocking**: TF-IDF cosine similarity retrieves top-50 candidates per record before LLM classification. Blocking recall is ~99% on both datasets under all conditions.
-
----
-
-## Reproducing the Results
+## Reproducing the results
 
 ### Prerequisites
 
-Python is managed with [uv](https://docs.astral.sh/uv/). `pyproject.toml` pins the direct dependencies, `uv.lock` pins the full tree, and `.python-version` pins Python 3.10.
+Python is managed with [uv](https://docs.astral.sh/uv/).
+`pyproject.toml` pins the direct dependencies, `uv.lock` pins the full
+tree, and `.python-version` pins Python 3.10.
 
-```bash
+``` bash
 uv sync                        # creates .venv/ with the locked versions (incl. dev: pytest)
 uv run tests/test_llm_harness.py
 ```
 
-Every command below runs with `uv run`, which uses that environment. Without uv, `pip install -r requirements.txt` installs the same locked versions (the file is generated by `uv export`; regenerate it after any `uv lock`).
+Every command below runs with `uv run`, which uses that environment.
+Without uv, `pip install -r requirements.txt` installs the same locked
+versions (the file is generated by `uv export`; regenerate it after any
+`uv lock`).
 
-R (figures, and later `README.qmd`):
+R (figures and this README) and [Quarto](https://quarto.org):
 
-```r
-install.packages(c("tidyverse", "cowplot", "ggh4x", "ragg", "knitr", "jsonlite"))
+``` r
+install.packages(c("tidyverse", "cowplot", "ggh4x", "ragg", "knitr", "rmarkdown", "jsonlite"))
 ```
 
-`08_figures.R` also needs the Roboto Condensed font installed system-wide.
+`08_figures.R` also needs the Roboto Condensed font installed
+system-wide.
 
-API keys needed for LLM/embedding methods go in `.env` (see `.env.example`):
+API keys for the LLM and embedding methods go in `.env` (see
+`.env.example`):
 
-```bash
+``` bash
 cp .env.example .env           # then fill in OPENAI_API_KEY, ANTHROPIC_API_KEY, KIMI_API_KEY
 ```
 
-### Step 1: Prepare transformed datasets
+### Step 1: Transformed datasets
 
-```bash
-uv run scripts/01_prepare_datasets.py --dataset all
+The v1 transforms are committed in `data/{dataset}/data_test/`. Do not
+regenerate them: the Ciphered Words map depends on `PYTHONHASHSEED`, and
+the committed CSVs are the only copy of the map the paper used.
+
+``` bash
+uv run scripts/01_prepare_datasets.py --dataset all     # v1 transforms (see above before running)
+uv run scripts/02_prepare_factorial.py --dataset all --verify   # 2x2 cells + TF-IDF invariance check
+uv run tests/test_factorial.py
 ```
 
-Creates `data/{dataset}/data_test/` with ciphered_letters, ciphered_words, and scrambled variants.
+### Step 2: Run the methods
 
-### Step 1b: 2x2 factorial transforms (descriptive words x identifiers)
-
-```bash
-uv run scripts/02_prepare_factorial.py --dataset all --verify
-uv run tests/test_factorial.py        # offline unit tests
+``` bash
+# Non-LLM methods (free), all v1 transforms plus the factorial cells
+uv run scripts/04_run_experiments.py --dataset all \
+    --methods tfidf,soft_tfidf,levenshtein,jaro_winkler,monge_elkan,sentence_transformer \
+    --transformations all,factorial
 ```
 
-This step adds three cells next to Original:
+Results are written as parquet files to
+`results/{dataset}/{method}/{transformation}.parquet`. LLM runs are
+described under [Harness v2](#harness-v2-llm-runs).
 
-|                      | identifiers intact | identifiers ciphered |
-|---|---|---|
-| **descriptions intact**   | `original`         | `ids_ciphered`       |
-| **descriptions ciphered** | `desc_ciphered`    | `all_ciphered`       |
+### Step 3: Tables
 
-- **Identifiers** are model numbers and SKUs: pieces that contain both a letter and a digit (`w55`, `pslx350h`), plus short non-English prefixes attached to them (`dsc` in `dsc-w55`). Quantities (`4gb`, `1080p`, `1024x768`) are not identifiers. Neither are pieces that appear in more than 20 records.
-- **Descriptive words** are everything else, including brand names.
-- Digits and single characters are never changed.
-- **Ciphers.**
-  - Descriptive words become pronounceable nonce words of the same length that are not English words. Unlike v1 Ciphered Words, this brings in no new meanings.
-  - Identifiers become random codes of the same shape: a letter for each letter, a digit for each digit.
-- Both maps are global and injective, and they never produce an original token. Exact token identity across the two catalogs is therefore unchanged. `--verify` checks that the TF-IDF score matrices are identical in every cell (to 1e-9).
-- F1 can still move in the third decimal, because floating-point summation order breaks exact ties between candidates.
-- Each dataset gets a `factorial_manifest.json` with class counts, the full maps, and identifier coverage.
-- Identifier coverage at seed 42:
-  - On Abt-Buy, 50% of true pairs share an identifier piece, and 43% share one that occurs in no other record.
-  - On Amazon-Google, the figures are 4% and 0.8%. The identifier factor mainly matters on Abt-Buy.
-- Run the cells with `--transformations factorial`, which runs Original plus the three new cells. They are not part of `all`.
-
-### Step 2: Run experiments
-
-```bash
-# All methods on all transformations and datasets
-uv run scripts/04_run_experiments.py --dataset all --methods all --transformations all
-
-# Or run selectively
-uv run scripts/04_run_experiments.py --dataset abt-buy --methods llm,tfidf --transformations original
+``` bash
+uv run scripts/05_cv_threshold.py        # -> results/cv_results.csv (source of every reported F1)
+uv run scripts/06_summarize_results.py   # -> results/summary.csv (TP/FP/FN, cost, wall time)
 ```
 
-Results are saved as parquet files in `results/{dataset}/{method}/`. The superseded v1 LLM results are in `results/v1_llm/{dataset}/{method}/`.
+### Step 4: Figures
 
-### Step 3: Cross-validate thresholds
-
-```bash
-uv run scripts/05_cv_threshold.py
+``` bash
+Rscript scripts/08_figures.R             # -> figs/*.png
 ```
 
-Produces `results/cv_results.csv` (F1 mean/std, precision, recall for all 128 configurations).
+### Step 5: This README
 
-### Step 4: Generate summary table
-
-```bash
-uv run scripts/06_summarize_results.py
+``` bash
+quarto render README.qmd                 # -> README.md
 ```
 
-Produces `results/summary.csv` with TP/FP/FN counts and (for LLM methods) cost and wall time.
+## Harness v2 (LLM runs)
 
-### Step 5: Generate figures
+The v1 LLM pipeline parsed free-text answers by line prefix and stored
+API errors and unparseable answers as blank “no match” rows. Harness v2
+replaces it for all new LLM runs.
 
-```bash
-Rscript scripts/08_figures.R
-```
+- **One code path for every model** (`scripts/lib/llm_clients.py`,
+  `scripts/lib/llm_runner.py`) with structured JSON output (`match`,
+  `confidence`, `rationale`).
+- **Row-level `status`**: `ok`, `no_match`, `parse_fail`, `truncated`,
+  `refusal`, `api_error`. Raw responses, stop reasons, token counts,
+  cost, served model, and request ids are saved for every row.
+- **Fails loudly.** A bad key, missing credit, or unknown model aborts
+  at once. Five consecutive API errors, or more than 1% of calls, also
+  abort the run. A run with unresolved API errors is never written to
+  `results/`. Partial progress goes to `checkpoints/`, and rerunning the
+  same command resumes it.
+- **No sampling parameters.** Current Claude models reject
+  `temperature`, so run-to-run variance is measured with `--repeat`.
+- **Instance-level diagnostics** on every row: the rank of the true
+  match among the shortlisted candidates, the candidate ids, and the
+  prompt size.
 
-Produces PNG figures in `figs/` (R requirements above).
-
----
-
-## Harness v2 (LLM rerun, set up 2026-11)
-
-The v1 LLM results (`llm`, `llm_haiku*`, `llm_claude*`, `llm_gpt4o*`) parsed free-text answers by line prefix and stored API errors and unparseable answers as blank "no match" rows. An audit on 2026-11-06 found these blank rows throughout the ablation conditions (for example, every Haiku token-fallback Scrambled row failed at $0 cost). Harness v2 replaces that pipeline for all new LLM runs. The v1 code and results are left untouched for reference.
-
-What changed:
-
-- **One code path for every model** (`scripts/lib/llm_clients.py`, `scripts/lib/llm_runner.py`) with structured JSON output (`match`, `confidence`, `rationale`) instead of line parsing.
-- **Row-level `status`**: `ok`, `no_match`, `parse_fail`, `truncated`, `refusal`, `api_error`. Raw responses, stop reasons, token counts, cost, served model and request ids are saved for every row.
-- **Fails loudly**: a bad key, missing credit, or unknown model aborts at once. Five consecutive API errors, or more than 1% of calls, also abort the run. A run with unresolved API errors is never written to `results/`. Partial progress goes to `checkpoints/`, and rerunning the same command resumes it.
-- **No sampling parameters.** Current Claude models reject `temperature`, so run-to-run variance is measured with `--repeat`.
-- **Instance-level diagnostics** on every row: the rank of the true match among the blocked candidates, the candidate ids, and the prompt size.
-
-Models (`llm_clients.MODELS`; prices checked 2026-11-06, re-check before budgeting):
+Models (`llm_clients.MODELS`; prices checked 2026-11-06, re-check before
+budgeting):
 
 | Method | Model | Run | Notes |
-|---|---|---|---|
+|----|----|----|----|
 | `llm_haiku55` | `claude-haiku-5-5` | full grid | reported |
 | `llm_sonnet55` | `claude-sonnet-5-5` | fixed 30% subsample | reported |
 | `llm_gpt4omini` | `gpt-4o-mini` | full grid | reported; bridge to the TKDE submission |
 | `llm_kimik3` | Kimi K3 (`moonshotai/kimi-k3` on OpenRouter, pinned to the Moonshot AI provider) | fixed 30% subsample | reported; open weights, hosted |
 | `llm_haiku55_cli`, `llm_sonnet55_cli` | Claude Code CLI on a subscription | any | **pilots only**; written to `pilot_results/` |
 
-Each method also has a token-fallback variant with a `_tf` suffix. Sonnet and Kimi use the same seed, so they see the same 30% of query records, and those records are also part of the Haiku and GPT-4o-mini runs. Claude models run at effort `medium` with adaptive thinking, which cannot be turned off. GPT-4o-mini is not a reasoning model. Kimi K3 runs at its provider's default reasoning setting.
+Each method also has a token-fallback variant with a `_tf` suffix.
+Sonnet and Kimi use the same seed, so they see the same 30% of query
+records, and those records are also part of the Haiku and GPT-4o-mini
+runs. Claude models run at effort `medium` with adaptive thinking, which
+cannot be turned off. GPT-4o-mini is not a reasoning model. Kimi K3 runs
+at its provider’s default reasoning setting.
 
-Subscription pilots run `claude -p` from an empty temporary directory, with no tools, no MCP servers, only project-level settings, and a replaced system prompt. `ANTHROPIC_API_KEY` is removed from their environment, so they can never bill the API. The CLI's JSON output fields and whether user-level context still reaches the model have not been checked yet. On the first pilot, compare the logged `input_tokens` with the prompt size, and look at `raw_response`. Use `--workers 2` or so, to stay inside subscription limits.
+Subscription pilots run `claude -p` from an empty temporary directory,
+with no tools, no MCP servers, only project-level settings, and a
+replaced system prompt. `ANTHROPIC_API_KEY` is removed from their
+environment, so they can never bill the API. Use `--workers 2` or so, to
+stay inside subscription limits.
 
-Setup and checks (none of these call an API):
+Checks that make no API calls:
 
-```bash
-cp .env.example .env            # then fill in keys
-uv sync                         # anthropic==2.6.0, openai==3.46.0
-uv run tests/test_llm_harness.py      # offline tests with fake clients
-uv run scripts/03_estimate_llm_cost.py     # prices one pass from locally built prompts
+``` bash
+uv run tests/test_llm_harness.py               # offline tests with fake clients
+uv run scripts/03_estimate_llm_cost.py         # prices one pass from locally built prompts
 ```
 
-Pilots (subscription; no API cost):
+Pilot (subscription; no API cost):
 
-```bash
+``` bash
 uv run scripts/04_run_experiments.py --dataset abt-buy --methods llm_haiku55_cli \
     --transformations original,ciphered_words --sample-frac 0.05 --workers 2
 ```
 
-Reported runs (these call APIs and cost money; about $65-150 per pass of the standard prompt on 2 datasets x 4 conditions):
+Reported runs (these call paid APIs; `03_estimate_llm_cost.py` prices
+them first):
 
-```bash
+``` bash
 uv run scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini   # full grid
 uv run scripts/04_run_experiments.py --dataset all --methods llm_sonnet55,llm_kimik3     # 30% subsample
 uv run scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini \
-    --transformations factorial                                                       # 2x2 cells; repeat with
-                                                                                      # llm_sonnet55,llm_kimik3 (about +$50 for all 4)
+    --transformations factorial                                                       # 2x2 cells
 # Options: --effort low|high, --repeat N, --shuffle-candidates, --top-k K, --workers N
 ```
 
-Robustness to the candidate-list design (reviewer objection to showing 50 candidates per query). The main design is rank-then-select: TF-IDF ranks every candidate for free, and the LLM picks the best of the top 50, listed in rank order. That is how a practical LLM matcher would be built. The shortlist is identical in every condition, because TF-IDF does not change under the ciphers. Two checks, both on Haiku and GPT-4o-mini over Original plus the three v1 ablations, about $10-15 together:
+Candidate-list robustness, on Haiku and GPT-4o-mini over the four v1
+conditions:
 
-```bash
+``` bash
 uv run scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini \
     --transformations original,ciphered_letters,ciphered_words,scrambled --shuffle-candidates             # rank-order hint removed
 uv run scripts/04_run_experiments.py --dataset all --methods llm_haiku55,llm_gpt4omini \
     --transformations original,ciphered_letters,ciphered_words,scrambled --shuffle-candidates --top-k 10  # short list
-uv run scripts/03_estimate_llm_cost.py --models haiku55,gpt4omini --top-k 10                                 # price the k=10 run
 ```
 
-Results go to `llm_<model>__shuffle0` and `llm_<model>__shuffle0__k10`. Pairwise yes/no prompting (one call per query-candidate pair) is deliberately not run. It is not the rank-then-select setting studied here, and it multiplies token cost. The paper states this as a limitation.
+Non-default options are appended to the result directory name (for
+example `results/abt-buy/llm_haiku55__shuffle0/`), so runs never
+overwrite each other. `05_cv_threshold.py` and `06_summarize_results.py`
+pick up new directories automatically. Pairwise yes/no prompting (one
+call per query-candidate pair) is deliberately not run: it is not the
+rank-then-select setting studied here, and it multiplies token cost.
 
-Non-default options are appended to the result directory name (for example `results/abt-buy/llm_haiku55__effort-high/`), so runs never overwrite each other. `05_cv_threshold.py` and `06_summarize_results.py` pick up the new directories automatically.
+## Project structure
 
-## Project Structure
-
-```
-2026-semantic-ablation-matching/
-├── data/
-│   ├── abt-buy/
-│   │   ├── data_original/           # Source CSVs + ground-truth mapping
-│   │   └── data_test/               # Transformed variants + factorial manifest
-│   └── amazon-google/
-│       ├── data_original/
-│       └── data_test/
-│
-├── scripts/                         # numbered in run order
-│   ├── 01_prepare_datasets.py       # v1 transforms: ciphered_letters, ciphered_words, scrambled
-│   ├── 02_prepare_factorial.py      # 2x2 cells: desc_ciphered, ids_ciphered, all_ciphered
-│   ├── 03_estimate_llm_cost.py      # offline LLM cost estimate (no API calls)
-│   ├── 04_run_experiments.py        # all methods; LLMs through harness v2
-│   ├── 05_cv_threshold.py           # 5-fold CV thresholds -> results/cv_results.csv
-│   ├── 06_summarize_results.py      # summary table -> results/summary.csv
-│   ├── 08_figures.R                 # publication figures -> figs/
-│   └── lib/                         # shared code imported by the scripts
-│       ├── paths.py                 # repo-root-anchored paths
-│       ├── datasets.py              # dataset config and loading
-│       ├── transforms.py            # v1 transform functions
-│       ├── factorial.py             # 2x2 factorial transform
-│       ├── methods.py               # non-LLM methods + v1 LLM code (reference only)
-│       ├── llm_clients.py           # harness v2 model clients
-│       └── llm_runner.py            # harness v2 runner
-│
-├── tests/                           # offline tests (no API calls)
-│
-├── results/
-│   ├── {dataset}/{method}/          # Per-method parquet files
-│   ├── v1_llm/{dataset}/{method}/   # Superseded v1 LLM results (contaminated; see Harness v2)
-│   ├── summary.csv                  # Fixed-threshold results with TP/FP/FN and cost
-│   └── cv_results.csv               # Cross-validated F1 (authoritative for figures/tables)
-│
-├── figs/                            # Generated figures
-├── checkpoints/                     # gitignored: partial harness-v2 runs
-├── pilot_results/                   # gitignored: subscription pilots, never reported
-└── README.md
-```
-
----
-
-## Key Results Files
-
-- **`results/cv_results.csv`** -- Threshold-optimized, cross-validated F1/precision/recall. **Use this for figures and tables.**
-- **`results/summary.csv`** -- Fixed-threshold results. Has TP/FP/FN counts and LLM `cost_usd`/`wall_time_seconds`, but thresholds are not F1-optimal. Use for cost/runtime analysis only.
+    2026-semantic-ablation-matching/
+    ├── data/
+    │   ├── abt-buy/
+    │   │   ├── data_original/           # source CSVs + ground-truth mapping
+    │   │   └── data_test/               # transformed variants + factorial manifest
+    │   └── amazon-google/
+    │       ├── data_original/
+    │       └── data_test/
+    │
+    ├── scripts/                         # numbered in run order
+    │   ├── 01_prepare_datasets.py       # v1 transforms: ciphered_letters, ciphered_words, scrambled
+    │   ├── 02_prepare_factorial.py      # 2x2 cells: desc_ciphered, ids_ciphered, all_ciphered
+    │   ├── 03_estimate_llm_cost.py      # offline LLM cost estimate (no API calls)
+    │   ├── 04_run_experiments.py        # all methods; LLMs through harness v2
+    │   ├── 05_cv_threshold.py           # 5-fold CV thresholds -> results/cv_results.csv
+    │   ├── 06_summarize_results.py      # summary table -> results/summary.csv
+    │   ├── 08_figures.R                 # figures -> figs/
+    │   └── lib/                         # shared code imported by the scripts
+    │
+    ├── tests/                           # offline tests (no API calls)
+    │
+    ├── results/
+    │   ├── {dataset}/{method}/          # per-method parquet files
+    │   ├── v1_llm/{dataset}/{method}/   # superseded v1 LLM results
+    │   ├── cv_results.csv               # cross-validated F1/precision/recall (source of every reported F1)
+    │   └── summary.csv                  # fixed-threshold TP/FP/FN, cost, wall time
+    │
+    ├── figs/                            # generated figures (main + *_lexical appendix figures)
+    ├── checkpoints/                     # gitignored: partial harness-v2 runs
+    ├── pilot_results/                   # gitignored: subscription pilots, never reported
+    ├── README.qmd                       # source of this README
+    └── README.md                        # rendered; do not edit by hand

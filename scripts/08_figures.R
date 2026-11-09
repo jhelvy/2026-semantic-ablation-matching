@@ -21,130 +21,122 @@ dir.create(figs_dir, showWarnings = FALSE)
 # ragg device instead; ggsave() below also uses ragg.
 ragg::agg_png(tempfile(fileext = '.png'))
 
+# Plot settings ---------------------------------------------------------------
+
 font <- 'Roboto Condensed'
 
-# Shared label cleaning ------------------------------------------------------
+# Transformation colors, plus the TF-IDF reference drawn in every main figure.
+plotColors <- c(
+  'Original' = 'grey20',
+  'Ciphered Letters' = '#80C5DCFF',
+  'Ciphered Words' = '#E37D39FF',
+  'Scrambled' = '#8FC977FF'
+)
+tfidf_color <- '#980000FF'
+
+# The four v1 conditions shown in the overview figures. The factorial cells
+# (desc_ciphered, ids_ciphered, all_ciphered) get their own figure later.
+v1_conditions <- c('original', 'ciphered_letters', 'ciphered_words', 'scrambled')
+ablation_levels <- c('Scrambled', 'Ciphered Words', 'Ciphered Letters')
+
+# Method lineup (PLAN.md, "Method lineup"): semantic methods are the object of
+# study and go in the main figures; TF-IDF is the lexical control, drawn there
+# as a reference. All lexical methods go in the appendix (*_lexical.png).
+# The v1 LLM runs (results/v1_llm/) are superseded and labeled "(v1)".
+semantic_methods <- c('llm', 'llm_haiku', 'openai_embeddings', 'sentence_transformer')
+lexical_methods <- c('tfidf', 'soft_tfidf', 'monge_elkan', 'levenshtein', 'jaro_winkler')
+
+# Shared label cleaning --------------------------------------------------------
+
 clean_labels <- function(d) {
-  d %>%
+  d |>
     mutate(
-      method = case_match(
-        method,
-        'llm' ~ 'GPT-4o-mini',
-        'llm_gpt4o_mini_token_fallback' ~ 'GPT-4o-mini\nToken Fallback',
-        'llm_haiku' ~ 'Claude Haiku',
-        'llm_haiku_token_fallback' ~ 'Claude Haiku\nToken Fallback',
-        'llm_claude' ~ 'Claude Sonnet\nStandard',
-        'llm_gpt4o' ~ 'GPT-4o\nStandard',
-        'tfidf' ~ 'TFIDF',
-        'soft_tfidf' ~ 'Soft TFIDF',
-        'openai_embeddings' ~ 'OpenAI Emb.',
-        'sentence_transformer' ~ 'Transformer',
-        .default = str_replace_all(method, "_", " ") %>% str_to_title()
+      method = case_when(
+        method == 'llm' ~ 'GPT-4o-mini\n(v1)',
+        method == 'llm_gpt4o_mini_token_fallback' ~ 'GPT-4o-mini\nToken Fallback (v1)',
+        method == 'llm_haiku' ~ 'Claude Haiku\n(v1)',
+        method == 'llm_haiku_token_fallback' ~ 'Claude Haiku\nToken Fallback (v1)',
+        method == 'llm_claude' ~ 'Claude Sonnet\n(v1)',
+        method == 'llm_gpt4o' ~ 'GPT-4o\n(v1)',
+        method == 'llm_haiku55' ~ 'Claude Haiku 5.5',
+        method == 'llm_sonnet55' ~ 'Claude Sonnet 5.5',
+        method == 'llm_gpt4omini' ~ 'GPT-4o-mini',
+        method == 'llm_kimik3' ~ 'Kimi K3',
+        method == 'tfidf' ~ 'TF-IDF',
+        method == 'soft_tfidf' ~ 'Soft TF-IDF',
+        method == 'openai_embeddings' ~ 'OpenAI Emb.',
+        method == 'sentence_transformer' ~ 'Transformer',
+        .default = str_replace_all(method, "_", " ") |> str_to_title()
       ),
-      dataset = str_replace_all(dataset, "-", " ") %>% str_to_title(),
-      transformation = str_replace_all(transformation, "_", " ") %>%
+      dataset = str_replace_all(dataset, "-", " ") |> str_to_title(),
+      transformation = str_replace_all(transformation, "_", " ") |>
         str_to_title()
     )
 }
 
-# Methods to exclude from main plots (expensive models + token-fallback variants
-# shown separately in robustness/prompt-comparison charts)
-expensive_methods <- c(
-  'llm_claude',
-  'llm_gpt4o',
-  'llm_gpt4o_mini_token_fallback',
-  'llm_haiku_token_fallback'
-)
-
-# LLM/embedding methods (raw names) — used to assign method_group in main plots
-llm_methods_raw <- c(
-  'llm',
-  'llm_haiku',
-  'openai_embeddings',
-  'sentence_transformer'
-)
-
-# ---------------------------------------------------------------------------
-# Plot 1: F1 by transformation, with 5-fold CV error bars (mean +/- 1 SD).
-# Excludes expensive models (Sonnet, GPT-4o) — those are in a separate chart.
-# ---------------------------------------------------------------------------
-cv <- read_csv(file.path(results_dir, 'cv_results.csv')) %>%
-  filter(!method %in% expensive_methods) %>%
-  mutate(
-    method_group = if_else(
-      method %in% llm_methods_raw,
-      'Semantic Methods',
-      'Lexical Methods'
-    )
-  ) %>%
-  clean_labels() %>%
-  group_by(method, dataset) %>%
-  mutate(max_f1 = max(f1_mean)) %>%
-  ungroup()
-
-# Order methods by max F1 within each group (LLM first, then string distance)
-cv_method_order <- cv %>%
-  distinct(method, method_group) %>%
-  left_join(
-    cv %>%
-      group_by(method) %>%
-      summarise(top_f1 = max(max_f1), .groups = 'drop'),
-    by = 'method'
-  ) %>%
-  arrange(method_group, desc(top_f1)) %>%
-  pull(method)
-
-cv <- cv %>%
-  mutate(
-    method_group = factor(method_group, levels = c('Semantic Methods', 'Lexical Methods')),
-    method = factor(method, levels = cv_method_order),
-    transformation = factor(
-      transformation,
-      levels = c('Scrambled', 'Ciphered Words', 'Ciphered Letters', 'Original')
-    )
-  )
-
-cv_baseline <- cv %>%
-  filter(transformation == 'Original') %>%
-  select(
-    method,
-    method_group,
-    dataset,
-    f1_baseline = f1_mean,
-    sd_baseline = f1_std
-  )
-
-cv_ablations <- cv %>%
-  filter(transformation != 'Original') %>%
-  mutate(transformation = fct_drop(transformation))
-
-group_header <- function(label) {
-  ggdraw() +
-    draw_label(
-      label,
-      fontface = 'bold',
-      color = 'white',
-      fontfamily = font,
-      size = 14
-    ) +
-    theme(plot.background = element_rect(fill = '#555555', color = NA))
+# Order methods by their best F1 across conditions and datasets.
+order_methods <- function(d) {
+  method_order <- d |>
+    group_by(method) |>
+    summarise(top_f1 = max(f1_mean), .groups = 'drop') |>
+    arrange(desc(top_f1)) |>
+    pull(method)
+  d |> mutate(method = factor(method, levels = method_order))
 }
 
-f1_panel <- function(ablations, baseline, show_x = FALSE, show_pct = FALSE) {
-  d <- ablations %>%
-    left_join(
-      baseline %>% select(method, dataset, f1_baseline),
-      by = c('method', 'dataset')
-    ) %>%
-    mutate(
-      pct_label = sprintf(
-        '%+.0f%%',
-        (f1_mean - f1_baseline) / f1_baseline * 100
-      )
-    ) %>%
-    arrange(method, dataset, transformation)
+facet_theme <- function(base) {
+  base +
+    theme(
+      strip.background = element_rect(fill = 'grey80', color = NA),
+      panel.grid.minor = element_blank(),
+      panel.background = element_rect(fill = 'white', color = NA),
+      plot.background = element_rect(fill = 'white', color = NA)
+    )
+}
 
-  p <- d %>%
+save_fig <- function(name, width, height) {
+  ggsave(
+    device = ragg::agg_png, # base png() device fails on the Roboto Condensed font
+    filename = file.path(figs_dir, name),
+    width = width,
+    height = height,
+    dpi = 300
+  )
+}
+
+# Data -------------------------------------------------------------------------
+
+cv_raw <- read_csv(file.path(results_dir, 'cv_results.csv'), show_col_types = FALSE)
+
+cv_v1 <- cv_raw |>
+  filter(transformation %in% v1_conditions) |>
+  mutate(method_raw = method) |>
+  clean_labels()
+
+# TF-IDF is invariant to the transforms (within about 0.01 F1), so one
+# reference per dataset at its Original F1 is enough in the F1 figures.
+tfidf_ref <- cv_v1 |>
+  filter(method_raw == 'tfidf', transformation == 'Original') |>
+  select(dataset, tfidf_f1 = f1_mean)
+
+# Plot 1: F1 by transformation, with 5-fold CV error bars (mean +/- 1 SD) -------
+# Each method's own Original F1 is the solid line (grey band = +/- 1 SD);
+# points are the three ablations, labeled with the % change from Original.
+
+f1_plot <- function(d, tfidf_line = FALSE) {
+  d <- order_methods(d)
+  baseline <- d |>
+    filter(transformation == 'Original') |>
+    select(method, dataset, f1_baseline = f1_mean, sd_baseline = f1_std)
+  ablations <- d |>
+    filter(transformation != 'Original') |>
+    mutate(transformation = factor(transformation, levels = ablation_levels)) |>
+    left_join(baseline, by = c('method', 'dataset')) |>
+    mutate(
+      pct_label = sprintf('%+.0f%%', (f1_mean - f1_baseline) / f1_baseline * 100)
+    )
+
+  p <- ablations |>
     ggplot(aes(x = f1_mean, y = transformation, color = transformation)) +
     geom_rect(
       data = baseline,
@@ -158,206 +150,169 @@ f1_panel <- function(ablations, baseline, show_x = FALSE, show_pct = FALSE) {
       fill = 'grey70',
       alpha = 0.35
     ) +
-    geom_vline(data = baseline, aes(xintercept = f1_baseline)) +
-    geom_errorbarh(
+    geom_vline(data = baseline, aes(xintercept = f1_baseline))
+
+  if (tfidf_line) {
+    # Label the reference once, in the top row of panels.
+    tfidf_label <- tfidf_ref |>
+      mutate(method = factor(levels(d$method)[1], levels = levels(d$method)))
+    p <- p +
+      geom_vline(
+        data = tfidf_ref,
+        aes(xintercept = tfidf_f1),
+        color = tfidf_color,
+        linetype = 'dashed',
+        linewidth = 0.6
+      ) +
+      geom_text(
+        data = tfidf_label,
+        inherit.aes = FALSE,
+        aes(x = tfidf_f1, y = Inf, label = 'TF-IDF'),
+        color = tfidf_color,
+        family = font,
+        size = 3.5,
+        hjust = 1.1,
+        vjust = 1.3
+      )
+  }
+
+  p <- p +
+    geom_errorbar(
+      orientation = 'y',
       aes(xmin = f1_mean - f1_std, xmax = f1_mean + f1_std),
-      height = 0.3,
+      width = 0.3,
       alpha = 0.9,
       linewidth = 0.5
     ) +
-    geom_point(size = 1.6) +
+    geom_point(size = 1.8) +
+    geom_text(
+      aes(label = pct_label, x = f1_mean - f1_std),
+      hjust = 1.1,
+      vjust = 0.5,
+      size = 2.8,
+      color = 'grey20',
+      family = font,
+      show.legend = FALSE
+    ) +
     facet_grid(method ~ dataset) +
+    scale_color_manual(values = plotColors) +
     scale_x_continuous(
+      breaks = seq(0, 1, 0.2),
       limits = c(0, 1),
       expand = expansion(add = c(0.12, 0.02))
     ) +
-    labs(x = if (show_x) 'F1 Score' else NULL, y = 'Transformation') +
-    theme_minimal_vgrid(font_family = font, font_size = 16) +
-    theme(
-      strip.background = element_rect('grey80'),
-      panel.grid.minor = element_blank(),
-      legend.position = 'none',
-      panel.background = element_rect(fill = 'white', color = NA),
-      plot.background = element_rect(fill = 'white', color = NA)
-    ) +
-    panel_border()
+    coord_cartesian(clip = 'off') +
+    labs(x = 'F1 Score', y = 'Transformation') +
+    theme_minimal_vgrid(font_family = font, font_size = 16)
+  p <- facet_theme(p) + theme(legend.position = 'none') + panel_border()
+  p
+}
 
-  if (show_pct) {
+# Main text: semantic methods, TF-IDF as a dashed reference line.
+f1_plot(cv_v1 |> filter(method_raw %in% semantic_methods), tfidf_line = TRUE)
+save_fig('f1_comparison.png', width = 8, height = 8)
+
+# Appendix: lexical methods (TF-IDF is an ordinary row here).
+f1_plot(cv_v1 |> filter(method_raw %in% lexical_methods))
+save_fig('f1_comparison_lexical.png', width = 8, height = 9.5)
+
+# Plot 2: Precision-recall scatter ----------------------------------------------
+# Cross-validated operating point from cv_results.csv, consistent with the F1
+# figure.
+
+pr_plot <- function(d, tfidf_points = FALSE) {
+  d <- d |>
+    order_methods() |>
+    mutate(transformation = factor(transformation, levels = names(plotColors)))
+
+  p <- d |>
+    ggplot() +
+    geom_point(
+      aes(x = recall, y = precision, color = transformation),
+      size = 2
+    )
+
+  if (tfidf_points) {
+    # TF-IDF in every panel, one point per condition (they nearly coincide,
+    # because TF-IDF is invariant). Labeled once, in the top row.
+    tfidf_pr <- cv_v1 |>
+      filter(method_raw == 'tfidf') |>
+      select(dataset, transformation, precision, recall)
+    tfidf_label <- tfidf_pr |>
+      filter(transformation == 'Original') |>
+      mutate(method = factor(levels(d$method)[1], levels = levels(d$method)))
     p <- p +
+      geom_point(
+        data = tfidf_pr,
+        aes(x = recall, y = precision),
+        color = tfidf_color,
+        shape = 18,
+        size = 3
+      ) +
       geom_text(
-        aes(label = pct_label, x = f1_mean - f1_std),
-        hjust = 1.1,
-        vjust = 0.5,
-        size = 2.5,
-        color = 'grey20',
-        show.legend = FALSE
+        data = tfidf_label,
+        aes(x = recall, y = precision, label = 'TF-IDF'),
+        color = tfidf_color,
+        family = font,
+        size = 3.5,
+        hjust = 1.25,
+        vjust = 0.5
       )
   }
-  p <- p + coord_cartesian(clip = 'off')
-  if (!show_x) {
-    p <- p +
-      theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
-  }
-  p
-}
 
-n_llm <- n_distinct(cv_ablations$method[
-  cv_ablations$method_group == 'Semantic Methods'
-])
-n_str <- n_distinct(cv_ablations$method[cv_ablations$method_group == 'Lexical Methods'])
-
-plot_grid(
-  group_header('Semantic Methods'),
-  f1_panel(
-    cv_ablations %>% filter(method_group == 'Semantic Methods'),
-    cv_baseline %>% filter(method_group == 'Semantic Methods'),
-    show_x = FALSE,
-    show_pct = TRUE
-  ),
-  group_header('Lexical Methods'),
-  f1_panel(
-    cv_ablations %>% filter(method_group == 'Lexical Methods'),
-    cv_baseline %>% filter(method_group == 'Lexical Methods'),
-    show_x = TRUE
-  ),
-  ncol = 1,
-  rel_heights = c(0.2, n_llm, 0.2, n_str),
-  align = 'v',
-  axis = 'lr'
-)
-
-ggsave(
-  device = ragg::agg_png, # base png() device fails on the Roboto Condensed font
-  filename = file.path(figs_dir, 'f1_comparison.png'),
-  width = 8,
-  height = 11.5
-)
-
-# ---------------------------------------------------------------------------
-# Plot 2: Precision-recall scatter (threshold-optimized, cross-validated
-# operating point from cv_results.csv, consistent with the F1 figure and
-# Tables S1-S4). Excludes expensive models.
-# ---------------------------------------------------------------------------
-df <- read_csv(file.path(results_dir, 'cv_results.csv')) %>%
-  rename(f1 = f1_mean) %>%
-  filter(!method %in% expensive_methods) %>%
-  mutate(
-    method_group = if_else(
-      method %in% llm_methods_raw,
-      'Semantic Methods',
-      'Lexical Methods'
-    )
-  ) %>%
-  clean_labels() %>%
-  group_by(method, dataset) %>%
-  mutate(max_f1 = max(f1)) %>%
-  ungroup()
-
-df_method_order <- df %>%
-  distinct(method, method_group) %>%
-  left_join(
-    df %>%
-      group_by(method) %>%
-      summarise(top_f1 = max(max_f1), .groups = 'drop'),
-    by = 'method'
-  ) %>%
-  arrange(method_group, desc(top_f1)) %>%
-  pull(method)
-
-df <- df %>%
-  mutate(
-    method_group = factor(method_group, levels = c('Semantic Methods', 'Lexical Methods')),
-    method = factor(method, levels = df_method_order),
-    transformation = fct_reorder(transformation, -f1)
-  )
-
-pr_panel <- function(data, show_legend = FALSE) {
-  p <- data %>%
-    ggplot() +
-    geom_point(aes(x = recall, y = precision, color = transformation)) +
+  p <- p +
     facet_grid(method ~ dataset) +
-    scale_x_continuous(limits = c(0, 1)) +
-    scale_y_continuous(limits = c(0, 1)) +
-    labs(x = 'Recall', y = 'Precision', color = 'Transformation') +
-    theme_minimal_grid(font_family = font, font_size = 16) +
-    theme(
-      strip.background = element_rect('grey80'),
-      panel.grid.minor = element_blank(),
-      legend.position = if (show_legend) 'right' else 'none',
-      panel.background = element_rect(fill = 'white', color = NA),
-      plot.background = element_rect(fill = 'white', color = NA)
-    ) +
-    guides(color = guide_legend(ncol = 1)) +
-    panel_border()
+    scale_color_manual(values = plotColors) +
+    scale_x_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
+    scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
+    labs(x = 'Recall', y = 'Precision', color = NULL) +
+    theme_minimal_grid(font_family = font, font_size = 16)
+  p <- facet_theme(p) + theme(legend.position = 'bottom') + panel_border()
   p
 }
 
-n_llm_pr <- n_distinct(df$method[df$method_group == 'Semantic Methods'])
-n_str_pr <- n_distinct(df$method[df$method_group == 'Lexical Methods'])
+pr_plot(cv_v1 |> filter(method_raw %in% semantic_methods), tfidf_points = TRUE)
+save_fig('precision_recall_scatter.png', width = 8, height = 10)
 
-plot_grid(
-  group_header('Semantic Methods'),
-  pr_panel(df %>% filter(method_group == 'Semantic Methods'), show_legend = TRUE),
-  group_header('Lexical Methods'),
-  pr_panel(df %>% filter(method_group == 'Lexical Methods'), show_legend = FALSE),
-  ncol = 1,
-  rel_heights = c(0.2, n_llm_pr, 0.2, n_str_pr),
-  align = 'v',
-  axis = 'lr'
-)
+pr_plot(cv_v1 |> filter(method_raw %in% lexical_methods))
+save_fig('precision_recall_scatter_lexical.png', width = 8, height = 12)
 
-ggsave(
-  device = ragg::agg_png, # base png() device fails on the Roboto Condensed font
-  filename = file.path(figs_dir, 'precision_recall_scatter.png'),
-  width = 8,
-  height = 13
-)
+# Plot 3: Robustness check — GPT-4o vs GPT-4o-mini (Amazon-Google only) ---------
+# v1 results. Shows all transformations as points + error bars by model tier.
 
-# ---------------------------------------------------------------------------
-# Plot 2b: Robustness check — GPT-4o vs GPT-4o-mini (Amazon-Google only).
-# Shows all transformations as points + error bars, dodged by model tier.
-# ---------------------------------------------------------------------------
 robustness_lookup <- tribble(
-  ~method     , ~tier         ,
-  'llm'       , 'GPT-4o-mini' ,
-  'llm_gpt4o' , 'GPT-4o'      ,
+  ~method     , ~tier              ,
+  'llm'       , 'GPT-4o-mini (v1)' ,
+  'llm_gpt4o' , 'GPT-4o (v1)'      ,
 )
 
-cv_robustness <- read_csv(file.path(results_dir, 'cv_results.csv')) %>%
-  inner_join(robustness_lookup, by = 'method') %>%
-  filter(dataset == 'amazon-google') %>%
+cv_robustness <- cv_raw |>
+  inner_join(robustness_lookup, by = 'method') |>
+  filter(dataset == 'amazon-google', transformation %in% v1_conditions) |>
   mutate(
-    dataset = str_replace_all(dataset, "-", " ") %>% str_to_title(),
-    transformation = str_replace_all(transformation, "_", " ") %>%
+    dataset = str_replace_all(dataset, "-", " ") |> str_to_title(),
+    transformation = str_replace_all(transformation, "_", " ") |>
       str_to_title(),
-    transformation = factor(
-      transformation,
-      levels = c('Scrambled', 'Ciphered Words', 'Ciphered Letters', 'Original')
-    ),
-    tier = factor(tier, levels = c('GPT-4o-mini', 'GPT-4o'))
+    tier = factor(tier, levels = robustness_lookup$tier)
   )
 
-robustness_baseline <- cv_robustness %>%
-  filter(transformation == 'Original') %>%
+robustness_baseline <- cv_robustness |>
+  filter(transformation == 'Original') |>
   select(tier, dataset, f1_baseline = f1_mean, sd_baseline = f1_std)
 
-robustness_ablations <- cv_robustness %>%
-  filter(transformation != 'Original') %>%
-  mutate(transformation = fct_drop(transformation)) %>%
-  left_join(
-    robustness_baseline %>% select(tier, dataset, f1_baseline),
-    by = c('tier', 'dataset')
-  ) %>%
+robustness_ablations <- cv_robustness |>
+  filter(transformation != 'Original') |>
+  mutate(transformation = factor(transformation, levels = ablation_levels)) |>
+  left_join(robustness_baseline, by = c('tier', 'dataset')) |>
   mutate(
     pct_label = if_else(
       is.na(f1_mean),
       NA_character_,
       sprintf('%+.0f%%', (f1_mean - f1_baseline) / f1_baseline * 100)
     )
-  ) %>%
-  arrange(tier, dataset, transformation)
+  )
 
-robustness_ablations %>%
+robustness_ablations |>
   ggplot(aes(x = f1_mean, y = transformation)) +
   geom_rect(
     data = robustness_baseline,
@@ -371,13 +326,18 @@ robustness_ablations %>%
     fill = 'grey70',
     alpha = 0.35
   ) +
+  geom_vline(data = robustness_baseline, aes(xintercept = f1_baseline)) +
   geom_vline(
-    data = robustness_baseline,
-    aes(xintercept = f1_baseline)
+    data = tfidf_ref |> filter(dataset == 'Amazon Google'),
+    aes(xintercept = tfidf_f1),
+    color = tfidf_color,
+    linetype = 'dashed',
+    linewidth = 0.6
   ) +
-  geom_errorbarh(
+  geom_errorbar(
+      orientation = 'y',
     aes(xmin = f1_mean - f1_std, xmax = f1_mean + f1_std),
-    height = 0.3,
+    width = 0.3,
     alpha = 0.9,
     linewidth = 0.5
   ) +
@@ -388,6 +348,7 @@ robustness_ablations %>%
     vjust = 0.5,
     size = 3,
     color = 'grey20',
+    family = font,
     show.legend = FALSE
   ) +
   facet_grid(tier ~ dataset) +
@@ -397,75 +358,60 @@ robustness_ablations %>%
   ) +
   labs(
     x = 'F1 Score',
-    y = 'Transformation'
+    y = 'Transformation',
+    caption = 'Dashed red line: TF-IDF (lexical control) F1 on Original'
   ) +
   coord_cartesian(clip = 'off') +
   theme_minimal_vgrid(font_family = font, font_size = 14) +
   theme(
-    strip.background = element_rect("grey80"),
+    strip.background = element_rect(fill = 'grey80', color = NA),
     panel.grid.minor = element_blank(),
-    plot.title.position = "plot",
+    plot.title.position = 'plot',
+    plot.caption.position = 'plot',
     legend.position = 'none',
     panel.background = element_rect(fill = 'white', color = NA),
     plot.background = element_rect(fill = 'white', color = NA)
   ) +
   panel_border()
 
-ggsave(
-  device = ragg::agg_png, # base png() device fails on the Roboto Condensed font
-  filename = file.path(figs_dir, 'llm_robustness.png'),
-  width = 8,
-  height = 6
-)
+save_fig('llm_robustness.png', width = 8, height = 6)
 
-# ---------------------------------------------------------------------------
-# Plots 3 & 4: Per-model LLM prompt comparison (standard vs token-fallback).
-# One figure per model family, faceted by dataset. Ablations on y-axis,
-# dodged points + error bars colored by prompt variant. Original shown as
-# reference line.
-# ---------------------------------------------------------------------------
+# Plot 4: Per-model LLM prompt comparison (standard vs token-fallback) ----------
+# v1 results. One row per model family, faceted by dataset. Ablations on the
+# y-axis, dodged points + error bars colored by prompt variant. Original
+# (standard prompt) is the solid reference line; TF-IDF is dashed.
 
-cv_raw <- read_csv(file.path(results_dir, 'cv_results.csv'))
-
-# Map raw method names to model family + prompt variant
 llm_lookup <- tribble(
-  ~method                         , ~model         , ~prompt    ,
-  'llm'                           , 'GPT-4o-mini'  , 'Standard' ,
-  'llm_gpt4o_mini_token_fallback' , 'GPT-4o-mini'  , 'Token-Fallback'  ,
-  'llm_haiku'                     , 'Claude Haiku' , 'Standard' ,
-  'llm_haiku_token_fallback'      , 'Claude Haiku' , 'Token-Fallback'  ,
+  ~method                         , ~model              , ~prompt          ,
+  'llm'                           , 'GPT-4o-mini (v1)'  , 'Standard'       ,
+  'llm_gpt4o_mini_token_fallback' , 'GPT-4o-mini (v1)'  , 'Token-Fallback' ,
+  'llm_haiku'                     , 'Claude Haiku (v1)' , 'Standard'       ,
+  'llm_haiku_token_fallback'      , 'Claude Haiku (v1)' , 'Token-Fallback' ,
 )
 
-cv_llm <- cv_raw %>%
-  inner_join(llm_lookup, by = 'method') %>%
+cv_llm <- cv_raw |>
+  inner_join(llm_lookup, by = 'method') |>
+  filter(transformation %in% v1_conditions) |>
   mutate(
-    dataset = str_replace_all(dataset, "-", " ") %>% str_to_title(),
-    transformation = str_replace_all(transformation, "_", " ") %>%
+    dataset = str_replace_all(dataset, "-", " ") |> str_to_title(),
+    transformation = str_replace_all(transformation, "_", " ") |>
       str_to_title(),
-    transformation = factor(
-      transformation,
-      levels = c('Scrambled', 'Ciphered Words', 'Ciphered Letters', 'Original')
-    ),
     prompt = factor(prompt, levels = c('Standard', 'Token-Fallback'))
   )
 
-llm_baseline <- cv_llm %>%
-  filter(transformation == 'Original', prompt == 'Standard') %>%
+llm_baseline <- cv_llm |>
+  filter(transformation == 'Original', prompt == 'Standard') |>
   select(model, dataset, f1_baseline = f1_mean, sd_baseline = f1_std)
 
-llm_ablations <- cv_llm %>%
-  filter(transformation != 'Original') %>%
-  mutate(transformation = fct_drop(transformation)) %>%
-  left_join(
-    llm_baseline %>% select(model, dataset, f1_baseline),
-    by = c('model', 'dataset')
-  ) %>%
+llm_ablations <- cv_llm |>
+  filter(transformation != 'Original') |>
+  mutate(transformation = factor(transformation, levels = ablation_levels)) |>
+  left_join(llm_baseline, by = c('model', 'dataset')) |>
   mutate(
     pct_label = sprintf('%+.0f%%', (f1_mean - f1_baseline) / f1_baseline * 100)
-  ) %>%
-  arrange(model, dataset, prompt, transformation)
+  )
 
-llm_ablations %>%
+llm_ablations |>
   ggplot(aes(x = f1_mean, y = transformation, color = prompt)) +
   geom_rect(
     data = llm_baseline,
@@ -479,13 +425,18 @@ llm_ablations %>%
     fill = 'grey70',
     alpha = 0.35
   ) +
+  geom_vline(data = llm_baseline, aes(xintercept = f1_baseline)) +
   geom_vline(
-    data = llm_baseline,
-    aes(xintercept = f1_baseline)
+    data = tfidf_ref,
+    aes(xintercept = tfidf_f1),
+    color = tfidf_color,
+    linetype = 'dashed',
+    linewidth = 0.6
   ) +
-  geom_errorbarh(
+  geom_errorbar(
+      orientation = 'y',
     aes(xmin = f1_mean - f1_std, xmax = f1_mean + f1_std),
-    height = 0.3,
+    width = 0.3,
     alpha = 0.9,
     linewidth = 0.5,
     position = position_dodge(width = 0.5)
@@ -497,6 +448,7 @@ llm_ablations %>%
     vjust = 0.5,
     size = 2.8,
     color = 'grey20',
+    family = font,
     show.legend = FALSE,
     position = position_dodge(width = 0.5)
   ) +
@@ -506,28 +458,25 @@ llm_ablations %>%
     expand = expansion(add = c(0.14, 0.02))
   ) +
   scale_color_manual(
-    values = c('Standard' = '#2166ac', 'Token-Fallback' = '#b2182b')
+    values = c('Standard' = '#2166ac', 'Token-Fallback' = '#E37D39FF')
   ) +
   labs(
     x = 'F1 Score',
     y = 'Transformation',
-    color = 'Prompt'
+    color = 'Prompt',
+    caption = 'Dashed red line: TF-IDF (lexical control) F1 on Original'
   ) +
   coord_cartesian(clip = 'off') +
   theme_minimal_vgrid(font_family = font, font_size = 14) +
   theme(
-    strip.background = element_rect("grey80"),
+    strip.background = element_rect(fill = 'grey80', color = NA),
     panel.grid.minor = element_blank(),
-    plot.title.position = "plot",
+    plot.title.position = 'plot',
+    plot.caption.position = 'plot',
     legend.position = 'bottom',
     panel.background = element_rect(fill = 'white', color = NA),
     plot.background = element_rect(fill = 'white', color = NA)
   ) +
   panel_border()
 
-ggsave(
-  device = ragg::agg_png, # base png() device fails on the Roboto Condensed font
-  filename = file.path(figs_dir, 'llm_prompt_comparison.png'),
-  width = 8,
-  height = 6
-)
+save_fig('llm_prompt_comparison.png', width = 8, height = 6)
