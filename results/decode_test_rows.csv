@@ -1,0 +1,771 @@
+dataset,transformation,model,batch,id,status,stop_reason,orig,transformed,decoded,n_changed,n_recovered,cost_usd,raw_response
+abt-buy,ciphered_letters,gpt6luna,1,32889,ok,completed,Pioneer Sirius Bus Interface - CDSB10,Npxottr Yprpvy Mvy Poetrgqjt - JZYM10,[unrecoverable from the altered text],5,0,0.0004858299999999999,"{""decoded"":[""[unrecoverable from the altered text]"",""[unrecoverable from the altered text]"",""[unrecoverable from the altered text]"",""[unrecoverable from the altered text]"",""[unrecoverable from the altered text]"",""[unrecoverable from the altered text]"",""[unrecoverable from the altered text]"",""Canon EF 70-300mm f/4-5.6 IS USM Telephoto Zoom Lens"",""[unrecoverable from the altered text]"",""[unrecoverable from the altered text]""]}"
+abt-buy,ciphered_letters,gpt6luna,1,33936,ok,completed,Panasonic Black 8.5' Portable DVD Player - DVDLS86,Nqoqyxopj Msqjl 8.5' Nxreqmst ZHZ Nsqdtr - ZHZSY86,[unrecoverable from the altered text],6,0,0.0004858299999999999,
+abt-buy,ciphered_letters,gpt6luna,1,35175,ok,completed,LG 24' LDS4821BB Semi Integrated Built In Black Dishwasher - LDS4821BK,SF 24' SZY4821MM Ytbp Poetfrqetz Mvpse Po Msqjl Zpykiqyktr - SZY4821ML,[unrecoverable from the altered text],11,0,0.0004858299999999999,
+abt-buy,ciphered_letters,gpt6luna,1,34126,ok,completed,Belkin Cush Top For Computer Laptop - F8N044SLV,Mtslpo Jvyk Exn Gxr Jxbnvetr Sqnexn - G8O044YSH,[unrecoverable from the altered text],9,0,0.0004858299999999999,
+abt-buy,ciphered_letters,gpt6luna,1,38773,ok,completed,Sony Black HD Radio With Dock For iPod And iPhone - XDRS10HDIP,Yxod Msqjl KZ Rqzpx Ipek Zxjl Gxr pNxz Qoz pNkxot - AZRY10KZPN,[unrecoverable from the altered text],12,0,0.0004858299999999999,
+abt-buy,ciphered_letters,gpt6luna,1,34301,ok,completed,LaCie 1TB USB 2.0 External Hard Drive - 301304U,SqJpt 1EM VYM 2.0 Taetroqs Kqrz Zrpht - 301304V,[unrecoverable from the altered text],7,0,0.0004858299999999999,
+abt-buy,ciphered_letters,gpt6luna,1,38096,ok,completed,Toshiba 22' Black LCD HDTV - 22AV500U,Exykpmq 22' Msqjl SJZ KZEH - 22QH500V,[unrecoverable from the altered text],6,0,0.0004858299999999999,
+abt-buy,ciphered_letters,gpt6luna,1,38106,ok,completed,Canon Black EF 70-300mm F/4-5.6 IS USM Telephoto Zoom Lens - 0345B002,Jqoxo Msqjl TG 70-300bb G/4-5.6 PY VYB Etstnkxex Uxxb Stoy - 0345M002,Canon EF 70-300mm f/4-5.6 IS USM Telephoto Zoom Lens,11,9,0.0004858299999999999,
+abt-buy,ciphered_letters,gpt6luna,1,38957,ok,completed,Lasonic ATSC Digital To Analog TV Converter Box - LTA260,Sqyxopj QEYJ Zpfpeqs Ex Qoqsxf EH Jxohtretr Mxa - SEQ260,[unrecoverable from the altered text],9,0,0.0004858299999999999,
+abt-buy,ciphered_letters,gpt6luna,1,37211,ok,completed,Apple 1GB Pink 2nd Generation iPod Shuffle - MB811LLA,Qnnst 1FM Npol 2oz Ftotrqepxo pNxz Ykvggst - BM811SSQ,[unrecoverable from the altered text],9,0,0.0004858299999999999,
+abt-buy,ciphered_letters,gpt6luna,2,38735,ok,completed,Logitech diNovo Edge Keyboard Windows Edition - 967685,Sxfpetjk zpOxhx Tzft Ltdmxqrz Ipozxiy Tzpepxo - 967685,[Unclear: product title] - 967685,6,0,0.0006224900000000001,"{""decoded"":[""[Unclear: product title] - 967685"",""[Unclear] 32' [possibly “Black”] [unclear] [unclear] 4 [unclear] [unclear] - SO32Q450"",""[Unclear] [unclear] [possibly “Black”] [unclear] - 7550"",""[Unclear] 5 [unclear] [unclear] [unclear] - [possibly “Black”] [unclear] - ZJB390"",""[Unclear: product title] - INYB54F"",""[Unclear] 9' [unclear] [unclear] [unclear] [unclear] [possibly “Black”] - ZNGH900"",""[Unclear: product title; “All-Terrain” is a possible reading] - LAEY620M"",""[Possibly “Yard”] [unclear] [possibly “Black”] [unclear] [unclear] - ZYJK10M"",""[Unclear] 16FM [possibly “Black”] 2oz [unclear] - BM531SSQ"",""[Unclear] 5.25' [unclear] [unclear] [unclear] [unclear] - LY7502EKA""]}"
+abt-buy,ciphered_letters,gpt6luna,2,34092,ok,completed,Samsung 32' Black Flat Panel Series 4 LCD HDTV - LN32A450,Yqbyvof 32' Msqjl Gsqe Nqots Ytrpty 4 SJZ KZEH - SO32Q450,[Unclear] 32' [possibly “Black”] [unclear] [unclear] 4 [unclear] [unclear] - SO32Q450,9,1,0.0006224900000000001,
+abt-buy,ciphered_letters,gpt6luna,2,34476,ok,completed,Weber Premium Black Grill Cover - 7550,Itmtr Nrtbpvb Msqjl Frpss Jxhtr - 7550,[Unclear] [unclear] [possibly “Black”] [unclear] - 7550,5,1,0.0006224900000000001,
+abt-buy,ciphered_letters,gpt6luna,2,25136,ok,completed,Denon 5 Disc CD Player - Black Finish - DCM390,Ztoxo 5 Zpyj JZ Nsqdtr - Msqjl Gpopyk - ZJB390,[Unclear] 5 [unclear] [unclear] [unclear] - [possibly “Black”] [unclear] - ZJB390,7,1,0.0006224900000000001,
+abt-buy,ciphered_letters,gpt6luna,2,31881,ok,completed,Linksys Wireless-G PrintServer - WPSM54G,Spolydy Iprtstyy-F NrpoeYtrhtr - INYB54F,[Unclear: product title] - INYB54F,6,0,0.0006224900000000001,
+abt-buy,ciphered_letters,gpt6luna,2,33220,ok,completed,Sony 9' Digital Photo Frame In Black - DPFV900,Yxod 9' Zpfpeqs Nkxex Grqbt Po Msqjl - ZNGH900,[Unclear] 9' [unclear] [unclear] [unclear] [unclear] [possibly “Black”] - ZNGH900,7,1,0.0006224900000000001,
+abt-buy,ciphered_letters,gpt6luna,2,30602,ok,completed,Panasonic Integrated Black Telephone System With All-Digital Answering System - KXTS620B,Nqoqyxopj Poetfrqetz Msqjl Etstnkxot Ydyetb Ipek Qss-Zpfpeqs Qoyitrpof Ydyetb - LAEY620M,[Unclear: product title; “All-Terrain” is a possible reading] - LAEY620M,12,1,0.0006224900000000001,
+abt-buy,ciphered_letters,gpt6luna,2,33562,ok,completed,Sony Cyber-Shot Black Digital Camera - DSCH10B,Yxod Jdmtr-Ykxe Msqjl Zpfpeqs Jqbtrq - ZYJK10M,[Possibly “Yard”] [unclear] [possibly “Black”] [unclear] [unclear] - ZYJK10M,8,1,0.0006224900000000001,
+abt-buy,ciphered_letters,gpt6luna,2,37182,ok,completed,Apple 16GB Black 2nd Generation iPod Touch - MB531LLA,Qnnst 16FM Msqjl 2oz Ftotrqepxo pNxz Exvjk - BM531SSQ,[Unclear] 16FM [possibly “Black”] 2oz [unclear] - BM531SSQ,9,1,0.0006224900000000001,
+abt-buy,ciphered_letters,gpt6luna,2,37039,ok,completed,Klipsch 5.25' THX Ultra2 In-Ceiling White Loudspeaker - KS7502THX,Lspnyjk 5.25' EKA Vserq2 Po-Jtpspof Ikpet Sxvzyntqltr - LY7502EKA,[Unclear] 5.25' [unclear] [unclear] [unclear] [unclear] - LY7502EKA,9,0,0.0006224900000000001,
+abt-buy,ciphered_letters,gpt6luna,3,17187,ok,completed,Universal IR/RF Remote - MX350,Vophtryqs PR/RG Rtbxet - BA350,[Unclear brand] SD/HC reader - BA350,5,0,0.00030358,"{""decoded"":[""[Unclear brand] SD/HC reader - BA350"",""[Unclear] [unclear] [unclear] wireless [unclear] - BB4000OTE1"",""[Unclear] NPABQ BA850 [unclear] [unclear] - BA850J"",""SF ZSTA8377IB [unclear] AS [unclear] [unclear] [unclear] - ZSTA8377IK"",""[Unclear] ZHN-GA820 [unclear] 8' [unclear] ZHZ [unclear] - ZHNGA820"",""[Unclear] [unclear] [unclear] [unclear] [unclear] - YZ880PY"",""[Unclear brand] 8GB DDR4 [unclear] [unclear] [unclear] [unclear] [unclear] - EY8FYZKJ6Y5I"",""[Unclear brand] 4GB [unclear] [unclear] [unclear] (DDR4) [unclear] 6 [unclear] [unclear] - EY4FYZKJ6"",""[Unclear brand] 8GB [unclear] [unclear] [unclear] [unclear] - EY8FVYZKJ6"",""[Unclear] [unclear] GB [unclear] - 4052ERNYTM""]}"
+abt-buy,ciphered_letters,gpt6luna,3,18441,ok,completed,Mosquito Magnet Defender Replacement Net - MM4000NET1,Bxycvpex Bqfote Ztgtoztr Rtnsqjtbtoe Ote - BB4000OTE1,[Unclear] [unclear] [unclear] wireless [unclear] - BB4000OTE1,7,0,0.00030358,
+abt-buy,ciphered_letters,gpt6luna,3,33493,ok,completed,Canon PIXMA MX850 Multifunction Printer - MX850C,Jqoxo NPABQ BA850 Bvsepgvojepxo Nrpoetr - BA850J,[Unclear] NPABQ BA850 [unclear] [unclear] - BA850J,7,0,0.00030358,
+abt-buy,ciphered_letters,gpt6luna,3,32280,ok,completed,LG DLEX8377WM White XL Capacity Electric SteamDryer - DLEX8377WH,SF ZSTA8377IB Ikpet AS Jqnqjped Tstjerpj YetqbZrdtr - ZSTA8377IK,SF ZSTA8377IB [unclear] AS [unclear] [unclear] [unclear] - ZSTA8377IK,10,0,0.00030358,
+abt-buy,ciphered_letters,gpt6luna,3,33758,ok,completed,Sony DVP-FX820 Black 8' Portable DVD Player - DVPFX820,Yxod ZHN-GA820 Msqjl 8' Nxreqmst ZHZ Nsqdtr - ZHNGA820,[Unclear] ZHN-GA820 [unclear] 8' [unclear] ZHZ [unclear] - ZHNGA820,8,0,0.00030358,
+abt-buy,ciphered_letters,gpt6luna,3,37964,ok,completed,Canon Silver PowerShot Digital Camera - SD880IS,Jqoxo Ypshtr NxitrYkxe Zpfpeqs Jqbtrq - YZ880PY,[Unclear] [unclear] [unclear] [unclear] [unclear] - YZ880PY,7,0,0.00030358,
+abt-buy,ciphered_letters,gpt6luna,3,36345,ok,completed,Transcend 8GB SDHC Card And Compact Card Reader - TS8GSDHC6S5W,Erqoyjtoz 8FM YZKJ Jqrz Qoz Jxbnqje Jqrz Rtqztr - EY8FYZKJ6Y5I,[Unclear brand] 8GB DDR4 [unclear] [unclear] [unclear] [unclear] [unclear] - EY8FYZKJ6Y5I,12,1,0.00030358,
+abt-buy,ciphered_letters,gpt6luna,3,31992,ok,completed,Transcend 4GB Secure Digital High-Capacity (SDHC) Class 6 Memory Card - TS4GSDHC6,Erqoyjtoz 4FM Ytjvrt Zpfpeqs Kpfk-Jqnqjped (YZKJ) Jsqyy 6 Btbxrd Jqrz - EY4FYZKJ6,[Unclear brand] 4GB [unclear] [unclear] [unclear] (DDR4) [unclear] 6 [unclear] [unclear] - EY4FYZKJ6,12,1,0.00030358,
+abt-buy,ciphered_letters,gpt6luna,3,38483,ok,completed,Transcend 8GB Micro Secure Digital Memory Card - TS8GUSDHC6,Erqoyjtoz 8FM Bpjrx Ytjvrt Zpfpeqs Btbxrd Jqrz - EY8FVYZKJ6,[Unclear brand] 8GB [unclear] [unclear] [unclear] [unclear] - EY8FVYZKJ6,9,1,0.00030358,
+abt-buy,ciphered_letters,gpt6luna,3,35477,ok,completed,Griffin iTrip FM Transmitter - 4052TRPSEB,Frpggpo pErpn GB Erqoybpeetr - 4052ERNYTM,[Unclear] [unclear] GB [unclear] - 4052ERNYTM,5,0,0.00030358,
+abt-buy,ciphered_letters,haiku55,1,32889,ok,end_turn,Pioneer Sirius Bus Interface - CDSB10,Npxottr Yprpvy Mvy Poetrgqjt - JZYM10,Monitor Display For Projector - JZYM10,5,0,0.00021631000000000002,"```json
+{""decoded"": [
+""Monitor Display For Projector - JZYM10"",
+""Projector 8.5' Screen Mount - ZHZSY86"",
+""HD 24' Cable Video Adapter For Camera Accessories - SZY4821ML"",
+""Digital Lens Filter Kit For Camera - G8O044YSH"",
+""Hard Case Bag For Camera Lens Accessories - AZRY10KZPN"",
+""Dual USB Power Adapter Charger - 301304V"",
+""Wireless 22' Camera Mount - 22QH500V"",
+""Digital Camera Lens 70-300mm F/4-5.6 For Canon Nikon Sony - 0345M002"",
+""Wireless Charger Pad For Smartphone Tablet - SEQ260"",
+""Power Cable 1FM Bond 2oz Protector Adapter - BM811SSQ""
+]}
+```
+
+I could not reliably recover most of these. The cipher does not appear to be a simple Caesar shift or a consistent letter-for-letter substitution, so these are best guesses based on typical product-listing wording. Only a few lines (such as line 1's ""Projector"" and the common ""Camera"" and ""Lens"" terms) are supported by partial matches. The product codes at the end of each line were not decoded and are mostly copied as-is."
+abt-buy,ciphered_letters,haiku55,1,33936,ok,end_turn,Panasonic Black 8.5' Portable DVD Player - DVDLS86,Nqoqyxopj Msqjl 8.5' Nxreqmst ZHZ Nsqdtr - ZHZSY86,Projector 8.5' Screen Mount - ZHZSY86,6,0,0.00021631000000000002,
+abt-buy,ciphered_letters,haiku55,1,35175,ok,end_turn,LG 24' LDS4821BB Semi Integrated Built In Black Dishwasher - LDS4821BK,SF 24' SZY4821MM Ytbp Poetfrqetz Mvpse Po Msqjl Zpykiqyktr - SZY4821ML,HD 24' Cable Video Adapter For Camera Accessories - SZY4821ML,11,0,0.00021631000000000002,
+abt-buy,ciphered_letters,haiku55,1,34126,ok,end_turn,Belkin Cush Top For Computer Laptop - F8N044SLV,Mtslpo Jvyk Exn Gxr Jxbnvetr Sqnexn - G8O044YSH,Digital Lens Filter Kit For Camera - G8O044YSH,9,1,0.00021631000000000002,
+abt-buy,ciphered_letters,haiku55,1,38773,ok,end_turn,Sony Black HD Radio With Dock For iPod And iPhone - XDRS10HDIP,Yxod Msqjl KZ Rqzpx Ipek Zxjl Gxr pNxz Qoz pNkxot - AZRY10KZPN,Hard Case Bag For Camera Lens Accessories - AZRY10KZPN,12,1,0.00021631000000000002,
+abt-buy,ciphered_letters,haiku55,1,34301,ok,end_turn,LaCie 1TB USB 2.0 External Hard Drive - 301304U,SqJpt 1EM VYM 2.0 Taetroqs Kqrz Zrpht - 301304V,Dual USB Power Adapter Charger - 301304V,7,1,0.00021631000000000002,
+abt-buy,ciphered_letters,haiku55,1,38096,ok,end_turn,Toshiba 22' Black LCD HDTV - 22AV500U,Exykpmq 22' Msqjl SJZ KZEH - 22QH500V,Wireless 22' Camera Mount - 22QH500V,6,0,0.00021631000000000002,
+abt-buy,ciphered_letters,haiku55,1,38106,ok,end_turn,Canon Black EF 70-300mm F/4-5.6 IS USM Telephoto Zoom Lens - 0345B002,Jqoxo Msqjl TG 70-300bb G/4-5.6 PY VYB Etstnkxex Uxxb Stoy - 0345M002,Digital Camera Lens 70-300mm F/4-5.6 For Canon Nikon Sony - 0345M002,11,4,0.00021631000000000002,
+abt-buy,ciphered_letters,haiku55,1,38957,ok,end_turn,Lasonic ATSC Digital To Analog TV Converter Box - LTA260,Sqyxopj QEYJ Zpfpeqs Ex Qoqsxf EH Jxohtretr Mxa - SEQ260,Wireless Charger Pad For Smartphone Tablet - SEQ260,9,0,0.00021631000000000002,
+abt-buy,ciphered_letters,haiku55,1,37211,ok,end_turn,Apple 1GB Pink 2nd Generation iPod Shuffle - MB811LLA,Qnnst 1FM Npol 2oz Ftotrqepxo pNxz Ykvggst - BM811SSQ,Power Cable 1FM Bond 2oz Protector Adapter - BM811SSQ,9,0,0.00021631000000000002,
+abt-buy,ciphered_letters,haiku55,2,38735,ok,end_turn,Logitech diNovo Edge Keyboard Windows Edition - 967685,Sxfpetjk zpOxhx Tzft Ltdmxqrz Ipozxiy Tzpepxo - 967685,Stainless Steel Kitchen Faucet Commercial Sink Sprayer - 967685,6,0,0.0001743,"```json
+{""decoded"": [
+""Stainless Steel Kitchen Faucet Commercial Sink Sprayer - 967685"",
+""Sanding 32' Black Flat Paint 4 GAL CAN - SO32Q450"",
+""Water Cabinet Black Glass Mirror Shelf - 7550"",
+""Motor 5 Cable AC Adapter - Black Plastic - ZJB390"",
+""Stainless-Steel Kitchen Sprayer - INYB54F"",
+""Pure 9' Ceramic White Light Bulb in Black - ZNGH900"",
+""Premium Professional Black Stainless Steel Kitchen Faucet Single Handle Pull-Down Sprayer - LAEY620M"",
+""Outdoor Multi-Stage Black Ceramic Kitchen Faucet - ZYJK10M"",
+""Panel 16FM Black 2oz Round Glass Bottle - BM531SSQ"",
+""Replace 5.25' DVD RW Wall-Mount Black Cable Adapter - LY7502EKA""
+]}
+```
+
+I could not fully decode every line. The text appears to use a letter-by-letter substitution, and I only mapped a few letters reliably (for example, ""Black"", ""Flat"", and ""Panel"" are consistent). The rest are plausible reconstructions from the product-listing style and partial letter patterns, so treat them as approximate, especially lines 1, 3, 4, 6, 7, 8, 9 and 10. The model numbers and numeric codes are copied through as they appear."
+abt-buy,ciphered_letters,haiku55,2,34092,ok,end_turn,Samsung 32' Black Flat Panel Series 4 LCD HDTV - LN32A450,Yqbyvof 32' Msqjl Gsqe Nqots Ytrpty 4 SJZ KZEH - SO32Q450,Sanding 32' Black Flat Paint 4 GAL CAN - SO32Q450,9,2,0.0001743,
+abt-buy,ciphered_letters,haiku55,2,34476,ok,end_turn,Weber Premium Black Grill Cover - 7550,Itmtr Nrtbpvb Msqjl Frpss Jxhtr - 7550,Water Cabinet Black Glass Mirror Shelf - 7550,5,1,0.0001743,
+abt-buy,ciphered_letters,haiku55,2,25136,ok,end_turn,Denon 5 Disc CD Player - Black Finish - DCM390,Ztoxo 5 Zpyj JZ Nsqdtr - Msqjl Gpopyk - ZJB390,Motor 5 Cable AC Adapter - Black Plastic - ZJB390,7,1,0.0001743,
+abt-buy,ciphered_letters,haiku55,2,31881,ok,end_turn,Linksys Wireless-G PrintServer - WPSM54G,Spolydy Iprtstyy-F NrpoeYtrhtr - INYB54F,Stainless-Steel Kitchen Sprayer - INYB54F,6,0,0.0001743,
+abt-buy,ciphered_letters,haiku55,2,33220,ok,end_turn,Sony 9' Digital Photo Frame In Black - DPFV900,Yxod 9' Zpfpeqs Nkxex Grqbt Po Msqjl - ZNGH900,Pure 9' Ceramic White Light Bulb in Black - ZNGH900,7,2,0.0001743,
+abt-buy,ciphered_letters,haiku55,2,30602,ok,end_turn,Panasonic Integrated Black Telephone System With All-Digital Answering System - KXTS620B,Nqoqyxopj Poetfrqetz Msqjl Etstnkxot Ydyetb Ipek Qss-Zpfpeqs Qoyitrpof Ydyetb - LAEY620M,Premium Professional Black Stainless Steel Kitchen Faucet Single Handle Pull-Down Sprayer - LAEY620M,12,1,0.0001743,
+abt-buy,ciphered_letters,haiku55,2,33562,ok,end_turn,Sony Cyber-Shot Black Digital Camera - DSCH10B,Yxod Jdmtr-Ykxe Msqjl Zpfpeqs Jqbtrq - ZYJK10M,Outdoor Multi-Stage Black Ceramic Kitchen Faucet - ZYJK10M,8,1,0.0001743,
+abt-buy,ciphered_letters,haiku55,2,37182,ok,end_turn,Apple 16GB Black 2nd Generation iPod Touch - MB531LLA,Qnnst 16FM Msqjl 2oz Ftotrqepxo pNxz Exvjk - BM531SSQ,Panel 16FM Black 2oz Round Glass Bottle - BM531SSQ,9,1,0.0001743,
+abt-buy,ciphered_letters,haiku55,2,37039,ok,end_turn,Klipsch 5.25' THX Ultra2 In-Ceiling White Loudspeaker - KS7502THX,Lspnyjk 5.25' EKA Vserq2 Po-Jtpspof Ikpet Sxvzyntqltr - LY7502EKA,Replace 5.25' DVD RW Wall-Mount Black Cable Adapter - LY7502EKA,9,0,0.0001743,
+abt-buy,ciphered_letters,haiku55,3,17187,ok,end_turn,Universal IR/RF Remote - MX350,Vophtryqs PR/RG Rtbxet - BA350,Universal PR/RG Remote - BA350,5,2,0.00079777,"```json
+{""decoded"": [
+""Universal PR/RG Remote - BA350"",
+""Mosquito Defender Replacement Net - BB4000OTE1"",
+""Canon NPABQ BA850 Multifunction Printer - BA850J"",
+""SF ZSTA8377IB White AS Capacity Electric Steam Dryer - ZSTA8377IK"",
+""Sony ZHN-GA820 Black 8' Portable ZHZ Player - ZHNGA820"",
+""Canon Silver PowerShot Digital Camera - YZ880PY"",
+""Transcend 8GB SDHC Card And Compact Card Reader"",
+""Transcend 4GB Secure Digital High-Capacity (SDHC) Class 6 Memory Card"",
+""Transcend 8GB Micro Secure Digital Memory Card"",
+""Fringing Tirin GB Transmitter - 4052ERNYTM""
+]}
+```
+
+Several lines were recovered by working out a consistent letter substitution (for example, ""Erqoyjtoz"" is ""Transcend"" and ""Jqnqjped"" is ""Capacity""). Lines 2, 4, 5 and 10 are less certain: line 10's first two words in particular did not resolve cleanly, so that line is a best guess."
+abt-buy,ciphered_letters,haiku55,3,18441,ok,end_turn,Mosquito Magnet Defender Replacement Net - MM4000NET1,Bxycvpex Bqfote Ztgtoztr Rtnsqjtbtoe Ote - BB4000OTE1,Mosquito Defender Replacement Net - BB4000OTE1,7,4,0.00079777,
+abt-buy,ciphered_letters,haiku55,3,33493,ok,end_turn,Canon PIXMA MX850 Multifunction Printer - MX850C,Jqoxo NPABQ BA850 Bvsepgvojepxo Nrpoetr - BA850J,Canon NPABQ BA850 Multifunction Printer - BA850J,7,3,0.00079777,
+abt-buy,ciphered_letters,haiku55,3,32280,ok,end_turn,LG DLEX8377WM White XL Capacity Electric SteamDryer - DLEX8377WH,SF ZSTA8377IB Ikpet AS Jqnqjped Tstjerpj YetqbZrdtr - ZSTA8377IK,SF ZSTA8377IB White AS Capacity Electric Steam Dryer - ZSTA8377IK,10,3,0.00079777,
+abt-buy,ciphered_letters,haiku55,3,33758,ok,end_turn,Sony DVP-FX820 Black 8' Portable DVD Player - DVPFX820,Yxod ZHN-GA820 Msqjl 8' Nxreqmst ZHZ Nsqdtr - ZHNGA820,Sony ZHN-GA820 Black 8' Portable ZHZ Player - ZHNGA820,8,4,0.00079777,
+abt-buy,ciphered_letters,haiku55,3,37964,ok,end_turn,Canon Silver PowerShot Digital Camera - SD880IS,Jqoxo Ypshtr NxitrYkxe Zpfpeqs Jqbtrq - YZ880PY,Canon Silver PowerShot Digital Camera - YZ880PY,7,5,0.00079777,
+abt-buy,ciphered_letters,haiku55,3,36345,ok,end_turn,Transcend 8GB SDHC Card And Compact Card Reader - TS8GSDHC6S5W,Erqoyjtoz 8FM YZKJ Jqrz Qoz Jxbnqje Jqrz Rtqztr - EY8FYZKJ6Y5I,Transcend 8GB SDHC Card And Compact Card Reader,12,8,0.00079777,
+abt-buy,ciphered_letters,haiku55,3,31992,ok,end_turn,Transcend 4GB Secure Digital High-Capacity (SDHC) Class 6 Memory Card - TS4GSDHC6,Erqoyjtoz 4FM Ytjvrt Zpfpeqs Kpfk-Jqnqjped (YZKJ) Jsqyy 6 Btbxrd Jqrz - EY4FYZKJ6,Transcend 4GB Secure Digital High-Capacity (SDHC) Class 6 Memory Card,12,10,0.00079777,
+abt-buy,ciphered_letters,haiku55,3,38483,ok,end_turn,Transcend 8GB Micro Secure Digital Memory Card - TS8GUSDHC6,Erqoyjtoz 8FM Bpjrx Ytjvrt Zpfpeqs Btbxrd Jqrz - EY8FVYZKJ6,Transcend 8GB Micro Secure Digital Memory Card,9,7,0.00079777,
+abt-buy,ciphered_letters,haiku55,3,35477,ok,end_turn,Griffin iTrip FM Transmitter - 4052TRPSEB,Frpggpo pErpn GB Erqoybpeetr - 4052ERNYTM,Fringing Tirin GB Transmitter - 4052ERNYTM,5,1,0.00079777,
+abt-buy,ciphered_letters,sonnet55,1,32889,ok,end_turn,Pioneer Sirius Bus Interface - CDSB10,Npxottr Yprpvy Mvy Poetrgqjt - JZYM10,Pioneer Sirius Car Interface - JZYM10,5,3,0.0017142000000000001,"These look like substitution-cipher-garbled product titles, so I decoded them by guessing the products and checking letter mappings.
+
+Mapping clues: ""Msqjl"" = Black, ""Qnnst"" = Apple, ""Npol"" = Pink. ""Sqyxopj"" = Lasering?
+
+Working through line 1: ""Npxottr Yprpvy Mvy Poetrgqjt - JZYM10"" → ""Phone ..."" doesn't fit; the letters give N=P, p=o, x=h, o=n, t=e, t=e, r=r, so ""Npxottr"" = ""Pohnerr""? That doesn't work. Try instead x=o, p=i. Then ""Npxottr"" would be ""Pioneer"" with N=P, p=i, x=o, o=n, t=e, e=e, r=r. So the first word is Pioneer. ""Yprpvy"" = Sirius, with Y=S, p=i, r=r, v=u. ""Mvy"" = Cub? That's not it. Taking ""Mvy"" as ""Car"" fails because it has v=u. ""Mvy"" = ""Cus""? Perhaps ""Subwoofer""? Better to read it as ""Pioneer Sirius Cut Interface""? I'll go with ""Pioneer Sirius Car Interface"" as the best guess, though it may be wrong.
+
+Line 2: ""Nqoqyxopj Msqjl 8.5' Nxreqmst ZHZ Nsqdtr"" → ""Panasonic Black 8.5' Portable DVD Player"", with N=P, q=a, o=n, y=s, x=o, p=i, j=k? Here ""Msqjl"" = Black, so j=c and l=k, and ""Nqoqyxopj"" = Panasonic.
+
+Line 3: ""SF 24' SZY4821MM Ytbp Poetfrqetz Mvpse Po Msqjl Zpykiqyktr"" → ""LG 24' LDS4821BB Sexy Integrated Child In Black Dispenser"", which is a loose guess. Better is ""LG 24' LDS4821BB Semi Integrated Dishwasher In Black Stainless"" (""Zpykiqyktr"" = Dishwasher).
+
+Line 4: ""Mtslpo Jvyk Exn Gxr Jxbnvetr Sqnexn"" → ""Belkin Dusk Top For Computer Laptop"".
+
+Line 5: ""Yxod Msqjl KZ Rqzpx Ipek Zxjl Gxr pNxz Qoz pNkxot"" → ""Sony Black CD Radio With Dock For iPod And iPhone"".
+
+Line 6: ""SqJpt 1EM VYM 2.0 Taetroqs Kqrz Zrpht"" → ""SanDisk 1TB USB 2.0 External Hard Drive"" fits better as ""LaCie 1TB USB 2.0 External Hard Drive"".
+
+Line 7: ""Exykpmq 22' Msqjl SJZ KZEH"" → ""Toshiba 22' Black LED CDTV"".
+
+Line 8: ""Jqoxo Msqjl TG 70-300bb G/4-5.6 PY VYB Etstnkxex Uxxb Stoy"" → ""Canon Black EF 70-300mm f/4-5.6 IS USM Telephoto Zoom Lens"".
+
+Line 9: ""Sqyxopj QEYJ Zpfpeqs Ex Qoqsxf EH Jxohtretr Mxa"" → ""Lasonic ..."" is unclear; I'll read it as ""Lasonic ATSC Digital To Analog TV Converter Box"".
+
+Line 10: ""Qnnst 1FM Npol 2oz Ftotrqepxo pNxz Ykvggst"" → ""Apple 1GB Pink 2nd Generation iPod Shuffle"".
+
+{""decoded"": [""Pioneer Sirius Car Interface - JZYM10"", ""Panasonic Black 8.5' Portable DVD Player - ZHZSY86"", ""LG 24' LDS4821BB Semi Integrated Dishwasher In Black Stainless - SZY4821ML"", ""Belkin Dusk Top For Computer Laptop - G8O044YSH"", ""Sony Black CD Radio With Dock For iPod And iPhone - AZRY10KZPN"", ""LaCie 1TB USB 2.0 External Hard Drive - 301304V"", ""Toshiba 22' Black LED CDTV - 22QH500V"", ""Canon Black EF 70-300mm f/4-5.6 IS USM Telephoto Zoom Lens - 0345M002"", ""Lasonic ATSC Digital To Analog TV Converter Box - SEQ260"", ""Apple 1GB Pink 2nd Generation iPod Shuffle - BM811SSQ""]}"
+abt-buy,ciphered_letters,sonnet55,1,33936,ok,end_turn,Panasonic Black 8.5' Portable DVD Player - DVDLS86,Nqoqyxopj Msqjl 8.5' Nxreqmst ZHZ Nsqdtr - ZHZSY86,Panasonic Black 8.5' Portable DVD Player - ZHZSY86,6,5,0.0017142000000000001,
+abt-buy,ciphered_letters,sonnet55,1,35175,ok,end_turn,LG 24' LDS4821BB Semi Integrated Built In Black Dishwasher - LDS4821BK,SF 24' SZY4821MM Ytbp Poetfrqetz Mvpse Po Msqjl Zpykiqyktr - SZY4821ML,LG 24' LDS4821BB Semi Integrated Dishwasher In Black Stainless - SZY4821ML,11,8,0.0017142000000000001,
+abt-buy,ciphered_letters,sonnet55,1,34126,ok,end_turn,Belkin Cush Top For Computer Laptop - F8N044SLV,Mtslpo Jvyk Exn Gxr Jxbnvetr Sqnexn - G8O044YSH,Belkin Dusk Top For Computer Laptop - G8O044YSH,9,5,0.0017142000000000001,
+abt-buy,ciphered_letters,sonnet55,1,38773,ok,end_turn,Sony Black HD Radio With Dock For iPod And iPhone - XDRS10HDIP,Yxod Msqjl KZ Rqzpx Ipek Zxjl Gxr pNxz Qoz pNkxot - AZRY10KZPN,Sony Black CD Radio With Dock For iPod And iPhone - AZRY10KZPN,12,9,0.0017142000000000001,
+abt-buy,ciphered_letters,sonnet55,1,34301,ok,end_turn,LaCie 1TB USB 2.0 External Hard Drive - 301304U,SqJpt 1EM VYM 2.0 Taetroqs Kqrz Zrpht - 301304V,LaCie 1TB USB 2.0 External Hard Drive - 301304V,7,6,0.0017142000000000001,
+abt-buy,ciphered_letters,sonnet55,1,38096,ok,end_turn,Toshiba 22' Black LCD HDTV - 22AV500U,Exykpmq 22' Msqjl SJZ KZEH - 22QH500V,Toshiba 22' Black LED CDTV - 22QH500V,6,2,0.0017142000000000001,
+abt-buy,ciphered_letters,sonnet55,1,38106,ok,end_turn,Canon Black EF 70-300mm F/4-5.6 IS USM Telephoto Zoom Lens - 0345B002,Jqoxo Msqjl TG 70-300bb G/4-5.6 PY VYB Etstnkxex Uxxb Stoy - 0345M002,Canon Black EF 70-300mm f/4-5.6 IS USM Telephoto Zoom Lens - 0345M002,11,10,0.0017142000000000001,
+abt-buy,ciphered_letters,sonnet55,1,38957,ok,end_turn,Lasonic ATSC Digital To Analog TV Converter Box - LTA260,Sqyxopj QEYJ Zpfpeqs Ex Qoqsxf EH Jxohtretr Mxa - SEQ260,Lasonic ATSC Digital To Analog TV Converter Box - SEQ260,9,8,0.0017142000000000001,
+abt-buy,ciphered_letters,sonnet55,1,37211,ok,end_turn,Apple 1GB Pink 2nd Generation iPod Shuffle - MB811LLA,Qnnst 1FM Npol 2oz Ftotrqepxo pNxz Ykvggst - BM811SSQ,Apple 1GB Pink 2nd Generation iPod Shuffle - BM811SSQ,9,7,0.0017142000000000001,
+abt-buy,ciphered_letters,sonnet55,2,38735,ok,end_turn,Logitech diNovo Edge Keyboard Windows Edition - 967685,Sxfpetjk zpOxhx Tzft Ltdmxqrz Ipozxiy Tzpepxo - 967685,Logitech diNovo Edge Keyboard Windows Edition - 967685,6,6,0.002163,"{""decoded"":[""Logitech diNovo Edge Keyboard Windows Edition - 967685"",""Samsung 32\"" Black Flat Panel Series 4 LCD HDTV - LN32A450"",""Weber Premium Black Grill Cover - 7550"",""Denon 5 Disc CD Player - Black Finish - DCM390"",""Linksys Wireless-G PrintServer - WPSM54G"",""Sony 9\"" Digital Photo Frame in Black - DPFV900"",""Panasonic Integrated Black Telephone System with All-Digital Answering System - KXTS620M"",""Sony Cyber-Shot Black Digital Camera - DSCH10B"",""Apple 16GB Black 2nd Generation iPod Touch - MB531LLA"",""Klipsch 5.25\"" THX Ultra2 In-Ceiling White Loudspeaker - KS7502THX""]}"
+abt-buy,ciphered_letters,sonnet55,2,34092,ok,end_turn,Samsung 32' Black Flat Panel Series 4 LCD HDTV - LN32A450,Yqbyvof 32' Msqjl Gsqe Nqots Ytrpty 4 SJZ KZEH - SO32Q450,"Samsung 32"" Black Flat Panel Series 4 LCD HDTV - LN32A450",9,9,0.002163,
+abt-buy,ciphered_letters,sonnet55,2,34476,ok,end_turn,Weber Premium Black Grill Cover - 7550,Itmtr Nrtbpvb Msqjl Frpss Jxhtr - 7550,Weber Premium Black Grill Cover - 7550,5,5,0.002163,
+abt-buy,ciphered_letters,sonnet55,2,25136,ok,end_turn,Denon 5 Disc CD Player - Black Finish - DCM390,Ztoxo 5 Zpyj JZ Nsqdtr - Msqjl Gpopyk - ZJB390,Denon 5 Disc CD Player - Black Finish - DCM390,7,7,0.002163,
+abt-buy,ciphered_letters,sonnet55,2,31881,ok,end_turn,Linksys Wireless-G PrintServer - WPSM54G,Spolydy Iprtstyy-F NrpoeYtrhtr - INYB54F,Linksys Wireless-G PrintServer - WPSM54G,6,6,0.002163,
+abt-buy,ciphered_letters,sonnet55,2,33220,ok,end_turn,Sony 9' Digital Photo Frame In Black - DPFV900,Yxod 9' Zpfpeqs Nkxex Grqbt Po Msqjl - ZNGH900,"Sony 9"" Digital Photo Frame in Black - DPFV900",7,7,0.002163,
+abt-buy,ciphered_letters,sonnet55,2,30602,ok,end_turn,Panasonic Integrated Black Telephone System With All-Digital Answering System - KXTS620B,Nqoqyxopj Poetfrqetz Msqjl Etstnkxot Ydyetb Ipek Qss-Zpfpeqs Qoyitrpof Ydyetb - LAEY620M,Panasonic Integrated Black Telephone System with All-Digital Answering System - KXTS620M,12,11,0.002163,
+abt-buy,ciphered_letters,sonnet55,2,33562,ok,end_turn,Sony Cyber-Shot Black Digital Camera - DSCH10B,Yxod Jdmtr-Ykxe Msqjl Zpfpeqs Jqbtrq - ZYJK10M,Sony Cyber-Shot Black Digital Camera - DSCH10B,8,8,0.002163,
+abt-buy,ciphered_letters,sonnet55,2,37182,ok,end_turn,Apple 16GB Black 2nd Generation iPod Touch - MB531LLA,Qnnst 16FM Msqjl 2oz Ftotrqepxo pNxz Exvjk - BM531SSQ,Apple 16GB Black 2nd Generation iPod Touch - MB531LLA,9,9,0.002163,
+abt-buy,ciphered_letters,sonnet55,2,37039,ok,end_turn,Klipsch 5.25' THX Ultra2 In-Ceiling White Loudspeaker - KS7502THX,Lspnyjk 5.25' EKA Vserq2 Po-Jtpspof Ikpet Sxvzyntqltr - LY7502EKA,"Klipsch 5.25"" THX Ultra2 In-Ceiling White Loudspeaker - KS7502THX",9,9,0.002163,
+abt-buy,ciphered_letters,sonnet55,3,17187,ok,end_turn,Universal IR/RF Remote - MX350,Vophtryqs PR/RG Rtbxet - BA350,Universal IR/RF Remote - MX350,5,5,0.0024794000000000005,"{""decoded"":[""Universal IR/RF Remote - MX350"",""Mosquito Magnet Defender Replacement Net - MM4000NET1"",""Canon PIXMA MX850 Multifunction Printer - MX850C"",""LG DLEX8377W White XL Capacity Electric SteamDryer - DLEX8377WH"",""Sony DVP-FX820 Black 8\"" Portable DVD Player - DVPFX820"",""Canon Silver PowerShot Digital Camera - SD880IS"",""Transcend 8GB SDHC Card And Compact Card Reader - TS8GSDHC6S5W"",""Transcend 4GB Secure Digital High-Capacity (SDHC) Class 6 Memory Card - TS4GSDHC6"",""Transcend 8GB Micro Secure Digital Memory Card - TS8GUSDHC6"",""Griffin iTrip FM Transmitter - 4052TRPSEB""]}"
+abt-buy,ciphered_letters,sonnet55,3,18441,ok,end_turn,Mosquito Magnet Defender Replacement Net - MM4000NET1,Bxycvpex Bqfote Ztgtoztr Rtnsqjtbtoe Ote - BB4000OTE1,Mosquito Magnet Defender Replacement Net - MM4000NET1,7,7,0.0024794000000000005,
+abt-buy,ciphered_letters,sonnet55,3,33493,ok,end_turn,Canon PIXMA MX850 Multifunction Printer - MX850C,Jqoxo NPABQ BA850 Bvsepgvojepxo Nrpoetr - BA850J,Canon PIXMA MX850 Multifunction Printer - MX850C,7,7,0.0024794000000000005,
+abt-buy,ciphered_letters,sonnet55,3,32280,ok,end_turn,LG DLEX8377WM White XL Capacity Electric SteamDryer - DLEX8377WH,SF ZSTA8377IB Ikpet AS Jqnqjped Tstjerpj YetqbZrdtr - ZSTA8377IK,LG DLEX8377W White XL Capacity Electric SteamDryer - DLEX8377WH,10,9,0.0024794000000000005,
+abt-buy,ciphered_letters,sonnet55,3,33758,ok,end_turn,Sony DVP-FX820 Black 8' Portable DVD Player - DVPFX820,Yxod ZHN-GA820 Msqjl 8' Nxreqmst ZHZ Nsqdtr - ZHNGA820,"Sony DVP-FX820 Black 8"" Portable DVD Player - DVPFX820",8,8,0.0024794000000000005,
+abt-buy,ciphered_letters,sonnet55,3,37964,ok,end_turn,Canon Silver PowerShot Digital Camera - SD880IS,Jqoxo Ypshtr NxitrYkxe Zpfpeqs Jqbtrq - YZ880PY,Canon Silver PowerShot Digital Camera - SD880IS,7,7,0.0024794000000000005,
+abt-buy,ciphered_letters,sonnet55,3,36345,ok,end_turn,Transcend 8GB SDHC Card And Compact Card Reader - TS8GSDHC6S5W,Erqoyjtoz 8FM YZKJ Jqrz Qoz Jxbnqje Jqrz Rtqztr - EY8FYZKJ6Y5I,Transcend 8GB SDHC Card And Compact Card Reader - TS8GSDHC6S5W,12,12,0.0024794000000000005,
+abt-buy,ciphered_letters,sonnet55,3,31992,ok,end_turn,Transcend 4GB Secure Digital High-Capacity (SDHC) Class 6 Memory Card - TS4GSDHC6,Erqoyjtoz 4FM Ytjvrt Zpfpeqs Kpfk-Jqnqjped (YZKJ) Jsqyy 6 Btbxrd Jqrz - EY4FYZKJ6,Transcend 4GB Secure Digital High-Capacity (SDHC) Class 6 Memory Card - TS4GSDHC6,12,12,0.0024794000000000005,
+abt-buy,ciphered_letters,sonnet55,3,38483,ok,end_turn,Transcend 8GB Micro Secure Digital Memory Card - TS8GUSDHC6,Erqoyjtoz 8FM Bpjrx Ytjvrt Zpfpeqs Btbxrd Jqrz - EY8FVYZKJ6,Transcend 8GB Micro Secure Digital Memory Card - TS8GUSDHC6,9,9,0.0024794000000000005,
+abt-buy,ciphered_letters,sonnet55,3,35477,ok,end_turn,Griffin iTrip FM Transmitter - 4052TRPSEB,Frpggpo pErpn GB Erqoybpeetr - 4052ERNYTM,Griffin iTrip FM Transmitter - 4052TRPSEB,5,5,0.0024794000000000005,
+abt-buy,scrambled,gpt6luna,1,32889,ok,completed,Pioneer Sirius Bus Interface - CDSB10,oenirpe riussi ubs trnfaecei - 1db0cs,Pioneer Sirius USB interface - 1db0cs,5,3,0.00015111,"{""decoded"":[""Pioneer Sirius USB interface - 1db0cs"",""Panasonic black 8.5-inch portable DVD player - sdd8l6v"",""LG 24-inch B4S812LBD semi-integrated built-in black dishwasher - 2kslb1d48"",""Belkin CushTop for computer laptop - l8v4s4n0f"",""Sony black HD radio with dock for iPod and iPhone - 0i1dsphxrd"",""LaCie 1TB USB 2.0 external hard drive - 300u413"",""Hitachi 22-inch black LCD HDTV - 05a202vu"",""Canon black EF 70-300mm f/4-5.6 IS USM telephoto zoom lens - 2b050304"",""Insignia ATSC digital-to-analog TV converter box - 06lat2"",""Apple 1GB pink 2nd generation iPod shuffle - 81llmb1a""]}"
+abt-buy,scrambled,gpt6luna,1,33936,ok,completed,Panasonic Black 8.5' Portable DVD Player - DVDLS86,ncosapina klcab 8.5' arbplote dvd rlapye - sdd8l6v,Panasonic black 8.5-inch portable DVD player - sdd8l6v,5,4,0.00015111,
+abt-buy,scrambled,gpt6luna,1,35175,ok,completed,LG 24' LDS4821BB Semi Integrated Built In Black Dishwasher - LDS4821BK,gl 24' b4s812lbd isem erntigedta built ni klcab dhsiesarhw - 2kslb1d48,LG 24-inch B4S812LBD semi-integrated built-in black dishwasher - 2kslb1d48,10,6,0.00015111,
+abt-buy,scrambled,gpt6luna,1,34126,ok,completed,Belkin Cush Top For Computer Laptop - F8N044SLV,kelinb shuc otp fro eoptrcmu laoptp - l8v4s4n0f,Belkin CushTop for computer laptop - l8v4s4n0f,7,4,0.00015111,
+abt-buy,scrambled,gpt6luna,1,38773,ok,completed,Sony Black HD Radio With Dock For iPod And iPhone - XDRS10HDIP,nyso klcab hd roiad hwit ckdo fro odip nad hoipne - 0i1dsphxrd,Sony black HD radio with dock for iPod and iPhone - 0i1dsphxrd,11,9,0.00015111,
+abt-buy,scrambled,gpt6luna,1,34301,ok,completed,LaCie 1TB USB 2.0 External Hard Drive - 301304U,eialc tb1 sbu 2.0 eetnlarx adrh eivdr - 300u413,LaCie 1TB USB 2.0 external hard drive - 300u413,5,5,0.00015111,
+abt-buy,scrambled,gpt6luna,1,38096,ok,completed,Toshiba 22' Black LCD HDTV - 22AV500U,hbotias 22' klcab ldc thvd - 05a202vu,Hitachi 22-inch black LCD HDTV - 05a202vu,6,3,0.00015111,
+abt-buy,scrambled,gpt6luna,1,38106,ok,completed,Canon Black EF 70-300mm F/4-5.6 IS USM Telephoto Zoom Lens - 0345B002,aocnn klcab fe 70-mm030 f/4-5.6 is mus lpothoeet zomo nels - 2b050304,Canon black EF 70-300mm f/4-5.6 IS USM telephoto zoom lens - 2b050304,7,7,0.00015111,
+abt-buy,scrambled,gpt6luna,1,38957,ok,completed,Lasonic ATSC Digital To Analog TV Converter Box - LTA260,lsniaco acts diagitl ot oaganl vt neortrevc bxo - 06lat2,Insignia ATSC digital-to-analog TV converter box - 06lat2,9,7,0.00015111,
+abt-buy,scrambled,gpt6luna,1,37211,ok,completed,Apple 1GB Pink 2nd Generation iPod Shuffle - MB811LLA,epalp 1gb inpk 2nd geianornet odip useffhl - 81llmb1a,Apple 1GB pink 2nd generation iPod shuffle - 81llmb1a,7,5,0.00015111,
+abt-buy,scrambled,gpt6luna,2,38735,ok,completed,Logitech diNovo Edge Keyboard Windows Edition - 967685,htilocge vooidn edge akobrdye wiwodsn tieindo - 986675,Logitech diNovo Edge Keyboard Windows Edition - 986675,5,5,0.00011615,"{""decoded"":[""Logitech diNovo Edge Keyboard Windows Edition - 986675"",""Samsung 32\"" Black Flat Panel Series 4 LCD HDTV - 0n2l4a35"",""Weber Premium Black Grill Cover - 5507"",""Denon 5 Disc CD Player - Black Finish - d9c3m0"",""Linksys Wireless-G Print Server - 4mgpsw5"",""Sony 9\"" Digital Photo Frame in Black - 90fpdv0"",""Panasonic Integrated Black Telephone System with All-Digital Answering System - 2kbstx60"",""Sony Cyber-shot Black Digital Camera - bds0c1h"",""Apple 16GB Black 2nd Generation iPod Touch - l3m1a5lb"",""Klipsch 5.25\"" THX Ultra2 In-Ceiling White Loudspeaker - 0thks527x""]}"
+abt-buy,scrambled,gpt6luna,2,34092,ok,completed,Samsung 32' Black Flat Panel Series 4 LCD HDTV - LN32A450,saumgsn 32' klcab laft anple eeriss 4 ldc thvd - 0n2l4a35,"Samsung 32"" Black Flat Panel Series 4 LCD HDTV - 0n2l4a35",8,7,0.00011615,
+abt-buy,scrambled,gpt6luna,2,34476,ok,completed,Weber Premium Black Grill Cover - 7550,erebw impumer klcab ligrl rocve - 5507,Weber Premium Black Grill Cover - 5507,5,5,0.00011615,
+abt-buy,scrambled,gpt6luna,2,25136,ok,completed,Denon 5 Disc CD Player - Black Finish - DCM390,nnode 5 cdsi cd rlapye - klcab iifnsh - d9c3m0,Denon 5 Disc CD Player - Black Finish - d9c3m0,6,5,0.00011615,
+abt-buy,scrambled,gpt6luna,2,31881,ok,completed,Linksys Wireless-G PrintServer - WPSM54G,lsksnyi slsewire-g etrvnirpsre - 4mgpsw5,Linksys Wireless-G Print Server - 4mgpsw5,5,3,0.00011615,
+abt-buy,scrambled,gpt6luna,2,33220,ok,completed,Sony 9' Digital Photo Frame In Black - DPFV900,nyso 9' diagitl hotpo earmf ni klcab - 90fpdv0,"Sony 9"" Digital Photo Frame in Black - 90fpdv0",7,6,0.00011615,
+abt-buy,scrambled,gpt6luna,2,30602,ok,completed,Panasonic Integrated Black Telephone System With All-Digital Answering System - KXTS620B,ncosapina erntigedta klcab photeleen estysm hwit all-diagitl sigwnnare estysm - 2kbstx60,Panasonic Integrated Black Telephone System with All-Digital Answering System - 2kbstx60,11,9,0.00011615,
+abt-buy,scrambled,gpt6luna,2,33562,ok,completed,Sony Cyber-Shot Black Digital Camera - DSCH10B,nyso ybcre-shto klcab diagitl mraeac - bds0c1h,Sony Cyber-shot Black Digital Camera - bds0c1h,8,6,0.00011615,
+abt-buy,scrambled,gpt6luna,2,37182,ok,completed,Apple 16GB Black 2nd Generation iPod Touch - MB531LLA,epalp bg16 klcab 2nd geianornet odip hoctu - l3m1a5lb,Apple 16GB Black 2nd Generation iPod Touch - l3m1a5lb,8,6,0.00011615,
+abt-buy,scrambled,gpt6luna,2,37039,ok,completed,Klipsch 5.25' THX Ultra2 In-Ceiling White Loudspeaker - KS7502THX,lhpcksi 5.25' htx aurl2t ni-linegci ewith kdersepolua - 0thks527x,"Klipsch 5.25"" THX Ultra2 In-Ceiling White Loudspeaker - 0thks527x",9,7,0.00011615,
+abt-buy,scrambled,gpt6luna,3,17187,ok,completed,Universal IR/RF Remote - MX350,esaurnivl ri/fr oreemt - 35x0m,Universal IR/RF remote - MX-350,5,5,0.00026593,"{""decoded"":[""Universal IR/RF remote - MX-350"",""Mosquito Magnet Defender replacement net"",""Canon PIXMA MX850 multifunction printer"",""LG DLEX8377W with XL-capacity electric steam dryer"",""Sony DVP-FX820 black 8-inch portable DVD player"",""Canon silver PowerShot digital camera - SD880 IS"",""Transcend 8GB SDHC card and compact card reader"",""Transcend 4GB Secure Digital High-Capacity (SDHC) Class 6 memory card"",""Transcend 8GB micro Secure Digital memory card"",""Griffin iTrip FM transmitter""]}"
+abt-buy,scrambled,gpt6luna,3,18441,ok,completed,Mosquito Magnet Defender Replacement Net - MM4000NET1,oqmtouis mtegna redfeend cnteeepmlra tne - m0ne4m01t0,Mosquito Magnet Defender replacement net,7,5,0.00026593,
+abt-buy,scrambled,gpt6luna,3,33493,ok,completed,Canon PIXMA MX850 Multifunction Printer - MX850C,aocnn xmpia xm058 nunoftumltici nitprer - c8x0m5,Canon PIXMA MX850 multifunction printer,6,5,0.00026593,
+abt-buy,scrambled,gpt6luna,3,32280,ok,completed,LG DLEX8377WM White XL Capacity Electric SteamDryer - DLEX8377WH,gl lw8m3xe7d7 ewith lx iaycptac rtclceei yrdresamte - l877eh3wxd,LG DLEX8377W with XL-capacity electric steam dryer,10,5,0.00026593,
+abt-buy,scrambled,gpt6luna,3,33758,ok,completed,Sony DVP-FX820 Black 8' Portable DVD Player - DVPFX820,nyso pvd-08x2f klcab 8' arbplote dvd rlapye - 0x8v2fpd,Sony DVP-FX820 black 8-inch portable DVD player,7,6,0.00026593,
+abt-buy,scrambled,gpt6luna,3,37964,ok,completed,Canon Silver PowerShot Digital Camera - SD880IS,aocnn veslri terohswpo diagitl mraeac - 80s8isd,Canon silver PowerShot digital camera - SD880 IS,7,7,0.00026593,
+abt-buy,scrambled,gpt6luna,3,36345,ok,completed,Transcend 8GB SDHC Card And Compact Card Reader - TS8GSDHC6S5W,nencrdtas 8gb hcsd dcar nad omctpac dcar draree - 65hstswsg8cd,Transcend 8GB SDHC card and compact card reader,11,7,0.00026593,
+abt-buy,scrambled,gpt6luna,3,31992,ok,completed,Transcend 4GB Secure Digital High-Capacity (SDHC) Class 6 Memory Card - TS4GSDHC6,nencrdtas bg4 srceue diagitl hghi-iaycptac (hcsd) slcsa 6 omrmey dcar - hsct4sd6g,Transcend 4GB Secure Digital High-Capacity (SDHC) Class 6 memory card,12,10,0.00026593,
+abt-buy,scrambled,gpt6luna,3,38483,ok,completed,Transcend 8GB Micro Secure Digital Memory Card - TS8GUSDHC6,nencrdtas 8gb miorc srceue diagitl omrmey dcar - u8dshsc6gt,Transcend 8GB micro Secure Digital memory card,8,6,0.00026593,
+abt-buy,scrambled,gpt6luna,3,35477,ok,completed,Griffin iTrip FM Transmitter - 4052TRPSEB,ifnigfr tprii fm mttrtansire - 24pt5rsbe0,Griffin iTrip FM transmitter,4,3,0.00026593,
+abt-buy,scrambled,haiku55,1,32889,ok,end_turn,Pioneer Sirius Bus Interface - CDSB10,oenirpe riussi ubs trnfaecei - 1db0cs,Pioneer Sirius USB Interface - 1db0cs,5,3,0.00022304,"```json
+{""decoded"": [
+""Pioneer Sirius USB Interface - 1db0cs"",
+""Panasonic Black 8.5' Portable DVD Player - sdd8l6v"",
+""LG 24' B4S812LBD Semi Integrated Built In Black Dishwasher - 2kslb1d48"",
+""Belkin Such Top for Computer Laptop - l8v4s4n0f"",
+""Sony Black HD Radio with Dock for iPod and iPhone - 0i1dsphxrd"",
+""LaCie 1TB USB 2.0 External Hard Drive - 300u413"",
+""Toshiba 22' Black LCD HDTV - 05a202vu"",
+""Canon Black EF 70-300mm f/4-5.6 IS USM Telephoto Zoom Lens - 2b050304"",
+""Casino Digital to Analog TV Converter Box - 06lat2"",
+""Apple 1GB Pink 2nd Generation iPod Shuffle - 81llmb1a""
+]}
+```"
+abt-buy,scrambled,haiku55,1,33936,ok,end_turn,Panasonic Black 8.5' Portable DVD Player - DVDLS86,ncosapina klcab 8.5' arbplote dvd rlapye - sdd8l6v,Panasonic Black 8.5' Portable DVD Player - sdd8l6v,5,4,0.00022304,
+abt-buy,scrambled,haiku55,1,35175,ok,end_turn,LG 24' LDS4821BB Semi Integrated Built In Black Dishwasher - LDS4821BK,gl 24' b4s812lbd isem erntigedta built ni klcab dhsiesarhw - 2kslb1d48,LG 24' B4S812LBD Semi Integrated Built In Black Dishwasher - 2kslb1d48,10,6,0.00022304,
+abt-buy,scrambled,haiku55,1,34126,ok,end_turn,Belkin Cush Top For Computer Laptop - F8N044SLV,kelinb shuc otp fro eoptrcmu laoptp - l8v4s4n0f,Belkin Such Top for Computer Laptop - l8v4s4n0f,7,5,0.00022304,
+abt-buy,scrambled,haiku55,1,38773,ok,end_turn,Sony Black HD Radio With Dock For iPod And iPhone - XDRS10HDIP,nyso klcab hd roiad hwit ckdo fro odip nad hoipne - 0i1dsphxrd,Sony Black HD Radio with Dock for iPod and iPhone - 0i1dsphxrd,11,9,0.00022304,
+abt-buy,scrambled,haiku55,1,34301,ok,end_turn,LaCie 1TB USB 2.0 External Hard Drive - 301304U,eialc tb1 sbu 2.0 eetnlarx adrh eivdr - 300u413,LaCie 1TB USB 2.0 External Hard Drive - 300u413,5,5,0.00022304,
+abt-buy,scrambled,haiku55,1,38096,ok,end_turn,Toshiba 22' Black LCD HDTV - 22AV500U,hbotias 22' klcab ldc thvd - 05a202vu,Toshiba 22' Black LCD HDTV - 05a202vu,6,4,0.00022304,
+abt-buy,scrambled,haiku55,1,38106,ok,end_turn,Canon Black EF 70-300mm F/4-5.6 IS USM Telephoto Zoom Lens - 0345B002,aocnn klcab fe 70-mm030 f/4-5.6 is mus lpothoeet zomo nels - 2b050304,Canon Black EF 70-300mm f/4-5.6 IS USM Telephoto Zoom Lens - 2b050304,7,7,0.00022304,
+abt-buy,scrambled,haiku55,1,38957,ok,end_turn,Lasonic ATSC Digital To Analog TV Converter Box - LTA260,lsniaco acts diagitl ot oaganl vt neortrevc bxo - 06lat2,Casino Digital to Analog TV Converter Box - 06lat2,9,6,0.00022304,
+abt-buy,scrambled,haiku55,1,37211,ok,end_turn,Apple 1GB Pink 2nd Generation iPod Shuffle - MB811LLA,epalp 1gb inpk 2nd geianornet odip useffhl - 81llmb1a,Apple 1GB Pink 2nd Generation iPod Shuffle - 81llmb1a,7,5,0.00022304,
+abt-buy,scrambled,haiku55,2,38735,ok,end_turn,Logitech diNovo Edge Keyboard Windows Edition - 967685,htilocge vooidn edge akobrdye wiwodsn tieindo - 986675,Logitech Ovoid Edge Keyboard Windows Edition,5,4,0.00024694,"```json
+{""decoded"": [
+""Logitech Ovoid Edge Keyboard Windows Edition"",
+""Samsung 32\"" Black Flat Panel Series 4 LED HDTV"",
+""Brewer Premium Black Grill Cover"",
+""Node 5 Disc CD Player - Black Finish"",
+""Linksys Wireless-G Enterprise"",
+""Sony 9\"" Digital Photo Frame in Black"",
+""Panasonic Integrated Black Telephone System with All-Digital Answering System"",
+""Sony Cyber-shot Black Digital Camera"",
+""Apple 16GB Black 2nd Generation iPod touch"",
+""Chieftec 5.25\"" Bay Ultra2 SCSI Hot-Swap Cage with Keyspeed""
+]}
+```"
+abt-buy,scrambled,haiku55,2,34092,ok,end_turn,Samsung 32' Black Flat Panel Series 4 LCD HDTV - LN32A450,saumgsn 32' klcab laft anple eeriss 4 ldc thvd - 0n2l4a35,"Samsung 32"" Black Flat Panel Series 4 LED HDTV",8,6,0.00024694,
+abt-buy,scrambled,haiku55,2,34476,ok,end_turn,Weber Premium Black Grill Cover - 7550,erebw impumer klcab ligrl rocve - 5507,Brewer Premium Black Grill Cover,5,4,0.00024694,
+abt-buy,scrambled,haiku55,2,25136,ok,end_turn,Denon 5 Disc CD Player - Black Finish - DCM390,nnode 5 cdsi cd rlapye - klcab iifnsh - d9c3m0,Node 5 Disc CD Player - Black Finish,6,4,0.00024694,
+abt-buy,scrambled,haiku55,2,31881,ok,end_turn,Linksys Wireless-G PrintServer - WPSM54G,lsksnyi slsewire-g etrvnirpsre - 4mgpsw5,Linksys Wireless-G Enterprise,5,3,0.00024694,
+abt-buy,scrambled,haiku55,2,33220,ok,end_turn,Sony 9' Digital Photo Frame In Black - DPFV900,nyso 9' diagitl hotpo earmf ni klcab - 90fpdv0,"Sony 9"" Digital Photo Frame in Black",7,6,0.00024694,
+abt-buy,scrambled,haiku55,2,30602,ok,end_turn,Panasonic Integrated Black Telephone System With All-Digital Answering System - KXTS620B,ncosapina erntigedta klcab photeleen estysm hwit all-diagitl sigwnnare estysm - 2kbstx60,Panasonic Integrated Black Telephone System with All-Digital Answering System,11,9,0.00024694,
+abt-buy,scrambled,haiku55,2,33562,ok,end_turn,Sony Cyber-Shot Black Digital Camera - DSCH10B,nyso ybcre-shto klcab diagitl mraeac - bds0c1h,Sony Cyber-shot Black Digital Camera,8,6,0.00024694,
+abt-buy,scrambled,haiku55,2,37182,ok,end_turn,Apple 16GB Black 2nd Generation iPod Touch - MB531LLA,epalp bg16 klcab 2nd geianornet odip hoctu - l3m1a5lb,Apple 16GB Black 2nd Generation iPod touch,8,6,0.00024694,
+abt-buy,scrambled,haiku55,2,37039,ok,end_turn,Klipsch 5.25' THX Ultra2 In-Ceiling White Loudspeaker - KS7502THX,lhpcksi 5.25' htx aurl2t ni-linegci ewith kdersepolua - 0thks527x,"Chieftec 5.25"" Bay Ultra2 SCSI Hot-Swap Cage with Keyspeed",9,1,0.00024694,
+abt-buy,scrambled,haiku55,3,17187,ok,end_turn,Universal IR/RF Remote - MX350,esaurnivl ri/fr oreemt - 35x0m,universal IR/RF remote - 35x0m,5,4,0.00033852000000000003,"{""decoded"": [""universal IR/RF remote - 35x0m"", ""oqmtouis magnet defender replacement ten - m0ne4m01t0"", ""canon pixma xm058 multifunction printer - c8x0m5"", ""gl lw8m3xe7d7 with lx capacity electric yrdresamte - l877eh3wxd"", ""sony pvd-08x2f black 8' portable dvd player - 0x8v2fpd"", ""canon silver powershot digital camera - 80s8isd"", ""transcend 8gb sdhc card and compact card reader - 65hstswsg8cd"", ""transcend 4gb secure digital high-capacity (sdhc) class 6 memory card - hsct4sd6g"", ""transcend 8gb micro secure digital memory card - u8dshsc6gt"", ""griffin itrip fm transmitter - 24pt5rsbe0""]}"
+abt-buy,scrambled,haiku55,3,18441,ok,end_turn,Mosquito Magnet Defender Replacement Net - MM4000NET1,oqmtouis mtegna redfeend cnteeepmlra tne - m0ne4m01t0,oqmtouis magnet defender replacement ten - m0ne4m01t0,7,3,0.00033852000000000003,
+abt-buy,scrambled,haiku55,3,33493,ok,end_turn,Canon PIXMA MX850 Multifunction Printer - MX850C,aocnn xmpia xm058 nunoftumltici nitprer - c8x0m5,canon pixma xm058 multifunction printer - c8x0m5,6,4,0.00033852000000000003,
+abt-buy,scrambled,haiku55,3,32280,ok,end_turn,LG DLEX8377WM White XL Capacity Electric SteamDryer - DLEX8377WH,gl lw8m3xe7d7 ewith lx iaycptac rtclceei yrdresamte - l877eh3wxd,gl lw8m3xe7d7 with lx capacity electric yrdresamte - l877eh3wxd,10,2,0.00033852000000000003,
+abt-buy,scrambled,haiku55,3,33758,ok,end_turn,Sony DVP-FX820 Black 8' Portable DVD Player - DVPFX820,nyso pvd-08x2f klcab 8' arbplote dvd rlapye - 0x8v2fpd,sony pvd-08x2f black 8' portable dvd player - 0x8v2fpd,7,4,0.00033852000000000003,
+abt-buy,scrambled,haiku55,3,37964,ok,end_turn,Canon Silver PowerShot Digital Camera - SD880IS,aocnn veslri terohswpo diagitl mraeac - 80s8isd,canon silver powershot digital camera - 80s8isd,7,5,0.00033852000000000003,
+abt-buy,scrambled,haiku55,3,36345,ok,end_turn,Transcend 8GB SDHC Card And Compact Card Reader - TS8GSDHC6S5W,nencrdtas 8gb hcsd dcar nad omctpac dcar draree - 65hstswsg8cd,transcend 8gb sdhc card and compact card reader - 65hstswsg8cd,11,7,0.00033852000000000003,
+abt-buy,scrambled,haiku55,3,31992,ok,end_turn,Transcend 4GB Secure Digital High-Capacity (SDHC) Class 6 Memory Card - TS4GSDHC6,nencrdtas bg4 srceue diagitl hghi-iaycptac (hcsd) slcsa 6 omrmey dcar - hsct4sd6g,transcend 4gb secure digital high-capacity (sdhc) class 6 memory card - hsct4sd6g,12,10,0.00033852000000000003,
+abt-buy,scrambled,haiku55,3,38483,ok,end_turn,Transcend 8GB Micro Secure Digital Memory Card - TS8GUSDHC6,nencrdtas 8gb miorc srceue diagitl omrmey dcar - u8dshsc6gt,transcend 8gb micro secure digital memory card - u8dshsc6gt,8,6,0.00033852000000000003,
+abt-buy,scrambled,haiku55,3,35477,ok,end_turn,Griffin iTrip FM Transmitter - 4052TRPSEB,ifnigfr tprii fm mttrtansire - 24pt5rsbe0,griffin itrip fm transmitter - 24pt5rsbe0,4,3,0.00033852000000000003,
+abt-buy,scrambled,sonnet55,1,32889,ok,end_turn,Pioneer Sirius Bus Interface - CDSB10,oenirpe riussi ubs trnfaecei - 1db0cs,pioneer surround sound receiver - 1db0cs,5,1,0.0003788,"{""decoded"": [""pioneer surround sound receiver - 1db0cs"", ""insignia black 8.5' portable dvd player - sdd8l6v"", ""lg 24' b4s812lbd smart integrated built in black dishwasher - 2kslb1d48"", ""belkin slim top for computer laptop - l8v4s4n0f"", ""sony black hd radio with dock for ipod and iphone - 0i1dsphxrd"", ""iclear tb1 usb 2.0 external hard drive - 300u413"", ""hobtias 22' black lcd tv hd - 05a202vu"", ""canon black ef 70-300mm f/4-5.6 is usm telephoto zoom lens - 2b050304"", ""lascino stats digital to analog tv converter box - 06lat2"", ""apple 1gb pink 2nd generation ipod shuffle - 81llmb1a""]}"
+abt-buy,scrambled,sonnet55,1,33936,ok,end_turn,Panasonic Black 8.5' Portable DVD Player - DVDLS86,ncosapina klcab 8.5' arbplote dvd rlapye - sdd8l6v,insignia black 8.5' portable dvd player - sdd8l6v,5,3,0.0003788,
+abt-buy,scrambled,sonnet55,1,35175,ok,end_turn,LG 24' LDS4821BB Semi Integrated Built In Black Dishwasher - LDS4821BK,gl 24' b4s812lbd isem erntigedta built ni klcab dhsiesarhw - 2kslb1d48,lg 24' b4s812lbd smart integrated built in black dishwasher - 2kslb1d48,10,5,0.0003788,
+abt-buy,scrambled,sonnet55,1,34126,ok,end_turn,Belkin Cush Top For Computer Laptop - F8N044SLV,kelinb shuc otp fro eoptrcmu laoptp - l8v4s4n0f,belkin slim top for computer laptop - l8v4s4n0f,7,5,0.0003788,
+abt-buy,scrambled,sonnet55,1,38773,ok,end_turn,Sony Black HD Radio With Dock For iPod And iPhone - XDRS10HDIP,nyso klcab hd roiad hwit ckdo fro odip nad hoipne - 0i1dsphxrd,sony black hd radio with dock for ipod and iphone - 0i1dsphxrd,11,9,0.0003788,
+abt-buy,scrambled,sonnet55,1,34301,ok,end_turn,LaCie 1TB USB 2.0 External Hard Drive - 301304U,eialc tb1 sbu 2.0 eetnlarx adrh eivdr - 300u413,iclear tb1 usb 2.0 external hard drive - 300u413,5,4,0.0003788,
+abt-buy,scrambled,sonnet55,1,38096,ok,end_turn,Toshiba 22' Black LCD HDTV - 22AV500U,hbotias 22' klcab ldc thvd - 05a202vu,hobtias 22' black lcd tv hd - 05a202vu,6,2,0.0003788,
+abt-buy,scrambled,sonnet55,1,38106,ok,end_turn,Canon Black EF 70-300mm F/4-5.6 IS USM Telephoto Zoom Lens - 0345B002,aocnn klcab fe 70-mm030 f/4-5.6 is mus lpothoeet zomo nels - 2b050304,canon black ef 70-300mm f/4-5.6 is usm telephoto zoom lens - 2b050304,7,7,0.0003788,
+abt-buy,scrambled,sonnet55,1,38957,ok,end_turn,Lasonic ATSC Digital To Analog TV Converter Box - LTA260,lsniaco acts diagitl ot oaganl vt neortrevc bxo - 06lat2,lascino stats digital to analog tv converter box - 06lat2,9,6,0.0003788,
+abt-buy,scrambled,sonnet55,1,37211,ok,end_turn,Apple 1GB Pink 2nd Generation iPod Shuffle - MB811LLA,epalp 1gb inpk 2nd geianornet odip useffhl - 81llmb1a,apple 1gb pink 2nd generation ipod shuffle - 81llmb1a,7,5,0.0003788,
+abt-buy,scrambled,sonnet55,2,38735,ok,end_turn,Logitech diNovo Edge Keyboard Windows Edition - 967685,htilocge vooidn edge akobrdye wiwodsn tieindo - 986675,logitech window edge keyboard windows edition - 986675,5,4,0.0013618000000000002,"Each line looks like a product listing in which the letters of every word have been shuffled. The model codes at the end of each line are scrambled too, so I could only guess at those.
+
+1. htilocge vooidn edge akobrdye wiwodsn tieindo → ""logitech video edge keyboard windows edition""? The letters of ""htilocge"" are g,e,c,h,i,l,o,t, which gives ""logitech"". ""vooidn"" gives ""window"", ""edge"" stays ""edge"", ""akobrdye"" gives ""keyboard"", ""wiwodsn"" gives ""windows"", and ""tieindo"" gives ""edition"". The number 986675 stays as is.
+2. saumgsn → samsung, klcab → black, laft → flat, anple → panel, eeriss → series, 4 stays, ldc → led, thvd → hdtv? The code 0n2l4a35 is unclear, so I left it unchanged.
+3. erebw → brewer? The original is probably ""brewer bumper black grill cover"", since impumer fits ""bumper"", klcab → black, ligrl → grill, and rocve → cover.
+4. nnode → denon, 5 stays, cdsi → disc, cd stays, rlapye → player, klcab → black, iifnsh → finish.
+5. lsksnyi → linksys, slsewire-g → wireless-g, etrvnirpsre → rangeextender is not a fit; the letters e,t,r,v,n,i,r,p,s,r,e fit "") ..."" only as ""ere..."" so I used ""reprinters""? The best match is ""wireless-g"" followed by ""print server"", and ""etrvnirpsre"" has letters for ""printserver"", so it reads ""print server"".
+6. nyso → sony, 9' stays, diagitl → digital, hotpo → photo, earmf → frame, ni → in, klcab → black.
+7. ncosapina → panasonic, erntigedta → integrated, klcab → black, photeleen → telephone, estysm → system, hwit → with, all-diagitl → all-digital, sigwnnare → answering, estysm → system.
+8. nyso → sony, ybcre-shto → cyber-shot, klcab → black, diagitl → digital, mraeac → camera.
+9. epalp → apple, bg16 → 16gb, klcab → black, 2nd stays, geianornet → generation, odip → ipod, hoctu → touch.
+10. lhpcksi → schlick? The letters l,h,p,c,k,s,i fit ""philcks""; the best fit is ""pickhls""? I settled on ""chkplis""? That is not a word, so I judged it a name and left it as ""philcks"". Then 5.25' stays, htx → hdx? The letters h,t,x fit ""htx"" itself, so I kept it. aurl2t → ultra2? ""aurl2t"" fits ""ultra2"", ni-linegci → in-ceiling, ewith → white, kdersepolua → loudspeakers? The letters k,d,e,r,s,e,p,o,l,u,a fit ""loudspeaker"" plus an extra, so I used ""loudspeakers"".
+
+{""decoded"": [""logitech window edge keyboard windows edition - 986675"", ""samsung 32' black flat panel series 4 led hdtv - 0n2l4a35"", ""brewer bumper black grill cover - 5507"", ""denon 5 disc cd player - black finish - d9c3m0"", ""linksys wireless-g print server - 4mgpsw5"", ""sony 9' digital photo frame in black - 90fpdv0"", ""panasonic integrated black telephone system with all-digital answering system - 2kbstx60"", ""sony cyber-shot black digital camera - bds0c1h"", ""apple 16gb black 2nd generation ipod touch - l3m1a5lb"", ""philcks 5.25' htx ultra2 in-ceiling white loudspeakers - 0thks527x""]}"
+abt-buy,scrambled,sonnet55,2,34092,ok,end_turn,Samsung 32' Black Flat Panel Series 4 LCD HDTV - LN32A450,saumgsn 32' klcab laft anple eeriss 4 ldc thvd - 0n2l4a35,samsung 32' black flat panel series 4 led hdtv - 0n2l4a35,8,6,0.0013618000000000002,
+abt-buy,scrambled,sonnet55,2,34476,ok,end_turn,Weber Premium Black Grill Cover - 7550,erebw impumer klcab ligrl rocve - 5507,brewer bumper black grill cover - 5507,5,3,0.0013618000000000002,
+abt-buy,scrambled,sonnet55,2,25136,ok,end_turn,Denon 5 Disc CD Player - Black Finish - DCM390,nnode 5 cdsi cd rlapye - klcab iifnsh - d9c3m0,denon 5 disc cd player - black finish - d9c3m0,6,5,0.0013618000000000002,
+abt-buy,scrambled,sonnet55,2,31881,ok,end_turn,Linksys Wireless-G PrintServer - WPSM54G,lsksnyi slsewire-g etrvnirpsre - 4mgpsw5,linksys wireless-g print server - 4mgpsw5,5,3,0.0013618000000000002,
+abt-buy,scrambled,sonnet55,2,33220,ok,end_turn,Sony 9' Digital Photo Frame In Black - DPFV900,nyso 9' diagitl hotpo earmf ni klcab - 90fpdv0,sony 9' digital photo frame in black - 90fpdv0,7,6,0.0013618000000000002,
+abt-buy,scrambled,sonnet55,2,30602,ok,end_turn,Panasonic Integrated Black Telephone System With All-Digital Answering System - KXTS620B,ncosapina erntigedta klcab photeleen estysm hwit all-diagitl sigwnnare estysm - 2kbstx60,panasonic integrated black telephone system with all-digital answering system - 2kbstx60,11,9,0.0013618000000000002,
+abt-buy,scrambled,sonnet55,2,33562,ok,end_turn,Sony Cyber-Shot Black Digital Camera - DSCH10B,nyso ybcre-shto klcab diagitl mraeac - bds0c1h,sony cyber-shot black digital camera - bds0c1h,8,6,0.0013618000000000002,
+abt-buy,scrambled,sonnet55,2,37182,ok,end_turn,Apple 16GB Black 2nd Generation iPod Touch - MB531LLA,epalp bg16 klcab 2nd geianornet odip hoctu - l3m1a5lb,apple 16gb black 2nd generation ipod touch - l3m1a5lb,8,6,0.0013618000000000002,
+abt-buy,scrambled,sonnet55,2,37039,ok,end_turn,Klipsch 5.25' THX Ultra2 In-Ceiling White Loudspeaker - KS7502THX,lhpcksi 5.25' htx aurl2t ni-linegci ewith kdersepolua - 0thks527x,philcks 5.25' htx ultra2 in-ceiling white loudspeakers - 0thks527x,9,4,0.0013618000000000002,
+abt-buy,scrambled,sonnet55,3,17187,ok,end_turn,Universal IR/RF Remote - MX350,esaurnivl ri/fr oreemt - 35x0m,universal rf/ir remote - 350m,5,4,0.00038040000000000003,"{""decoded"": [""universal rf/ir remote - 350m"", ""motion sensing wired decentralized net - m0ne4m01t0"", ""canon maxima xm058 multifunction printer - c8x0m5"", ""lg lw8m3xe7d7 with lx capacity electric dryer machine - l877eh3wxd"", ""sony dvd-2x80f black 8' portable dvd player - 0x8v2fpd"", ""canon silver shotpower digital camera - 80s8isd"", ""transcend 8gb sdhc card and compact card reader - 65hstswsg8cd"", ""transcend 4gb secure digital high-capacity (sdhc) class 6 memory card - hsct4sd6g"", ""transcend 8gb micro secure digital memory card - u8dshsc6gt"", ""griffin spirit fm transmitter - 24pt5rsbe0""]}"
+abt-buy,scrambled,sonnet55,3,18441,ok,end_turn,Mosquito Magnet Defender Replacement Net - MM4000NET1,oqmtouis mtegna redfeend cnteeepmlra tne - m0ne4m01t0,motion sensing wired decentralized net - m0ne4m01t0,7,1,0.00038040000000000003,
+abt-buy,scrambled,sonnet55,3,33493,ok,end_turn,Canon PIXMA MX850 Multifunction Printer - MX850C,aocnn xmpia xm058 nunoftumltici nitprer - c8x0m5,canon maxima xm058 multifunction printer - c8x0m5,6,3,0.00038040000000000003,
+abt-buy,scrambled,sonnet55,3,32280,ok,end_turn,LG DLEX8377WM White XL Capacity Electric SteamDryer - DLEX8377WH,gl lw8m3xe7d7 ewith lx iaycptac rtclceei yrdresamte - l877eh3wxd,lg lw8m3xe7d7 with lx capacity electric dryer machine - l877eh3wxd,10,3,0.00038040000000000003,
+abt-buy,scrambled,sonnet55,3,33758,ok,end_turn,Sony DVP-FX820 Black 8' Portable DVD Player - DVPFX820,nyso pvd-08x2f klcab 8' arbplote dvd rlapye - 0x8v2fpd,sony dvd-2x80f black 8' portable dvd player - 0x8v2fpd,7,4,0.00038040000000000003,
+abt-buy,scrambled,sonnet55,3,37964,ok,end_turn,Canon Silver PowerShot Digital Camera - SD880IS,aocnn veslri terohswpo diagitl mraeac - 80s8isd,canon silver shotpower digital camera - 80s8isd,7,4,0.00038040000000000003,
+abt-buy,scrambled,sonnet55,3,36345,ok,end_turn,Transcend 8GB SDHC Card And Compact Card Reader - TS8GSDHC6S5W,nencrdtas 8gb hcsd dcar nad omctpac dcar draree - 65hstswsg8cd,transcend 8gb sdhc card and compact card reader - 65hstswsg8cd,11,7,0.00038040000000000003,
+abt-buy,scrambled,sonnet55,3,31992,ok,end_turn,Transcend 4GB Secure Digital High-Capacity (SDHC) Class 6 Memory Card - TS4GSDHC6,nencrdtas bg4 srceue diagitl hghi-iaycptac (hcsd) slcsa 6 omrmey dcar - hsct4sd6g,transcend 4gb secure digital high-capacity (sdhc) class 6 memory card - hsct4sd6g,12,10,0.00038040000000000003,
+abt-buy,scrambled,sonnet55,3,38483,ok,end_turn,Transcend 8GB Micro Secure Digital Memory Card - TS8GUSDHC6,nencrdtas 8gb miorc srceue diagitl omrmey dcar - u8dshsc6gt,transcend 8gb micro secure digital memory card - u8dshsc6gt,8,6,0.00038040000000000003,
+abt-buy,scrambled,sonnet55,3,35477,ok,end_turn,Griffin iTrip FM Transmitter - 4052TRPSEB,ifnigfr tprii fm mttrtansire - 24pt5rsbe0,griffin spirit fm transmitter - 24pt5rsbe0,4,2,0.00038040000000000003,
+abt-buy,ciphered_words,gpt6luna,1,32889,ok,completed,Pioneer Sirius Bus Interface - CDSB10,algosis artery emm alloquial - azygos,"Algosis artery, emm alloquial — azygos",5,0,0.00031479,"{""decoded"":[""Algosis artery, emm alloquial — azygos"",""Alcarraza Anker 8.5-inch agnathia hat barkey — accoast"",""Li 24-inch advenient calm antifeudal atoll yu Anker annelidian — antiodont"",""Amused bern jem wax annotine abuser — anticynic"",""Dive Anker en beeve flea earl wax baya saw bambos — anadromous"",""Ascus fid ast 2.0 alfurese fady algor — antares"",""Anidian 22-inch Anker bap esca — ahankara"",""Aizle Anker ku 70-betis J/4-5.6 of fez alopecoid cain brae — aldazine"",""Alcaide dram arcadia yu abrash ve adjection goa — answer"",""Bothy sou bred mon aeromancer baya aidable — ammonium""]}"
+abt-buy,ciphered_words,gpt6luna,1,33936,ok,completed,Panasonic Black 8.5' Portable DVD Player - DVDLS86,alcarraza anker 8.5' agnathia hat barkey - accoast,Alcarraza Anker 8.5-inch agnathia hat barkey — accoast,6,0,0.00031479,
+abt-buy,ciphered_words,gpt6luna,1,35175,ok,completed,LG 24' LDS4821BB Semi Integrated Built In Black Dishwasher - LDS4821BK,li 24' advenient calm antifeudal atoll yu anker annelidian - antiodont,Li 24-inch advenient calm antifeudal atoll yu Anker annelidian — antiodont,11,0,0.00031479,
+abt-buy,ciphered_words,gpt6luna,1,34126,ok,completed,Belkin Cush Top For Computer Laptop - F8N044SLV,amused bern jem wax annotine abuser - anticynic,Amused bern jem wax annotine abuser — anticynic,9,0,0.00031479,
+abt-buy,ciphered_words,gpt6luna,1,38773,ok,completed,Sony Black HD Radio With Dock For iPod And iPhone - XDRS10HDIP,dive anker en beeve flea earl wax baya saw bambos - anadromous,Dive Anker en beeve flea earl wax baya saw bambos — anadromous,12,0,0.00031479,
+abt-buy,ciphered_words,gpt6luna,1,34301,ok,completed,LaCie 1TB USB 2.0 External Hard Drive - 301304U,ascus fid ast 2.0 alfurese fady algor - antares,Ascus fid ast 2.0 alfurese fady algor — antares,7,0,0.00031479,
+abt-buy,ciphered_words,gpt6luna,1,38096,ok,completed,Toshiba 22' Black LCD HDTV - 22AV500U,anidian 22' anker bap esca - ahankara,Anidian 22-inch Anker bap esca — ahankara,6,0,0.00031479,
+abt-buy,ciphered_words,gpt6luna,1,38106,ok,completed,Canon Black EF 70-300mm F/4-5.6 IS USM Telephoto Zoom Lens - 0345B002,aizle anker ku 70-betis j/4-5.6 of fez alopecoid cain brae - aldazine,Aizle Anker ku 70-betis J/4-5.6 of fez alopecoid cain brae — aldazine,11,0,0.00031479,
+abt-buy,ciphered_words,gpt6luna,1,38957,ok,completed,Lasonic ATSC Digital To Analog TV Converter Box - LTA260,alcaide dram arcadia yu abrash ve adjection goa - answer,Alcaide dram arcadia yu abrash ve adjection goa — answer,9,0,0.00031479,
+abt-buy,ciphered_words,gpt6luna,1,37211,ok,completed,Apple 1GB Pink 2nd Generation iPod Shuffle - MB811LLA,bothy sou bred mon aeromancer baya aidable - ammonium,Bothy sou bred mon aeromancer baya aidable — ammonium,9,0,0.00031479,
+abt-buy,ciphered_words,gpt6luna,2,38735,ok,completed,Logitech diNovo Edge Keyboard Windows Edition - 967685,aloewood apiose dote aglitter apoplex amandus - 967685,Unrecoverable from the provided text.,6,0,0.000443,"{""decoded"":[""Unrecoverable from the provided text."",""Unrecoverable from the provided text."",""Unrecoverable from the provided text."",""Unrecoverable from the provided text."",""Unrecoverable from the provided text."",""Unrecoverable from the provided text."",""Unrecoverable from the provided text."",""Unrecoverable from the provided text."",""Unrecoverable from the provided text."",""Unrecoverable from the provided text.""]}"
+abt-buy,ciphered_words,gpt6luna,2,34092,ok,completed,Samsung 32' Black Flat Panel Series 4 LCD HDTV - LN32A450,archeus 32' anker cote acari around 4 bap esca - albiness,Unrecoverable from the provided text.,9,0,0.000443,
+abt-buy,ciphered_words,gpt6luna,2,34476,ok,completed,Weber Premium Black Grill Cover - 7550,awing attagen anker beaut aimer - 7550,Unrecoverable from the provided text.,5,0,0.000443,
+abt-buy,ciphered_words,gpt6luna,2,25136,ok,completed,Denon 5 Disc CD Player - Black Finish - DCM390,breck 5 aura wa barkey - anker bacony - aedile,Unrecoverable from the provided text.,7,0,0.000443,
+abt-buy,ciphered_words,gpt6luna,2,31881,ok,completed,Linksys Wireless-G PrintServer - WPSM54G,apojove amolilla-s antialbumin - alumine,Unrecoverable from the provided text.,6,0,0.000443,
+abt-buy,ciphered_words,gpt6luna,2,33220,ok,completed,Sony 9' Digital Photo Frame In Black - DPFV900,dive 9' arcadia amuse bedip yu anker - aniline,Unrecoverable from the provided text.,7,0,0.000443,
+abt-buy,ciphered_words,gpt6luna,2,30602,ok,completed,Panasonic Integrated Black Telephone System With All-Digital Answering System - KXTS620B,alcarraza antifeudal anker aitkenite archil flea beg-arcadia alintatao archil - aphakial,Unrecoverable from the provided text.,12,0,0.000443,
+abt-buy,ciphered_words,gpt6luna,2,33562,ok,completed,Sony Cyber-Shot Black Digital Camera - DSCH10B,dive bevel-aquo anker arcadia backet - abiosis,Unrecoverable from the provided text.,8,0,0.000443,
+abt-buy,ciphered_words,gpt6luna,2,37182,ok,completed,Apple 16GB Black 2nd Generation iPod Touch - MB531LLA,bothy dari anker mon aeromancer baya batty - antebath,Unrecoverable from the provided text.,9,0,0.000443,
+abt-buy,ciphered_words,gpt6luna,2,37039,ok,completed,Klipsch 5.25' THX Ultra2 In-Ceiling White Loudspeaker - KS7502THX,alkanet 5.25' dob ablaut yu-atresic aread aggrandizer - altissimo,Unrecoverable from the provided text.,9,0,0.000443,
+abt-buy,ciphered_words,gpt6luna,3,17187,ok,completed,Universal IR/RF Remote - MX350,apostolic el/my adjust - ample,apostolic el/my adjust - ample,5,0,0.00030633,"{""decoded"":[""apostolic el/my adjust - ample"",""antipass adighe achenial anticardium pun - amphipnous"",""aizle agoho alcor accommodative acceder - agrege"",""li alphonsine aread st alburnum achilary accredited - admiration"",""dive dew-argon anker 8' agnathia hat barkey - amphigen"",""aizle amylan antanemic arcadia backet - aminate"",""anglicist wir bout care saw anosmia care athrob - altiloquence"",""anglicist iva aswell arcadia elmy-alburnum (bout) betel 6 baller care - abrogable"",""anglicist wir bedin aswell arcadia baller care - ampullated"",""amusive bardy ab affranchise - antihectic""]}"
+abt-buy,ciphered_words,gpt6luna,3,18441,ok,completed,Mosquito Magnet Defender Replacement Net - MM4000NET1,antipass adighe achenial anticardium pun - amphipnous,antipass adighe achenial anticardium pun - amphipnous,7,0,0.00030633,
+abt-buy,ciphered_words,gpt6luna,3,33493,ok,completed,Canon PIXMA MX850 Multifunction Printer - MX850C,aizle agoho alcor accommodative acceder - agrege,aizle agoho alcor accommodative acceder - agrege,7,0,0.00030633,
+abt-buy,ciphered_words,gpt6luna,3,32280,ok,completed,LG DLEX8377WM White XL Capacity Electric SteamDryer - DLEX8377WH,li alphonsine aread st alburnum achilary accredited - admiration,li alphonsine aread st alburnum achilary accredited - admiration,10,0,0.00030633,
+abt-buy,ciphered_words,gpt6luna,3,33758,ok,completed,Sony DVP-FX820 Black 8' Portable DVD Player - DVPFX820,dive dew-argon anker 8' agnathia hat barkey - amphigen,dive dew-argon anker 8' agnathia hat barkey - amphigen,8,0,0.00030633,
+abt-buy,ciphered_words,gpt6luna,3,37964,ok,completed,Canon Silver PowerShot Digital Camera - SD880IS,aizle amylan antanemic arcadia backet - aminate,aizle amylan antanemic arcadia backet - aminate,7,0,0.00030633,
+abt-buy,ciphered_words,gpt6luna,3,36345,ok,completed,Transcend 8GB SDHC Card And Compact Card Reader - TS8GSDHC6S5W,anglicist wir bout care saw anosmia care athrob - altiloquence,anglicist wir bout care saw anosmia care athrob - altiloquence,12,0,0.00030633,
+abt-buy,ciphered_words,gpt6luna,3,31992,ok,completed,Transcend 4GB Secure Digital High-Capacity (SDHC) Class 6 Memory Card - TS4GSDHC6,anglicist iva aswell arcadia elmy-alburnum (bout) betel 6 baller care - abrogable,anglicist iva aswell arcadia elmy-alburnum (bout) betel 6 baller care - abrogable,12,0,0.00030633,
+abt-buy,ciphered_words,gpt6luna,3,38483,ok,completed,Transcend 8GB Micro Secure Digital Memory Card - TS8GUSDHC6,anglicist wir bedin aswell arcadia baller care - ampullated,anglicist wir bedin aswell arcadia baller care - ampullated,9,0,0.00030633,
+abt-buy,ciphered_words,gpt6luna,3,35477,ok,completed,Griffin iTrip FM Transmitter - 4052TRPSEB,amusive bardy ab affranchise - antihectic,amusive bardy ab affranchise - antihectic,5,0,0.00030633,
+abt-buy,ciphered_words,haiku55,1,32889,ok,end_turn,Pioneer Sirius Bus Interface - CDSB10,algosis artery emm alloquial - azygos,Anatomy artery mm colloquial - azygos,5,0,6.776e-05,"{""decoded"": [""Anatomy artery mm colloquial - azygos"", ""Alcarraza anchor 8.5' agnathia hat barkey - accoast"", ""Li 24' advenient calm antifeudal atoll yu anchor annelidian - antiodont"", ""Amused barn jam wax annotine abuser - anticynic"", ""Dive anchor in beeve flea earl wax bay saw bamboo - anadromous"", ""Ascus fig ast 2.0 alfurese fady algor - antares"", ""Anidian 22' anchor bap esca - ahankara"", ""Aizle anchor ku 70-300mm f/4-5.6 of fez alopecoid cain brae - aldazine"", ""Alcaide dram arcadia yu abrash ve adjection goa - answer"", ""Bothy sou bred mon aeromancer bay aidable - ammonium""]}"
+abt-buy,ciphered_words,haiku55,1,33936,ok,end_turn,Panasonic Black 8.5' Portable DVD Player - DVDLS86,alcarraza anker 8.5' agnathia hat barkey - accoast,Alcarraza anchor 8.5' agnathia hat barkey - accoast,6,0,6.776e-05,
+abt-buy,ciphered_words,haiku55,1,35175,ok,end_turn,LG 24' LDS4821BB Semi Integrated Built In Black Dishwasher - LDS4821BK,li 24' advenient calm antifeudal atoll yu anker annelidian - antiodont,Li 24' advenient calm antifeudal atoll yu anchor annelidian - antiodont,11,0,6.776e-05,
+abt-buy,ciphered_words,haiku55,1,34126,ok,end_turn,Belkin Cush Top For Computer Laptop - F8N044SLV,amused bern jem wax annotine abuser - anticynic,Amused barn jam wax annotine abuser - anticynic,9,0,6.776e-05,
+abt-buy,ciphered_words,haiku55,1,38773,ok,end_turn,Sony Black HD Radio With Dock For iPod And iPhone - XDRS10HDIP,dive anker en beeve flea earl wax baya saw bambos - anadromous,Dive anchor in beeve flea earl wax bay saw bamboo - anadromous,12,0,6.776e-05,
+abt-buy,ciphered_words,haiku55,1,34301,ok,end_turn,LaCie 1TB USB 2.0 External Hard Drive - 301304U,ascus fid ast 2.0 alfurese fady algor - antares,Ascus fig ast 2.0 alfurese fady algor - antares,7,0,6.776e-05,
+abt-buy,ciphered_words,haiku55,1,38096,ok,end_turn,Toshiba 22' Black LCD HDTV - 22AV500U,anidian 22' anker bap esca - ahankara,Anidian 22' anchor bap esca - ahankara,6,0,6.776e-05,
+abt-buy,ciphered_words,haiku55,1,38106,ok,end_turn,Canon Black EF 70-300mm F/4-5.6 IS USM Telephoto Zoom Lens - 0345B002,aizle anker ku 70-betis j/4-5.6 of fez alopecoid cain brae - aldazine,Aizle anchor ku 70-300mm f/4-5.6 of fez alopecoid cain brae - aldazine,11,2,6.776e-05,
+abt-buy,ciphered_words,haiku55,1,38957,ok,end_turn,Lasonic ATSC Digital To Analog TV Converter Box - LTA260,alcaide dram arcadia yu abrash ve adjection goa - answer,Alcaide dram arcadia yu abrash ve adjection goa - answer,9,0,6.776e-05,
+abt-buy,ciphered_words,haiku55,1,37211,ok,end_turn,Apple 1GB Pink 2nd Generation iPod Shuffle - MB811LLA,bothy sou bred mon aeromancer baya aidable - ammonium,Bothy sou bred mon aeromancer bay aidable - ammonium,9,0,6.776e-05,
+abt-buy,ciphered_words,haiku55,2,38735,ok,end_turn,Logitech diNovo Edge Keyboard Windows Edition - 967685,aloewood apiose dote aglitter apoplex amandus - 967685,Aloe wood vase glitter apple candle - 967685,6,0,4.5350000000000005e-05,"{""decoded"": [""Aloe wood vase glitter apple candle - 967685"", ""Archer 32' anchor cote acari around 4 bag vase - albiness"", ""Swing attagen anchor beauty mirror - 7550"", ""Brick 5 aura wall barkey - anchor balcony - aisle"", ""Apple jove amolilla-s antialbumin - alumine"", ""Dive 9' arcadia amuse dip you anchor - aniline"", ""Alcarraza antifeudal anchor aitkenite archil flea beg-arcadia alintatao archil - aphakial"", ""Dive bevel-aquo anchor arcadia bracket - abiosis"", ""Bothy dari anchor mon aeromancer baya batty - antebath"", ""Blanket 5.25' dob ablaut you-atresic aread aggrandizer - altissimo""]}"
+abt-buy,ciphered_words,haiku55,2,34092,ok,end_turn,Samsung 32' Black Flat Panel Series 4 LCD HDTV - LN32A450,archeus 32' anker cote acari around 4 bap esca - albiness,Archer 32' anchor cote acari around 4 bag vase - albiness,9,0,4.5350000000000005e-05,
+abt-buy,ciphered_words,haiku55,2,34476,ok,end_turn,Weber Premium Black Grill Cover - 7550,awing attagen anker beaut aimer - 7550,Swing attagen anchor beauty mirror - 7550,5,0,4.5350000000000005e-05,
+abt-buy,ciphered_words,haiku55,2,25136,ok,end_turn,Denon 5 Disc CD Player - Black Finish - DCM390,breck 5 aura wa barkey - anker bacony - aedile,Brick 5 aura wall barkey - anchor balcony - aisle,7,0,4.5350000000000005e-05,
+abt-buy,ciphered_words,haiku55,2,31881,ok,end_turn,Linksys Wireless-G PrintServer - WPSM54G,apojove amolilla-s antialbumin - alumine,Apple jove amolilla-s antialbumin - alumine,6,0,4.5350000000000005e-05,
+abt-buy,ciphered_words,haiku55,2,33220,ok,end_turn,Sony 9' Digital Photo Frame In Black - DPFV900,dive 9' arcadia amuse bedip yu anker - aniline,Dive 9' arcadia amuse dip you anchor - aniline,7,0,4.5350000000000005e-05,
+abt-buy,ciphered_words,haiku55,2,30602,ok,end_turn,Panasonic Integrated Black Telephone System With All-Digital Answering System - KXTS620B,alcarraza antifeudal anker aitkenite archil flea beg-arcadia alintatao archil - aphakial,Alcarraza antifeudal anchor aitkenite archil flea beg-arcadia alintatao archil - aphakial,12,0,4.5350000000000005e-05,
+abt-buy,ciphered_words,haiku55,2,33562,ok,end_turn,Sony Cyber-Shot Black Digital Camera - DSCH10B,dive bevel-aquo anker arcadia backet - abiosis,Dive bevel-aquo anchor arcadia bracket - abiosis,8,0,4.5350000000000005e-05,
+abt-buy,ciphered_words,haiku55,2,37182,ok,end_turn,Apple 16GB Black 2nd Generation iPod Touch - MB531LLA,bothy dari anker mon aeromancer baya batty - antebath,Bothy dari anchor mon aeromancer baya batty - antebath,9,0,4.5350000000000005e-05,
+abt-buy,ciphered_words,haiku55,2,37039,ok,end_turn,Klipsch 5.25' THX Ultra2 In-Ceiling White Loudspeaker - KS7502THX,alkanet 5.25' dob ablaut yu-atresic aread aggrandizer - altissimo,Blanket 5.25' dob ablaut you-atresic aread aggrandizer - altissimo,9,0,4.5350000000000005e-05,
+abt-buy,ciphered_words,haiku55,3,17187,ok,end_turn,Universal IR/RF Remote - MX350,apostolic el/my adjust - ample,apostolic elmy adjust - ample,5,0,5.817e-05,"{""decoded"": [""apostolic elmy adjust - ample"", ""antipass adige achenial anticardium pun - amphipnous"", ""aisle agoho alcor accommodative accede - agrege"", ""li alphonsine aread st alburnum achilary accredited - admiration"", ""dive dew-argon anker 8' agnathia hat barkey - amphigen"", ""aisle amylan antanemic arcadia backet - aminate"", ""anglicist wir bout care saw anosmia care athrob - altiloquence"", ""anglicist iva aswell arcadia elmy-alburnum (bout) betel 6 baller care - abrogable"", ""anglicist wir bedin aswell arcadia baller care - ampullated"", ""amusive bardy ab affranchise - antihectic""]}"
+abt-buy,ciphered_words,haiku55,3,18441,ok,end_turn,Mosquito Magnet Defender Replacement Net - MM4000NET1,antipass adighe achenial anticardium pun - amphipnous,antipass adige achenial anticardium pun - amphipnous,7,0,5.817e-05,
+abt-buy,ciphered_words,haiku55,3,33493,ok,end_turn,Canon PIXMA MX850 Multifunction Printer - MX850C,aizle agoho alcor accommodative acceder - agrege,aisle agoho alcor accommodative accede - agrege,7,0,5.817e-05,
+abt-buy,ciphered_words,haiku55,3,32280,ok,end_turn,LG DLEX8377WM White XL Capacity Electric SteamDryer - DLEX8377WH,li alphonsine aread st alburnum achilary accredited - admiration,li alphonsine aread st alburnum achilary accredited - admiration,10,0,5.817e-05,
+abt-buy,ciphered_words,haiku55,3,33758,ok,end_turn,Sony DVP-FX820 Black 8' Portable DVD Player - DVPFX820,dive dew-argon anker 8' agnathia hat barkey - amphigen,dive dew-argon anker 8' agnathia hat barkey - amphigen,8,0,5.817e-05,
+abt-buy,ciphered_words,haiku55,3,37964,ok,end_turn,Canon Silver PowerShot Digital Camera - SD880IS,aizle amylan antanemic arcadia backet - aminate,aisle amylan antanemic arcadia backet - aminate,7,0,5.817e-05,
+abt-buy,ciphered_words,haiku55,3,36345,ok,end_turn,Transcend 8GB SDHC Card And Compact Card Reader - TS8GSDHC6S5W,anglicist wir bout care saw anosmia care athrob - altiloquence,anglicist wir bout care saw anosmia care athrob - altiloquence,12,0,5.817e-05,
+abt-buy,ciphered_words,haiku55,3,31992,ok,end_turn,Transcend 4GB Secure Digital High-Capacity (SDHC) Class 6 Memory Card - TS4GSDHC6,anglicist iva aswell arcadia elmy-alburnum (bout) betel 6 baller care - abrogable,anglicist iva aswell arcadia elmy-alburnum (bout) betel 6 baller care - abrogable,12,0,5.817e-05,
+abt-buy,ciphered_words,haiku55,3,38483,ok,end_turn,Transcend 8GB Micro Secure Digital Memory Card - TS8GUSDHC6,anglicist wir bedin aswell arcadia baller care - ampullated,anglicist wir bedin aswell arcadia baller care - ampullated,9,0,5.817e-05,
+abt-buy,ciphered_words,haiku55,3,35477,ok,end_turn,Griffin iTrip FM Transmitter - 4052TRPSEB,amusive bardy ab affranchise - antihectic,amusive bardy ab affranchise - antihectic,5,0,5.817e-05,
+abt-buy,ciphered_words,sonnet55,1,32889,ok,end_turn,Pioneer Sirius Bus Interface - CDSB10,algosis artery emm alloquial - azygos,Wireless Bluetooth Speaker with Microphone - Black,5,0,0.0009992,"{""decoded"": [""Wireless Bluetooth Speaker with Microphone - Black"", ""Leather Case for 8.5' Tablet with Stand Holder - Brown"", ""LED 24' Monitor Full HD Display for Gaming Computer - Black"", ""Memory Card Reader with USB Adapter - Silver"", ""Phone Case for iPhone with Card Holder and Stand - Blue"", ""Wireless Mouse 2.4 GHz Optical for Laptop - Gray"", ""Portable 22' Monitor for Laptop Stand - White"", ""Lens for Canon 70-300 f/4-5.6 with Hood and Cap - Black"", ""Charger Cable USB for Android Phone and Tablet - White"", ""Water Bottle Stainless Steel with Lid - Silver""]}"
+abt-buy,ciphered_words,sonnet55,1,33936,ok,end_turn,Panasonic Black 8.5' Portable DVD Player - DVDLS86,alcarraza anker 8.5' agnathia hat barkey - accoast,Leather Case for 8.5' Tablet with Stand Holder - Brown,6,0,0.0009992,
+abt-buy,ciphered_words,sonnet55,1,35175,ok,end_turn,LG 24' LDS4821BB Semi Integrated Built In Black Dishwasher - LDS4821BK,li 24' advenient calm antifeudal atoll yu anker annelidian - antiodont,LED 24' Monitor Full HD Display for Gaming Computer - Black,11,1,0.0009992,
+abt-buy,ciphered_words,sonnet55,1,34126,ok,end_turn,Belkin Cush Top For Computer Laptop - F8N044SLV,amused bern jem wax annotine abuser - anticynic,Memory Card Reader with USB Adapter - Silver,9,0,0.0009992,
+abt-buy,ciphered_words,sonnet55,1,38773,ok,end_turn,Sony Black HD Radio With Dock For iPod And iPhone - XDRS10HDIP,dive anker en beeve flea earl wax baya saw bambos - anadromous,Phone Case for iPhone with Card Holder and Stand - Blue,12,4,0.0009992,
+abt-buy,ciphered_words,sonnet55,1,34301,ok,end_turn,LaCie 1TB USB 2.0 External Hard Drive - 301304U,ascus fid ast 2.0 alfurese fady algor - antares,Wireless Mouse 2.4 GHz Optical for Laptop - Gray,7,0,0.0009992,
+abt-buy,ciphered_words,sonnet55,1,38096,ok,end_turn,Toshiba 22' Black LCD HDTV - 22AV500U,anidian 22' anker bap esca - ahankara,Portable 22' Monitor for Laptop Stand - White,6,0,0.0009992,
+abt-buy,ciphered_words,sonnet55,1,38106,ok,end_turn,Canon Black EF 70-300mm F/4-5.6 IS USM Telephoto Zoom Lens - 0345B002,aizle anker ku 70-betis j/4-5.6 of fez alopecoid cain brae - aldazine,Lens for Canon 70-300 f/4-5.6 with Hood and Cap - Black,11,4,0.0009992,
+abt-buy,ciphered_words,sonnet55,1,38957,ok,end_turn,Lasonic ATSC Digital To Analog TV Converter Box - LTA260,alcaide dram arcadia yu abrash ve adjection goa - answer,Charger Cable USB for Android Phone and Tablet - White,9,0,0.0009992,
+abt-buy,ciphered_words,sonnet55,1,37211,ok,end_turn,Apple 1GB Pink 2nd Generation iPod Shuffle - MB811LLA,bothy sou bred mon aeromancer baya aidable - ammonium,Water Bottle Stainless Steel with Lid - Silver,9,0,0.0009992,
+abt-buy,ciphered_words,sonnet55,2,38735,ok,end_turn,Logitech diNovo Edge Keyboard Windows Edition - 967685,aloewood apiose dote aglitter apoplex amandus - 967685,Aloe vera dot glitter apron - 967685,6,0,0.000503,"These lines look like each original word was swapped for another word that starts with a similar letter, so I can't recover them with any confidence. The text is mostly unrecoverable, and what follows is a guess.
+
+The numbers and the unit marks (32', 9', 5.25') seem to be preserved, and the structure looks like product titles such as ""Brand 32' Something - Model"". The word ""anker"" recurs in several lines and may stand for something like ""Anker"", the brand. Recovering the other words would require guessing, so I have given plausible readings with that caveat.
+
+```json
+{""decoded"": [
+""Aloe vera dot glitter apron - 967685"",
+""Arch 32' Anker cord cable around 4 bag - album"",
+""Awning attache Anker beauty air - 7550"",
+""Break 5 aura wall bark - Anker bacon - aid"",
+""Apple amoeba-s antialbum - alumni"",
+""Dive 9' arcade amuse bed Anker - aniline"",
+""Alcazar antiseed Anker kite archer flea bag-arcade alien archer - aphid"",
+""Dive bevel-aqua Anker arcade backet - abyss"",
+""Both dark Anker mon aero baby batty - bath"",
+""Alkaline 5.25' dog ablaze-at read aggregator - alto""
+]}
+```"
+abt-buy,ciphered_words,sonnet55,2,34092,ok,end_turn,Samsung 32' Black Flat Panel Series 4 LCD HDTV - LN32A450,archeus 32' anker cote acari around 4 bap esca - albiness,Arch 32' Anker cord cable around 4 bag - album,9,0,0.000503,
+abt-buy,ciphered_words,sonnet55,2,34476,ok,end_turn,Weber Premium Black Grill Cover - 7550,awing attagen anker beaut aimer - 7550,Awning attache Anker beauty air - 7550,5,0,0.000503,
+abt-buy,ciphered_words,sonnet55,2,25136,ok,end_turn,Denon 5 Disc CD Player - Black Finish - DCM390,breck 5 aura wa barkey - anker bacony - aedile,Break 5 aura wall bark - Anker bacon - aid,7,0,0.000503,
+abt-buy,ciphered_words,sonnet55,2,31881,ok,end_turn,Linksys Wireless-G PrintServer - WPSM54G,apojove amolilla-s antialbumin - alumine,Apple amoeba-s antialbum - alumni,6,0,0.000503,
+abt-buy,ciphered_words,sonnet55,2,33220,ok,end_turn,Sony 9' Digital Photo Frame In Black - DPFV900,dive 9' arcadia amuse bedip yu anker - aniline,Dive 9' arcade amuse bed Anker - aniline,7,0,0.000503,
+abt-buy,ciphered_words,sonnet55,2,30602,ok,end_turn,Panasonic Integrated Black Telephone System With All-Digital Answering System - KXTS620B,alcarraza antifeudal anker aitkenite archil flea beg-arcadia alintatao archil - aphakial,Alcazar antiseed Anker kite archer flea bag-arcade alien archer - aphid,12,0,0.000503,
+abt-buy,ciphered_words,sonnet55,2,33562,ok,end_turn,Sony Cyber-Shot Black Digital Camera - DSCH10B,dive bevel-aquo anker arcadia backet - abiosis,Dive bevel-aqua Anker arcade backet - abyss,8,0,0.000503,
+abt-buy,ciphered_words,sonnet55,2,37182,ok,end_turn,Apple 16GB Black 2nd Generation iPod Touch - MB531LLA,bothy dari anker mon aeromancer baya batty - antebath,Both dark Anker mon aero baby batty - bath,9,0,0.000503,
+abt-buy,ciphered_words,sonnet55,2,37039,ok,end_turn,Klipsch 5.25' THX Ultra2 In-Ceiling White Loudspeaker - KS7502THX,alkanet 5.25' dob ablaut yu-atresic aread aggrandizer - altissimo,Alkaline 5.25' dog ablaze-at read aggregator - alto,9,0,0.000503,
+abt-buy,ciphered_words,sonnet55,3,17187,ok,end_turn,Universal IR/RF Remote - MX350,apostolic el/my adjust - ample,Adjustable Elbow Support - Ample,5,0,0.0009514,"These lines look like product listings in which words were replaced by dictionary words that are alphabetically close to the originals, with a trailing ""- word"" suffix. Recovering the original text exactly is not really possible. The best I can do is guess plausible product titles, so the decoded lines below are loose reconstructions rather than confident recoveries.
+
+The pattern seems to be that each line is a product name, and the final word after the dash is a differently altered token. The words are mostly obscure ""a"" words, so I treated the alterations as a kind of cipher where each token maps to a common word.
+
+The guesses:
+
+1. ""apostolic el/my adjust - ample"" → ""Adjustable Elbow Support - Ample""
+2. ""antipass adighe achenial anticardium pun - amphipnous"" → ""Anti-slip Adhesive Pad Set""
+3. ""aizle agoho alcor accommodative acceder - agrege"" → ""Aisle Runner Rug Accent""
+4. ""li alphonsine aread st alburnum achilary accredited - admiration"" → ""Lithium Alkaline AA Battery Set""
+5. ""dive dew-argon anker 8' agnathia hat barkey - amphigen"" → ""Dive Dry Bag 8' Waterproof Hat""
+6. ""aizle amylan antanemic arcadia backet - aminate"" → ""Aisle Runner Anti-fatigue Mat""
+7. ""anglicist wir bout care saw anosmia care athrob - altiloquence"" → ""English Wire Bound Care Saw""
+8. ""anglicist iva aswell arcadia elmy-alburnum (bout) betel 6 baller care - abrogable"" → ""English Ivy Wall Art""
+9. ""anglicist wir bedin aswell arcadia baller care - ampullated"" → ""English Wire Bed Wall Art""
+10. ""amusive bardy ab affranchise - antihectic"" → ""Amusing Birdy Ab Franchise""
+
+These are uncertain guesses.
+
+```json
+{""decoded"": [""Adjustable Elbow Support - Ample"", ""Anti-slip Adhesive Pad Set - Amphi"", ""Aisle Runner Rug Accent - Agree"", ""Lithium Alkaline AA Battery Set - Admiration"", ""Dive Dry Bag 8' Waterproof Hat - Amphi"", ""Aisle Runner Anti-fatigue Mat - Aminate"", ""English Wire Bound Care Saw - Altiloquence"", ""English Ivy Wall Art 6 - Abrogable"", ""English Wire Bed Wall Art - Ampullated"", ""Amusing Birdy Ab Franchise - Antihectic""]}
+```"
+abt-buy,ciphered_words,sonnet55,3,18441,ok,end_turn,Mosquito Magnet Defender Replacement Net - MM4000NET1,antipass adighe achenial anticardium pun - amphipnous,Anti-slip Adhesive Pad Set - Amphi,7,0,0.0009514,
+abt-buy,ciphered_words,sonnet55,3,33493,ok,end_turn,Canon PIXMA MX850 Multifunction Printer - MX850C,aizle agoho alcor accommodative acceder - agrege,Aisle Runner Rug Accent - Agree,7,0,0.0009514,
+abt-buy,ciphered_words,sonnet55,3,32280,ok,end_turn,LG DLEX8377WM White XL Capacity Electric SteamDryer - DLEX8377WH,li alphonsine aread st alburnum achilary accredited - admiration,Lithium Alkaline AA Battery Set - Admiration,10,0,0.0009514,
+abt-buy,ciphered_words,sonnet55,3,33758,ok,end_turn,Sony DVP-FX820 Black 8' Portable DVD Player - DVPFX820,dive dew-argon anker 8' agnathia hat barkey - amphigen,Dive Dry Bag 8' Waterproof Hat - Amphi,8,0,0.0009514,
+abt-buy,ciphered_words,sonnet55,3,37964,ok,end_turn,Canon Silver PowerShot Digital Camera - SD880IS,aizle amylan antanemic arcadia backet - aminate,Aisle Runner Anti-fatigue Mat - Aminate,7,0,0.0009514,
+abt-buy,ciphered_words,sonnet55,3,36345,ok,end_turn,Transcend 8GB SDHC Card And Compact Card Reader - TS8GSDHC6S5W,anglicist wir bout care saw anosmia care athrob - altiloquence,English Wire Bound Care Saw - Altiloquence,12,0,0.0009514,
+abt-buy,ciphered_words,sonnet55,3,31992,ok,end_turn,Transcend 4GB Secure Digital High-Capacity (SDHC) Class 6 Memory Card - TS4GSDHC6,anglicist iva aswell arcadia elmy-alburnum (bout) betel 6 baller care - abrogable,English Ivy Wall Art 6 - Abrogable,12,0,0.0009514,
+abt-buy,ciphered_words,sonnet55,3,38483,ok,end_turn,Transcend 8GB Micro Secure Digital Memory Card - TS8GUSDHC6,anglicist wir bedin aswell arcadia baller care - ampullated,English Wire Bed Wall Art - Ampullated,9,0,0.0009514,
+abt-buy,ciphered_words,sonnet55,3,35477,ok,end_turn,Griffin iTrip FM Transmitter - 4052TRPSEB,amusive bardy ab affranchise - antihectic,Amusing Birdy Ab Franchise - Antihectic,5,0,0.0009514,
+amazon-google,ciphered_letters,gpt6luna,1,b000a0s3x6,ok,completed,caillou ready for school (pc & mac),jqpssxv rtqzd gxr yjkxxs (nj & bqj),Unable to recover uniquely from the text provided.,6,0,0.00048306,"{""decoded"":[""Unable to recover uniquely from the text provided."",""Unable to recover uniquely from the text provided."",""Unable to recover uniquely from the text provided."",""Unable to recover uniquely from the text provided."",""Unable to recover uniquely from the text provided."",""Unable to recover uniquely from the text provided."",""Unable to recover uniquely from the text provided."",""Unable to recover uniquely from the text provided."",""Unable to recover uniquely from the text provided."",""Unable to recover uniquely from the text provided.""]}"
+amazon-google,ciphered_letters,gpt6luna,1,b000056b62,ok,completed,cook'n vegetarian,jxxl'o htfteqrpqo,Unable to recover uniquely from the text provided.,3,0,0.00048306,
+amazon-google,ciphered_letters,gpt6luna,1,b000o39qyo,ok,completed,city of heroes good vs. evil edition,jped xg ktrxty fxxz hy. thps tzpepxo,Unable to recover uniquely from the text provided.,7,0,0.00048306,
+amazon-google,ciphered_letters,gpt6luna,1,b000pienlo,ok,completed,onone plug-in suite 3 for adobe photoshop,xoxot nsvf-po yvpet 3 gxr qzxmt nkxexykxn,Unable to recover uniquely from the text provided.,7,0,0.00048306,
+amazon-google,ciphered_letters,gpt6luna,1,b0006b64v2,ok,completed,star wars battlefront (mac),yeqr iqry mqeestgrxoe (bqj),Unable to recover uniquely from the text provided.,4,0,0.00048306,
+amazon-google,ciphered_letters,gpt6luna,1,b00006iqth,ok,completed,halo (mac),kqsx (bqj),Unable to recover uniquely from the text provided.,2,0,0.00048306,
+amazon-google,ciphered_letters,gpt6luna,1,b000lp6jky,ok,completed,roxio toast 8 titanium,rxapx exqye 8 epeqopvb,Unable to recover uniquely from the text provided.,3,0,0.00048306,
+amazon-google,ciphered_letters,gpt6luna,1,b000922dwc,ok,completed,zonealarm firewall pro 5 (free upgrade to new version),uxotqsqrb gprtiqss nrx 5 (grtt vnfrqzt ex oti htrypxo),Unable to recover uniquely from the text provided.,8,1,0.00048306,
+amazon-google,ciphered_letters,gpt6luna,1,b000hvtk9e,ok,completed,1pk internet sec ste 2007 oem,1nl poetrote ytj yet 2007 xtb,Unable to recover uniquely from the text provided.,5,0,0.00048306,
+amazon-google,ciphered_letters,gpt6luna,1,b000gwfgqk,ok,completed,palo alto business plan pro premier 2007,nqsx qsex mvypotyy nsqo nrx nrtbptr 2007,Unable to recover uniquely from the text provided.,6,0,0.00048306,
+amazon-google,ciphered_letters,gpt6luna,2,b000gcd6lw,ok,completed,computrace lojack for laptops - 3 year license (mac),jxbnverqjt sxwqjl gxr sqnexny - 3 dtqr spjtoyt (bqj),Unrecoverable from the text alone: jxbnverqjt sxwqjl gxr sqnexny - 3 dtqr spjtoyt (bqj),7,0,0.00043511,"{""decoded"":[""Unrecoverable from the text alone: jxbnverqjt sxwqjl gxr sqnexny - 3 dtqr spjtoyt (bqj)"",""Unrecoverable from the text alone: qeqrp qrjqzt jsqyypjy (bqj)"",""Unrecoverable from the text alone: cvpjlto stfqs mvypotyy nrx 2007"",""Unrecoverable from the text alone: utoz yevzpx 5.1 (ipo/bqj)"",""Unrecoverable from the text alone: kqozbqrl xagxrz qbtrpjqo ztyl zpjepxoqrd qoz ektyqvrvy"",""Unrecoverable from the text alone: bpjrxbqe nrxexfx"",""Unrecoverable from the text alone: ypbnsd nve yxgeiqrt zqeq tspbpoqexr"",""Unrecoverable from the text alone: bqyetrjxxl ztsvat sxi jqrm"",""Unrecoverable from the text alone: qt nqpoetr h9 ipo/bqj mxa"",""Unrecoverable from the text alone: kxdst nvuust & mxqrz fqbty 2007""]}"
+amazon-google,ciphered_letters,gpt6luna,2,b0006oei8u,ok,completed,atari arcade classics (mac),qeqrp qrjqzt jsqyypjy (bqj),Unrecoverable from the text alone: qeqrp qrjqzt jsqyypjy (bqj),4,0,0.00043511,
+amazon-google,ciphered_letters,gpt6luna,2,b000h2421o,ok,completed,quicken legal business pro 2007,cvpjlto stfqs mvypotyy nrx 2007,Unrecoverable from the text alone: cvpjlto stfqs mvypotyy nrx 2007,4,0,0.00043511,
+amazon-google,ciphered_letters,gpt6luna,2,b000fcyts2,ok,completed,zend studio 5.1 (win/mac),utoz yevzpx 5.1 (ipo/bqj),Unrecoverable from the text alone: utoz yevzpx 5.1 (ipo/bqj),4,0,0.00043511,
+amazon-google,ciphered_letters,gpt6luna,2,b00013wh0w,ok,completed,handmark oxford american desk dictionary and thesaurus,kqozbqrl xagxrz qbtrpjqo ztyl zpjepxoqrd qoz ektyqvrvy,Unrecoverable from the text alone: kqozbqrl xagxrz qbtrpjqo ztyl zpjepxoqrd qoz ektyqvrvy,7,0,0.00043511,
+amazon-google,ciphered_letters,gpt6luna,2,b000mu6mve,ok,completed,micromat protogo,bpjrxbqe nrxexfx,Unrecoverable from the text alone: bpjrxbqe nrxexfx,2,0,0.00043511,
+amazon-google,ciphered_letters,gpt6luna,2,b000ccvp0a,ok,completed,simply put software data eliminator,ypbnsd nve yxgeiqrt zqeq tspbpoqexr,Unrecoverable from the text alone: ypbnsd nve yxgeiqrt zqeq tspbpoqexr,5,0,0.00043511,
+amazon-google,ciphered_letters,gpt6luna,2,b00024yohy,ok,completed,mastercook deluxe low carb,bqyetrjxxl ztsvat sxi jqrm,Unrecoverable from the text alone: bqyetrjxxl ztsvat sxi jqrm,4,0,0.00043511,
+amazon-google,ciphered_letters,gpt6luna,2,b00030cbu4,ok,completed,ae painter v9 win/mac box,qt nqpoetr h9 ipo/bqj mxa,Unrecoverable from the text alone: qt nqpoetr h9 ipo/bqj mxa,6,0,0.00043511,
+amazon-google,ciphered_letters,gpt6luna,2,b000egidpe,ok,completed,hoyle puzzle & board games 2007,kxdst nvuust & mxqrz fqbty 2007,Unrecoverable from the text alone: kxdst nvuust & mxqrz fqbty 2007,4,0,0.00043511,
+amazon-google,ciphered_letters,gpt6luna,3,b000ozhfsq,ok,completed,tlc dr. seuss reading learning system 2008,esj zr. ytvyy rtqzpof stqropof ydyetb 2008,TLC Dr. Seuss Reading Learning System 2008,6,6,0.00040857,"{""decoded"":[""TLC Dr. Seuss Reading Learning System 2008"",""ProCurve VPN Client Software Unlimited Client Licenses"",""The Print Shop Design Suite Pro [unclear] The Print Shop"",""Movies on PSP"",""Aquarium 3-in-One Collection (Win/Mac)"",""Star Wars: Empire at War (Intel Only Macs)"",""ZoneAlarm Pro Firewall"",""High School Advantage 2007"",""40 Years of the Avengers"",""RollerCoaster Tycoon 3: Soaked""]}"
+amazon-google,ciphered_letters,gpt6luna,3,b0009hmx36,ok,completed,procurve vpn client software unlimited client licenses,nrxjvrht hno jsptoe yxgeiqrt vospbpetz jsptoe spjtoyty,ProCurve VPN Client Software Unlimited Client Licenses,7,7,0.00040857,
+amazon-google,ciphered_letters,gpt6luna,3,b000hed3gm,ok,completed,the print shop design suite pro ed sb cs by the print shop,ekt nrpoe ykxn ztypfo yvpet nrx tz ym jy md ekt nrpoe ykxn,The Print Shop Design Suite Pro [unclear] The Print Shop,13,9,0.00040857,
+amazon-google,ciphered_letters,gpt6luna,3,b000bnb72g,ok,completed,movies on psp,bxhpty xo nyn,Movies on PSP,3,3,0.00040857,
+amazon-google,ciphered_letters,gpt6luna,3,b000aa8796,ok,completed,aquarium 3-in-one collection (win/mac),qcvqrpvb 3-po-xot jxsstjepxo (ipo/bqj),Aquarium 3-in-One Collection (Win/Mac),6,6,0.00040857,
+amazon-google,ciphered_letters,gpt6luna,3,b000lrdlia,ok,completed,star wars empire at war (intel only macs),yeqr iqry tbnprt qe iqr (poets xosd bqjy),Star Wars: Empire at War (Intel Only Macs),8,8,0.00040857,
+amazon-google,ciphered_letters,gpt6luna,3,b000hkpfje,ok,completed,zonealarm pro firewall,uxotqsqrb nrx gprtiqss,ZoneAlarm Pro Firewall,3,3,0.00040857,
+amazon-google,ciphered_letters,gpt6luna,3,b000fer1d0,ok,completed,high school advantage 2007,kpfk yjkxxs qzhqoeqft 2007,High School Advantage 2007,3,3,0.00040857,
+amazon-google,ciphered_letters,gpt6luna,3,b000fjsa2g,ok,completed,40 years of the avengers,40 dtqry xg ekt qhtoftry,40 Years of the Avengers,4,4,0.00040857,
+amazon-google,ciphered_letters,gpt6luna,3,b000n5meva,ok,completed,rollercoaster tycoon 3: soaked,rxsstrjxqyetr edjxxo 3: yxqltz,RollerCoaster Tycoon 3: Soaked,3,3,0.00040857,
+amazon-google,ciphered_letters,haiku55,1,b000a0s3x6,ok,end_turn,caillou ready for school (pc & mac),jqpssxv rtqzd gxr yjkxxs (nj & bqj),Stylish Dress for Women (S & M),6,1,0.00014949,"{""decoded"": [""Stylish Dress for Women (S & M)"", ""Cool's Wardrobe"", ""Made of Cotton. Easy to Wear. These"", ""Water-proof Shoes for 3 Men and Women"", ""Best Seller (New)"", ""Shoes (New)"", ""Super Quality Cotton Dress"", ""Mountain Hiking Boots for 5 (Free Shipping to the US)"", ""New Arrival Stylish Tops and Shorts 2007"", ""Sold Only Between Market Stores 2007""]}"
+amazon-google,ciphered_letters,haiku55,1,b000056b62,ok,end_turn,cook'n vegetarian,jxxl'o htfteqrpqo,Cool's Wardrobe,3,0,0.00014949,
+amazon-google,ciphered_letters,haiku55,1,b000o39qyo,ok,end_turn,city of heroes good vs. evil edition,jped xg ktrxty fxxz hy. thps tzpepxo,Made of Cotton. Easy to Wear. These,7,1,0.00014949,
+amazon-google,ciphered_letters,haiku55,1,b000pienlo,ok,end_turn,onone plug-in suite 3 for adobe photoshop,xoxot nsvf-po yvpet 3 gxr qzxmt nkxexykxn,Water-proof Shoes for 3 Men and Women,7,1,0.00014949,
+amazon-google,ciphered_letters,haiku55,1,b0006b64v2,ok,end_turn,star wars battlefront (mac),yeqr iqry mqeestgrxoe (bqj),Best Seller (New),4,0,0.00014949,
+amazon-google,ciphered_letters,haiku55,1,b00006iqth,ok,end_turn,halo (mac),kqsx (bqj),Shoes (New),2,0,0.00014949,
+amazon-google,ciphered_letters,haiku55,1,b000lp6jky,ok,end_turn,roxio toast 8 titanium,rxapx exqye 8 epeqopvb,Super Quality Cotton Dress,3,0,0.00014949,
+amazon-google,ciphered_letters,haiku55,1,b000922dwc,ok,end_turn,zonealarm firewall pro 5 (free upgrade to new version),uxotqsqrb gprtiqss nrx 5 (grtt vnfrqzt ex oti htrypxo),Mountain Hiking Boots for 5 (Free Shipping to the US),8,2,0.00014949,
+amazon-google,ciphered_letters,haiku55,1,b000hvtk9e,ok,end_turn,1pk internet sec ste 2007 oem,1nl poetrote ytj yet 2007 xtb,New Arrival Stylish Tops and Shorts 2007,5,0,0.00014949,
+amazon-google,ciphered_letters,haiku55,1,b000gwfgqk,ok,end_turn,palo alto business plan pro premier 2007,nqsx qsex mvypotyy nsqo nrx nrtbptr 2007,Sold Only Between Market Stores 2007,6,0,0.00014949,
+amazon-google,ciphered_letters,haiku55,2,b000gcd6lw,refusal,refusal,computrace lojack for laptops - 3 year license (mac),jxbnverqjt sxwqjl gxr sqnexny - 3 dtqr spjtoyt (bqj),,7,0,0.00030797,
+amazon-google,ciphered_letters,haiku55,2,b0006oei8u,refusal,refusal,atari arcade classics (mac),qeqrp qrjqzt jsqyypjy (bqj),,4,0,0.00030797,
+amazon-google,ciphered_letters,haiku55,2,b000h2421o,refusal,refusal,quicken legal business pro 2007,cvpjlto stfqs mvypotyy nrx 2007,,4,0,0.00030797,
+amazon-google,ciphered_letters,haiku55,2,b000fcyts2,refusal,refusal,zend studio 5.1 (win/mac),utoz yevzpx 5.1 (ipo/bqj),,4,0,0.00030797,
+amazon-google,ciphered_letters,haiku55,2,b00013wh0w,refusal,refusal,handmark oxford american desk dictionary and thesaurus,kqozbqrl xagxrz qbtrpjqo ztyl zpjepxoqrd qoz ektyqvrvy,,7,0,0.00030797,
+amazon-google,ciphered_letters,haiku55,2,b000mu6mve,refusal,refusal,micromat protogo,bpjrxbqe nrxexfx,,2,0,0.00030797,
+amazon-google,ciphered_letters,haiku55,2,b000ccvp0a,refusal,refusal,simply put software data eliminator,ypbnsd nve yxgeiqrt zqeq tspbpoqexr,,5,0,0.00030797,
+amazon-google,ciphered_letters,haiku55,2,b00024yohy,refusal,refusal,mastercook deluxe low carb,bqyetrjxxl ztsvat sxi jqrm,,4,0,0.00030797,
+amazon-google,ciphered_letters,haiku55,2,b00030cbu4,refusal,refusal,ae painter v9 win/mac box,qt nqpoetr h9 ipo/bqj mxa,,6,0,0.00030797,
+amazon-google,ciphered_letters,haiku55,2,b000egidpe,refusal,refusal,hoyle puzzle & board games 2007,kxdst nvuust & mxqrz fqbty 2007,,4,0,0.00030797,
+amazon-google,ciphered_letters,haiku55,3,b000ozhfsq,refusal,refusal,tlc dr. seuss reading learning system 2008,esj zr. ytvyy rtqzpof stqropof ydyetb 2008,,6,0,5.2249999999999996e-05,
+amazon-google,ciphered_letters,haiku55,3,b0009hmx36,refusal,refusal,procurve vpn client software unlimited client licenses,nrxjvrht hno jsptoe yxgeiqrt vospbpetz jsptoe spjtoyty,,7,0,5.2249999999999996e-05,
+amazon-google,ciphered_letters,haiku55,3,b000hed3gm,refusal,refusal,the print shop design suite pro ed sb cs by the print shop,ekt nrpoe ykxn ztypfo yvpet nrx tz ym jy md ekt nrpoe ykxn,,13,0,5.2249999999999996e-05,
+amazon-google,ciphered_letters,haiku55,3,b000bnb72g,refusal,refusal,movies on psp,bxhpty xo nyn,,3,0,5.2249999999999996e-05,
+amazon-google,ciphered_letters,haiku55,3,b000aa8796,refusal,refusal,aquarium 3-in-one collection (win/mac),qcvqrpvb 3-po-xot jxsstjepxo (ipo/bqj),,6,0,5.2249999999999996e-05,
+amazon-google,ciphered_letters,haiku55,3,b000lrdlia,refusal,refusal,star wars empire at war (intel only macs),yeqr iqry tbnprt qe iqr (poets xosd bqjy),,8,0,5.2249999999999996e-05,
+amazon-google,ciphered_letters,haiku55,3,b000hkpfje,refusal,refusal,zonealarm pro firewall,uxotqsqrb nrx gprtiqss,,3,0,5.2249999999999996e-05,
+amazon-google,ciphered_letters,haiku55,3,b000fer1d0,refusal,refusal,high school advantage 2007,kpfk yjkxxs qzhqoeqft 2007,,3,0,5.2249999999999996e-05,
+amazon-google,ciphered_letters,haiku55,3,b000fjsa2g,refusal,refusal,40 years of the avengers,40 dtqry xg ekt qhtoftry,,4,0,5.2249999999999996e-05,
+amazon-google,ciphered_letters,haiku55,3,b000n5meva,refusal,refusal,rollercoaster tycoon 3: soaked,rxsstrjxqyetr edjxxo 3: yxqltz,,3,0,5.2249999999999996e-05,
+amazon-google,ciphered_letters,sonnet55,1,b000a0s3x6,refusal,refusal,caillou ready for school (pc & mac),jqpssxv rtqzd gxr yjkxxs (nj & bqj),,6,0,6.88e-05,
+amazon-google,ciphered_letters,sonnet55,1,b000056b62,refusal,refusal,cook'n vegetarian,jxxl'o htfteqrpqo,,3,0,6.88e-05,
+amazon-google,ciphered_letters,sonnet55,1,b000o39qyo,refusal,refusal,city of heroes good vs. evil edition,jped xg ktrxty fxxz hy. thps tzpepxo,,7,0,6.88e-05,
+amazon-google,ciphered_letters,sonnet55,1,b000pienlo,refusal,refusal,onone plug-in suite 3 for adobe photoshop,xoxot nsvf-po yvpet 3 gxr qzxmt nkxexykxn,,7,0,6.88e-05,
+amazon-google,ciphered_letters,sonnet55,1,b0006b64v2,refusal,refusal,star wars battlefront (mac),yeqr iqry mqeestgrxoe (bqj),,4,0,6.88e-05,
+amazon-google,ciphered_letters,sonnet55,1,b00006iqth,refusal,refusal,halo (mac),kqsx (bqj),,2,0,6.88e-05,
+amazon-google,ciphered_letters,sonnet55,1,b000lp6jky,refusal,refusal,roxio toast 8 titanium,rxapx exqye 8 epeqopvb,,3,0,6.88e-05,
+amazon-google,ciphered_letters,sonnet55,1,b000922dwc,refusal,refusal,zonealarm firewall pro 5 (free upgrade to new version),uxotqsqrb gprtiqss nrx 5 (grtt vnfrqzt ex oti htrypxo),,8,0,6.88e-05,
+amazon-google,ciphered_letters,sonnet55,1,b000hvtk9e,refusal,refusal,1pk internet sec ste 2007 oem,1nl poetrote ytj yet 2007 xtb,,5,0,6.88e-05,
+amazon-google,ciphered_letters,sonnet55,1,b000gwfgqk,refusal,refusal,palo alto business plan pro premier 2007,nqsx qsex mvypotyy nsqo nrx nrtbptr 2007,,6,0,6.88e-05,
+amazon-google,ciphered_letters,sonnet55,2,b000gcd6lw,refusal,refusal,computrace lojack for laptops - 3 year license (mac),jxbnverqjt sxwqjl gxr sqnexny - 3 dtqr spjtoyt (bqj),,7,0,7.34e-05,
+amazon-google,ciphered_letters,sonnet55,2,b0006oei8u,refusal,refusal,atari arcade classics (mac),qeqrp qrjqzt jsqyypjy (bqj),,4,0,7.34e-05,
+amazon-google,ciphered_letters,sonnet55,2,b000h2421o,refusal,refusal,quicken legal business pro 2007,cvpjlto stfqs mvypotyy nrx 2007,,4,0,7.34e-05,
+amazon-google,ciphered_letters,sonnet55,2,b000fcyts2,refusal,refusal,zend studio 5.1 (win/mac),utoz yevzpx 5.1 (ipo/bqj),,4,0,7.34e-05,
+amazon-google,ciphered_letters,sonnet55,2,b00013wh0w,refusal,refusal,handmark oxford american desk dictionary and thesaurus,kqozbqrl xagxrz qbtrpjqo ztyl zpjepxoqrd qoz ektyqvrvy,,7,0,7.34e-05,
+amazon-google,ciphered_letters,sonnet55,2,b000mu6mve,refusal,refusal,micromat protogo,bpjrxbqe nrxexfx,,2,0,7.34e-05,
+amazon-google,ciphered_letters,sonnet55,2,b000ccvp0a,refusal,refusal,simply put software data eliminator,ypbnsd nve yxgeiqrt zqeq tspbpoqexr,,5,0,7.34e-05,
+amazon-google,ciphered_letters,sonnet55,2,b00024yohy,refusal,refusal,mastercook deluxe low carb,bqyetrjxxl ztsvat sxi jqrm,,4,0,7.34e-05,
+amazon-google,ciphered_letters,sonnet55,2,b00030cbu4,refusal,refusal,ae painter v9 win/mac box,qt nqpoetr h9 ipo/bqj mxa,,6,0,7.34e-05,
+amazon-google,ciphered_letters,sonnet55,2,b000egidpe,refusal,refusal,hoyle puzzle & board games 2007,kxdst nvuust & mxqrz fqbty 2007,,4,0,7.34e-05,
+amazon-google,ciphered_letters,sonnet55,3,b000ozhfsq,ok,end_turn,tlc dr. seuss reading learning system 2008,esj zr. ytvyy rtqzpof stqropof ydyetb 2008,tlc dr. seuss reading learning system 2008,6,6,0.001745,"{""decoded"":[""tlc dr. seuss reading learning system 2008"",""procurve vpn client unlimited client licenses"",""the print shop design suite pro ed sm cs my the print shop"",""movies on psp"",""aquarium 3-in-one collection (win/mac)"",""star wars empire at war (intel only macs)"",""zonealarm pro firewall"",""high school advantage 2007"",""40 years of the avengers"",""rollercoaster tycoon 3: soaked""]}"
+amazon-google,ciphered_letters,sonnet55,3,b0009hmx36,ok,end_turn,procurve vpn client software unlimited client licenses,nrxjvrht hno jsptoe yxgeiqrt vospbpetz jsptoe spjtoyty,procurve vpn client unlimited client licenses,7,6,0.001745,
+amazon-google,ciphered_letters,sonnet55,3,b000hed3gm,ok,end_turn,the print shop design suite pro ed sb cs by the print shop,ekt nrpoe ykxn ztypfo yvpet nrx tz ym jy md ekt nrpoe ykxn,the print shop design suite pro ed sm cs my the print shop,13,11,0.001745,
+amazon-google,ciphered_letters,sonnet55,3,b000bnb72g,ok,end_turn,movies on psp,bxhpty xo nyn,movies on psp,3,3,0.001745,
+amazon-google,ciphered_letters,sonnet55,3,b000aa8796,ok,end_turn,aquarium 3-in-one collection (win/mac),qcvqrpvb 3-po-xot jxsstjepxo (ipo/bqj),aquarium 3-in-one collection (win/mac),6,6,0.001745,
+amazon-google,ciphered_letters,sonnet55,3,b000lrdlia,ok,end_turn,star wars empire at war (intel only macs),yeqr iqry tbnprt qe iqr (poets xosd bqjy),star wars empire at war (intel only macs),8,8,0.001745,
+amazon-google,ciphered_letters,sonnet55,3,b000hkpfje,ok,end_turn,zonealarm pro firewall,uxotqsqrb nrx gprtiqss,zonealarm pro firewall,3,3,0.001745,
+amazon-google,ciphered_letters,sonnet55,3,b000fer1d0,ok,end_turn,high school advantage 2007,kpfk yjkxxs qzhqoeqft 2007,high school advantage 2007,3,3,0.001745,
+amazon-google,ciphered_letters,sonnet55,3,b000fjsa2g,ok,end_turn,40 years of the avengers,40 dtqry xg ekt qhtoftry,40 years of the avengers,4,4,0.001745,
+amazon-google,ciphered_letters,sonnet55,3,b000n5meva,ok,end_turn,rollercoaster tycoon 3: soaked,rxsstrjxqyetr edjxxo 3: yxqltz,rollercoaster tycoon 3: soaked,3,3,0.001745,
+amazon-google,scrambled,gpt6luna,1,b000a0s3x6,ok,completed,caillou ready for school (pc & mac),claoilu reday for school (pc & mac),Caillou Ready for School (PC & Mac),2,2,8.161e-05,"{""decoded"":[""Caillou Ready for School (PC & Mac)"",""Cook'n Vegetarian"",""City of Heroes: Good vs. Evil Edition"",""OnOne Plug-In Suite 3 for Adobe Photoshop"",""Star Wars Battlefront (Mac)"",""Halo (Mac)"",""Roxio Toast 8 Titanium"",""ZoneAlarm Firewall Pro 5 (Free Upgrade to New Version)"",""1pk Internet Security Suite 2007 OEM"",""Palo Alto Business Plan Pro Premier 2007""]}"
+amazon-google,scrambled,gpt6luna,1,b000056b62,ok,completed,cook'n vegetarian,cook'n vieraagten,Cook'n Vegetarian,1,1,8.161e-05,
+amazon-google,scrambled,gpt6luna,1,b000o39qyo,ok,completed,city of heroes good vs. evil edition,city of heeors good vs. eivl etdoiin,City of Heroes: Good vs. Evil Edition,3,3,8.161e-05,
+amazon-google,scrambled,gpt6luna,1,b000pienlo,ok,completed,onone plug-in suite 3 for adobe photoshop,onone plug-in siute 3 for abode poosohthp,OnOne Plug-In Suite 3 for Adobe Photoshop,3,3,8.161e-05,
+amazon-google,scrambled,gpt6luna,1,b0006b64v2,ok,completed,star wars battlefront (mac),satr wars blfroettant (mac),Star Wars Battlefront (Mac),2,2,8.161e-05,
+amazon-google,scrambled,gpt6luna,1,b00006iqth,ok,completed,halo (mac),halo (mac),Halo (Mac),0,0,8.161e-05,
+amazon-google,scrambled,gpt6luna,1,b000lp6jky,ok,completed,roxio toast 8 titanium,rioxo tasot 8 tuanitim,Roxio Toast 8 Titanium,3,3,8.161e-05,
+amazon-google,scrambled,gpt6luna,1,b000922dwc,ok,completed,zonealarm firewall pro 5 (free upgrade to new version),zrolaenam fliwearl pro 5 (free udrgpae to new vierosn),ZoneAlarm Firewall Pro 5 (Free Upgrade to New Version),4,4,8.161e-05,
+amazon-google,scrambled,gpt6luna,1,b000hvtk9e,ok,completed,1pk internet sec ste 2007 oem,1pk itennret sec ste 2007 oem,1pk Internet Security Suite 2007 OEM,1,1,8.161e-05,
+amazon-google,scrambled,gpt6luna,1,b000gwfgqk,ok,completed,palo alto business plan pro premier 2007,palo atlo bsenuiss plan pro peirmer 2007,Palo Alto Business Plan Pro Premier 2007,3,3,8.161e-05,
+amazon-google,scrambled,gpt6luna,2,b000gcd6lw,ok,completed,computrace lojack for laptops - 3 year license (mac),cmcturpaoe ljoack for lptopas - 3 year lncesie (mac),Computrace LoJack for Laptops - 3 Year License (Mac),4,4,0.00010708,"{""decoded"":[""Computrace LoJack for Laptops - 3 Year License (Mac)"",""Atari Arcade Classics (Mac)"",""Quicken Legal Business Pro 2007"",""Zend Studio 5.1 (Win/Mac)"",""Handmark Oxford American Desk Dictionary and Thesaurus"",""Micromat ProToGo"",""Simply Put Software Data Eliminator"",""MasterCook Deluxe Low Carb"",""Corel Painter v9 (Win/Mac) Box"",""Hoyle Puzzle & Board Games 2007""]}"
+amazon-google,scrambled,gpt6luna,2,b0006oei8u,ok,completed,atari arcade classics (mac),aarti acrade caislcss (mac),Atari Arcade Classics (Mac),3,3,0.00010708,
+amazon-google,scrambled,gpt6luna,2,b000h2421o,ok,completed,quicken legal business pro 2007,qieuckn lgeal bsenuiss pro 2007,Quicken Legal Business Pro 2007,3,3,0.00010708,
+amazon-google,scrambled,gpt6luna,2,b000fcyts2,ok,completed,zend studio 5.1 (win/mac),zend suitdo 5.1 (win/mac),Zend Studio 5.1 (Win/Mac),1,1,0.00010708,
+amazon-google,scrambled,gpt6luna,2,b00013wh0w,ok,completed,handmark oxford american desk dictionary and thesaurus,hadmrank ofroxd aiearcmn desk dantrioicy and tashuerus,Handmark Oxford American Desk Dictionary and Thesaurus,5,5,0.00010708,
+amazon-google,scrambled,gpt6luna,2,b000mu6mve,ok,completed,micromat protogo,mmaiocrt prgotoo,Micromat ProToGo,2,2,0.00010708,
+amazon-google,scrambled,gpt6luna,2,b000ccvp0a,ok,completed,simply put software data eliminator,simlpy put sotrawfe data eatimonilr,Simply Put Software Data Eliminator,3,3,0.00010708,
+amazon-google,scrambled,gpt6luna,2,b00024yohy,ok,completed,mastercook deluxe low carb,mastocoerk dluexe low crab,MasterCook Deluxe Low Carb,3,3,0.00010708,
+amazon-google,scrambled,gpt6luna,2,b00030cbu4,ok,completed,ae painter v9 win/mac box,ae ptieanr v9 win/mac box,Corel Painter v9 (Win/Mac) Box,1,1,0.00010708,
+amazon-google,scrambled,gpt6luna,2,b000egidpe,ok,completed,hoyle puzzle & board games 2007,hloye pzuzle & braod games 2007,Hoyle Puzzle & Board Games 2007,3,3,0.00010708,
+amazon-google,scrambled,gpt6luna,3,b000ozhfsq,ok,completed,tlc dr. seuss reading learning system 2008,tlc dr. sseus rndaieg learinng setysm 2008,TLC Dr. Seuss Reading Learning System 2008,4,4,0.00010649000000000002,"{""decoded"":[""TLC Dr. Seuss Reading Learning System 2008"",""ProCurve VPN Client Software Unlimited Client License"",""The Print Shop Design Suite Pro Ed. SB CS by The Print Shop"",""Movies on PSP"",""Aquarium 3-in-1 Collection (Win/Mac)"",""Star Wars: Empire at War (Intel Only Macs)"",""ZoneAlarm Pro Firewall"",""High School Advantage 2007"",""40 Years of the Avengers"",""RollerCoaster Tycoon 3: Soaked!""]}"
+amazon-google,scrambled,gpt6luna,3,b0009hmx36,ok,completed,procurve vpn client software unlimited client licenses,purrvcoe vpn cilent sotrawfe uilentimd cilent lecesnis,ProCurve VPN Client Software Unlimited Client License,6,5,0.00010649000000000002,
+amazon-google,scrambled,gpt6luna,3,b000hed3gm,ok,completed,the print shop design suite pro ed sb cs by the print shop,the pirnt shop deigsn siute pro ed sb cs by the pirnt shop,The Print Shop Design Suite Pro Ed. SB CS by The Print Shop,4,4,0.00010649000000000002,
+amazon-google,scrambled,gpt6luna,3,b000bnb72g,ok,completed,movies on psp,mevios on psp,Movies on PSP,1,1,0.00010649000000000002,
+amazon-google,scrambled,gpt6luna,3,b000aa8796,ok,completed,aquarium 3-in-one collection (win/mac),aiuuqarm 3-in-one cicooleltn (win/mac),Aquarium 3-in-1 Collection (Win/Mac),2,2,0.00010649000000000002,
+amazon-google,scrambled,gpt6luna,3,b000lrdlia,ok,completed,star wars empire at war (intel only macs),satr wars eirpme at war (itenl olny mcas),Star Wars: Empire at War (Intel Only Macs),5,5,0.00010649000000000002,
+amazon-google,scrambled,gpt6luna,3,b000hkpfje,ok,completed,zonealarm pro firewall,zrolaenam pro fliwearl,ZoneAlarm Pro Firewall,2,2,0.00010649000000000002,
+amazon-google,scrambled,gpt6luna,3,b000fer1d0,ok,completed,high school advantage 2007,high school avgtanade 2007,High School Advantage 2007,1,1,0.00010649000000000002,
+amazon-google,scrambled,gpt6luna,3,b000fjsa2g,ok,completed,40 years of the avengers,40 years of the arnevges,40 Years of the Avengers,1,1,0.00010649000000000002,
+amazon-google,scrambled,gpt6luna,3,b000n5meva,ok,completed,rollercoaster tycoon 3: soaked,rtceoasollerr tocoyn 3: seakod,RollerCoaster Tycoon 3: Soaked!,3,3,0.00010649000000000002,
+amazon-google,scrambled,haiku55,1,b000a0s3x6,ok,end_turn,caillou ready for school (pc & mac),claoilu reday for school (pc & mac),Calculus Ready for School (PC & Mac),2,1,9.358e-05,"```json
+{""decoded"": [
+""Calculus Ready for School (PC & Mac)"",
+""Cook'n Vegetarian"",
+""City of Heroes Good vs. Evil Edition"",
+""ONONE Plug-in Suite 3 for Adobe Photoshop"",
+""Star Wars Battlefront (Mac)"",
+""Halo (Mac)"",
+""Roxio Toast 8 Titanium"",
+""ZoneAlarm Firewall Pro 5 (free upgrade to new version)"",
+""1pk Internet Security Suite 2007 OEM"",
+""Palo Alto Business Plan Pro Premier 2007""
+]}
+```"
+amazon-google,scrambled,haiku55,1,b000056b62,ok,end_turn,cook'n vegetarian,cook'n vieraagten,Cook'n Vegetarian,1,1,9.358e-05,
+amazon-google,scrambled,haiku55,1,b000o39qyo,ok,end_turn,city of heroes good vs. evil edition,city of heeors good vs. eivl etdoiin,City of Heroes Good vs. Evil Edition,3,3,9.358e-05,
+amazon-google,scrambled,haiku55,1,b000pienlo,ok,end_turn,onone plug-in suite 3 for adobe photoshop,onone plug-in siute 3 for abode poosohthp,ONONE Plug-in Suite 3 for Adobe Photoshop,3,3,9.358e-05,
+amazon-google,scrambled,haiku55,1,b0006b64v2,ok,end_turn,star wars battlefront (mac),satr wars blfroettant (mac),Star Wars Battlefront (Mac),2,2,9.358e-05,
+amazon-google,scrambled,haiku55,1,b00006iqth,ok,end_turn,halo (mac),halo (mac),Halo (Mac),0,0,9.358e-05,
+amazon-google,scrambled,haiku55,1,b000lp6jky,ok,end_turn,roxio toast 8 titanium,rioxo tasot 8 tuanitim,Roxio Toast 8 Titanium,3,3,9.358e-05,
+amazon-google,scrambled,haiku55,1,b000922dwc,ok,end_turn,zonealarm firewall pro 5 (free upgrade to new version),zrolaenam fliwearl pro 5 (free udrgpae to new vierosn),ZoneAlarm Firewall Pro 5 (free upgrade to new version),4,4,9.358e-05,
+amazon-google,scrambled,haiku55,1,b000hvtk9e,ok,end_turn,1pk internet sec ste 2007 oem,1pk itennret sec ste 2007 oem,1pk Internet Security Suite 2007 OEM,1,1,9.358e-05,
+amazon-google,scrambled,haiku55,1,b000gwfgqk,ok,end_turn,palo alto business plan pro premier 2007,palo atlo bsenuiss plan pro peirmer 2007,Palo Alto Business Plan Pro Premier 2007,3,3,9.358e-05,
+amazon-google,scrambled,haiku55,2,b000gcd6lw,ok,end_turn,computrace lojack for laptops - 3 year license (mac),cmcturpaoe ljoack for lptopas - 3 year lncesie (mac),Computer Lock for Laptops - 3 Year License (Mac),4,2,0.00019609000000000003,"```json
+{""decoded"": [
+""Computer Lock for Laptops - 3 Year License (Mac)"",
+""Atari Arcade Classics (Mac)"",
+""Quicken Legal Business Pro 2007"",
+""Zend Studio 5.1 (win/mac)"",
+""Handmark Oxford American Desk Dictionary and Thesaurus"",
+""Micro Trooper Program"",
+""Simply Put Software Data Estimator"",
+""Mastercook Deluxe Low Carb"",
+""AE Painter v9 win/mac box"",
+""Hoyle Puzzle & Board Games 2007""
+]}
+```"
+amazon-google,scrambled,haiku55,2,b0006oei8u,ok,end_turn,atari arcade classics (mac),aarti acrade caislcss (mac),Atari Arcade Classics (Mac),3,3,0.00019609000000000003,
+amazon-google,scrambled,haiku55,2,b000h2421o,ok,end_turn,quicken legal business pro 2007,qieuckn lgeal bsenuiss pro 2007,Quicken Legal Business Pro 2007,3,3,0.00019609000000000003,
+amazon-google,scrambled,haiku55,2,b000fcyts2,ok,end_turn,zend studio 5.1 (win/mac),zend suitdo 5.1 (win/mac),Zend Studio 5.1 (win/mac),1,1,0.00019609000000000003,
+amazon-google,scrambled,haiku55,2,b00013wh0w,ok,end_turn,handmark oxford american desk dictionary and thesaurus,hadmrank ofroxd aiearcmn desk dantrioicy and tashuerus,Handmark Oxford American Desk Dictionary and Thesaurus,5,5,0.00019609000000000003,
+amazon-google,scrambled,haiku55,2,b000mu6mve,ok,end_turn,micromat protogo,mmaiocrt prgotoo,Micro Trooper Program,2,0,0.00019609000000000003,
+amazon-google,scrambled,haiku55,2,b000ccvp0a,ok,end_turn,simply put software data eliminator,simlpy put sotrawfe data eatimonilr,Simply Put Software Data Estimator,3,2,0.00019609000000000003,
+amazon-google,scrambled,haiku55,2,b00024yohy,ok,end_turn,mastercook deluxe low carb,mastocoerk dluexe low crab,Mastercook Deluxe Low Carb,3,3,0.00019609000000000003,
+amazon-google,scrambled,haiku55,2,b00030cbu4,ok,end_turn,ae painter v9 win/mac box,ae ptieanr v9 win/mac box,AE Painter v9 win/mac box,1,1,0.00019609000000000003,
+amazon-google,scrambled,haiku55,2,b000egidpe,ok,end_turn,hoyle puzzle & board games 2007,hloye pzuzle & braod games 2007,Hoyle Puzzle & Board Games 2007,3,3,0.00019609000000000003,
+amazon-google,scrambled,haiku55,3,b000ozhfsq,ok,end_turn,tlc dr. seuss reading learning system 2008,tlc dr. sseus rndaieg learinng setysm 2008,TLC Dr. Seuss Reading Learning System 2008,4,4,0.00011076,"{""decoded"": [""TLC Dr. Seuss Reading Learning System 2008"", ""Purevoice VPN Client Software Unlimited Client Licenses"", ""The Print Shop Deluxe Suite Pro Ed SB CS by The Print Shop"", ""Movies on PSP"", ""Aquarium 3-in-1 Collection (Win/Mac)"", ""Star Wars Empire at War (Intel Only Macs)"", ""ZoneAlarm Pro Firewall"", ""High School Advantage 2007"", ""40 Years of the Avengers"", ""RollerCoaster Tycoon 3: Soaked""]}"
+amazon-google,scrambled,haiku55,3,b0009hmx36,ok,end_turn,procurve vpn client software unlimited client licenses,purrvcoe vpn cilent sotrawfe uilentimd cilent lecesnis,Purevoice VPN Client Software Unlimited Client Licenses,6,5,0.00011076,
+amazon-google,scrambled,haiku55,3,b000hed3gm,ok,end_turn,the print shop design suite pro ed sb cs by the print shop,the pirnt shop deigsn siute pro ed sb cs by the pirnt shop,The Print Shop Deluxe Suite Pro Ed SB CS by The Print Shop,4,3,0.00011076,
+amazon-google,scrambled,haiku55,3,b000bnb72g,ok,end_turn,movies on psp,mevios on psp,Movies on PSP,1,1,0.00011076,
+amazon-google,scrambled,haiku55,3,b000aa8796,ok,end_turn,aquarium 3-in-one collection (win/mac),aiuuqarm 3-in-one cicooleltn (win/mac),Aquarium 3-in-1 Collection (Win/Mac),2,2,0.00011076,
+amazon-google,scrambled,haiku55,3,b000lrdlia,ok,end_turn,star wars empire at war (intel only macs),satr wars eirpme at war (itenl olny mcas),Star Wars Empire at War (Intel Only Macs),5,5,0.00011076,
+amazon-google,scrambled,haiku55,3,b000hkpfje,ok,end_turn,zonealarm pro firewall,zrolaenam pro fliwearl,ZoneAlarm Pro Firewall,2,2,0.00011076,
+amazon-google,scrambled,haiku55,3,b000fer1d0,ok,end_turn,high school advantage 2007,high school avgtanade 2007,High School Advantage 2007,1,1,0.00011076,
+amazon-google,scrambled,haiku55,3,b000fjsa2g,ok,end_turn,40 years of the avengers,40 years of the arnevges,40 Years of the Avengers,1,1,0.00011076,
+amazon-google,scrambled,haiku55,3,b000n5meva,ok,end_turn,rollercoaster tycoon 3: soaked,rtceoasollerr tocoyn 3: seakod,RollerCoaster Tycoon 3: Soaked,3,3,0.00011076,
+amazon-google,scrambled,sonnet55,1,b000a0s3x6,ok,end_turn,caillou ready for school (pc & mac),claoilu reday for school (pc & mac),clarissa ready for school (pc & mac),2,1,0.0002186,"{""decoded"": [""clarissa ready for school (pc & mac)"", ""cook'n vegetarian"", ""city of heroes good vs. evil edition"", ""onone plug-in suite 3 for adobe photoshop"", ""star wars battlefront (mac)"", ""halo (mac)"", ""roxio toast 8 titanium"", ""zonealarm firewall pro 5 (free upgrade to new version)"", ""1pk internet security 2007 oem"", ""palo alto business plan pro premier 2007""]}"
+amazon-google,scrambled,sonnet55,1,b000056b62,ok,end_turn,cook'n vegetarian,cook'n vieraagten,cook'n vegetarian,1,1,0.0002186,
+amazon-google,scrambled,sonnet55,1,b000o39qyo,ok,end_turn,city of heroes good vs. evil edition,city of heeors good vs. eivl etdoiin,city of heroes good vs. evil edition,3,3,0.0002186,
+amazon-google,scrambled,sonnet55,1,b000pienlo,ok,end_turn,onone plug-in suite 3 for adobe photoshop,onone plug-in siute 3 for abode poosohthp,onone plug-in suite 3 for adobe photoshop,3,3,0.0002186,
+amazon-google,scrambled,sonnet55,1,b0006b64v2,ok,end_turn,star wars battlefront (mac),satr wars blfroettant (mac),star wars battlefront (mac),2,2,0.0002186,
+amazon-google,scrambled,sonnet55,1,b00006iqth,ok,end_turn,halo (mac),halo (mac),halo (mac),0,0,0.0002186,
+amazon-google,scrambled,sonnet55,1,b000lp6jky,ok,end_turn,roxio toast 8 titanium,rioxo tasot 8 tuanitim,roxio toast 8 titanium,3,3,0.0002186,
+amazon-google,scrambled,sonnet55,1,b000922dwc,ok,end_turn,zonealarm firewall pro 5 (free upgrade to new version),zrolaenam fliwearl pro 5 (free udrgpae to new vierosn),zonealarm firewall pro 5 (free upgrade to new version),4,4,0.0002186,
+amazon-google,scrambled,sonnet55,1,b000hvtk9e,ok,end_turn,1pk internet sec ste 2007 oem,1pk itennret sec ste 2007 oem,1pk internet security 2007 oem,1,1,0.0002186,
+amazon-google,scrambled,sonnet55,1,b000gwfgqk,ok,end_turn,palo alto business plan pro premier 2007,palo atlo bsenuiss plan pro peirmer 2007,palo alto business plan pro premier 2007,3,3,0.0002186,
+amazon-google,scrambled,sonnet55,2,b000gcd6lw,ok,end_turn,computrace lojack for laptops - 3 year license (mac),cmcturpaoe ljoack for lptopas - 3 year lncesie (mac),computrace lojack for laptops - 3 year license (mac),4,4,0.0008208,"These are my best reconstructions. Each line looks like a product title whose letters within words were scrambled, so I unscrambled word by word. Lines 5, 8 and 9 are the least certain.
+
+1. ""cmcturpaoe ljoack"" is probably ""computrace lojack"", with ""lptopas"" as ""laptops"" and ""lncesie"" as ""license"".
+2. ""aarti acrade caislcss"" looks like ""arti arcade classics"".
+3. ""qieuckn lgeal bsenuiss pro 2007"" is ""quicken legal business pro 2007"".
+4. ""zend suitdo 5.1"" is ""zend studio 5.1"".
+5. ""hadmrank ofroxd aiearcmn desk dantrioicy and tashuerus"" is ""hammrmark oxford american desk dictionary and thesaurus"". ""hadmrank"" most likely stands for ""handmark"", the publisher, so I used that.
+6. ""mmaiocrt prgotoo"" is ""macromedia""-like, but it more likely reads ""microsoft""-style scrambling of ""mimicart""... I settled on ""magicart photo"" as a guess. This is the weakest line.
+7. ""simlpy put sotrawfe data eatimonilr"" is ""simply put software data elimination"", though ""eatimonilr"" may be ""elimination"" with letters off.
+8. ""mastocoerk dluexe low crab"" looks like ""masterlook deluxe low carb"", where ""mastocoerk"" could be ""mastercook"" and ""dluexe"" is ""deluxe"". So ""mastercook deluxe low carb"".
+9. ""ae ptieanr v9 win/mac box"" is ""ae painter v9 win/mac box"". Possibly ""corel painter v9"", but ""ae"" is kept as given.
+10. ""hloye pzuzle & braod games 2007"" is ""hoyle puzzle & board games 2007"".
+
+```json
+{""decoded"": [""computrace lojack for laptops - 3 year license (mac)"", ""arti arcade classics (mac)"", ""quicken legal business pro 2007"", ""zend studio 5.1 (win/mac)"", ""handmark oxford american desk dictionary and thesaurus"", ""magicart photo"", ""simply put software data elimination"", ""mastercook deluxe low carb"", ""corel painter v9 win/mac box"", ""hoyle puzzle & board games 2007""]}
+```"
+amazon-google,scrambled,sonnet55,2,b0006oei8u,ok,end_turn,atari arcade classics (mac),aarti acrade caislcss (mac),arti arcade classics (mac),3,2,0.0008208,
+amazon-google,scrambled,sonnet55,2,b000h2421o,ok,end_turn,quicken legal business pro 2007,qieuckn lgeal bsenuiss pro 2007,quicken legal business pro 2007,3,3,0.0008208,
+amazon-google,scrambled,sonnet55,2,b000fcyts2,ok,end_turn,zend studio 5.1 (win/mac),zend suitdo 5.1 (win/mac),zend studio 5.1 (win/mac),1,1,0.0008208,
+amazon-google,scrambled,sonnet55,2,b00013wh0w,ok,end_turn,handmark oxford american desk dictionary and thesaurus,hadmrank ofroxd aiearcmn desk dantrioicy and tashuerus,handmark oxford american desk dictionary and thesaurus,5,5,0.0008208,
+amazon-google,scrambled,sonnet55,2,b000mu6mve,ok,end_turn,micromat protogo,mmaiocrt prgotoo,magicart photo,2,0,0.0008208,
+amazon-google,scrambled,sonnet55,2,b000ccvp0a,ok,end_turn,simply put software data eliminator,simlpy put sotrawfe data eatimonilr,simply put software data elimination,3,2,0.0008208,
+amazon-google,scrambled,sonnet55,2,b00024yohy,ok,end_turn,mastercook deluxe low carb,mastocoerk dluexe low crab,mastercook deluxe low carb,3,3,0.0008208,
+amazon-google,scrambled,sonnet55,2,b00030cbu4,ok,end_turn,ae painter v9 win/mac box,ae ptieanr v9 win/mac box,corel painter v9 win/mac box,1,1,0.0008208,
+amazon-google,scrambled,sonnet55,2,b000egidpe,ok,end_turn,hoyle puzzle & board games 2007,hloye pzuzle & braod games 2007,hoyle puzzle & board games 2007,3,3,0.0008208,
+amazon-google,scrambled,sonnet55,3,b000ozhfsq,ok,end_turn,tlc dr. seuss reading learning system 2008,tlc dr. sseus rndaieg learinng setysm 2008,tlc dr. seuss reading learning system 2008,4,4,0.0002222,"{""decoded"": [""tlc dr. seuss reading learning system 2008"", ""provpn vpn client software unlimited client licenses"", ""the print shop design suite pro ed sb cs by the print shop"", ""movies on psp"", ""aquarium 3-in-one collection (win/mac)"", ""star wars empire at war (intel only macs)"", ""zonealarm pro firewall"", ""high school advantage 2007"", ""40 years of the avengers"", ""rollercoaster tycoon 3: soaked""]}"
+amazon-google,scrambled,sonnet55,3,b0009hmx36,ok,end_turn,procurve vpn client software unlimited client licenses,purrvcoe vpn cilent sotrawfe uilentimd cilent lecesnis,provpn vpn client software unlimited client licenses,6,5,0.0002222,
+amazon-google,scrambled,sonnet55,3,b000hed3gm,ok,end_turn,the print shop design suite pro ed sb cs by the print shop,the pirnt shop deigsn siute pro ed sb cs by the pirnt shop,the print shop design suite pro ed sb cs by the print shop,4,4,0.0002222,
+amazon-google,scrambled,sonnet55,3,b000bnb72g,ok,end_turn,movies on psp,mevios on psp,movies on psp,1,1,0.0002222,
+amazon-google,scrambled,sonnet55,3,b000aa8796,ok,end_turn,aquarium 3-in-one collection (win/mac),aiuuqarm 3-in-one cicooleltn (win/mac),aquarium 3-in-one collection (win/mac),2,2,0.0002222,
+amazon-google,scrambled,sonnet55,3,b000lrdlia,ok,end_turn,star wars empire at war (intel only macs),satr wars eirpme at war (itenl olny mcas),star wars empire at war (intel only macs),5,5,0.0002222,
+amazon-google,scrambled,sonnet55,3,b000hkpfje,ok,end_turn,zonealarm pro firewall,zrolaenam pro fliwearl,zonealarm pro firewall,2,2,0.0002222,
+amazon-google,scrambled,sonnet55,3,b000fer1d0,ok,end_turn,high school advantage 2007,high school avgtanade 2007,high school advantage 2007,1,1,0.0002222,
+amazon-google,scrambled,sonnet55,3,b000fjsa2g,ok,end_turn,40 years of the avengers,40 years of the arnevges,40 years of the avengers,1,1,0.0002222,
+amazon-google,scrambled,sonnet55,3,b000n5meva,ok,end_turn,rollercoaster tycoon 3: soaked,rtceoasollerr tocoyn 3: seakod,rollercoaster tycoon 3: soaked,3,3,0.0002222,
+amazon-google,ciphered_words,gpt6luna,1,b000a0s3x6,ok,completed,caillou ready for school (pc & mac),nanook ives sui meccas (al & ups),Nanook Ives Sui Meccas (AL & UPS),6,0,0.00044814,"{""decoded"":[""Nanook Ives Sui Meccas (AL & UPS)"",""FNMA's Caesareans"",""FICA GI Alsace Body CA. Piaf Dreyfus"",""Bosch Corm-re Lyme 3 Sui Mazda Oriental"",""Dawn Saar Countersank (UPS)"",""Loki (UPS)"",""Carib Cheer 8 Barnett"",""Stendhal Sheraton SOS 5 (Conk Ohioan NB Inc Navaho)"",""RDS Aurelio PMS Say 2007 Pan"",""Clit Cart Hendrix Blur SOS Clarke 2007""]}"
+amazon-google,ciphered_words,gpt6luna,1,b000056b62,ok,completed,cook'n vegetarian,fnma'us caesareans,FNMA's Caesareans,3,0,0.00044814,
+amazon-google,ciphered_words,gpt6luna,1,b000o39qyo,ok,completed,city of heroes good vs. evil edition,fica gi alsace body ca. piaf dreyfus,FICA GI Alsace Body CA. Piaf Dreyfus,7,0,0.00044814,
+amazon-google,ciphered_words,gpt6luna,1,b000pienlo,ok,completed,onone plug-in suite 3 for adobe photoshop,bosh corm-re lyme 3 sui mazda oriental,Bosch Corm-re Lyme 3 Sui Mazda Oriental,7,0,0.00044814,
+amazon-google,ciphered_words,gpt6luna,1,b0006b64v2,ok,completed,star wars battlefront (mac),dawn saar countersank (ups),Dawn Saar Countersank (UPS),4,0,0.00044814,
+amazon-google,ciphered_words,gpt6luna,1,b00006iqth,ok,completed,halo (mac),loki (ups),Loki (UPS),2,0,0.00044814,
+amazon-google,ciphered_words,gpt6luna,1,b000lp6jky,ok,completed,roxio toast 8 titanium,carib cheer 8 barnett,Carib Cheer 8 Barnett,3,0,0.00044814,
+amazon-google,ciphered_words,gpt6luna,1,b000922dwc,ok,completed,zonealarm firewall pro 5 (free upgrade to new version),stendhal sheraton sos 5 (conk ohioan nb inc navaho),Stendhal Sheraton SOS 5 (Conk Ohioan NB Inc Navaho),8,0,0.00044814,
+amazon-google,ciphered_words,gpt6luna,1,b000hvtk9e,ok,completed,1pk internet sec ste 2007 oem,rds aurelio pms say 2007 pan,RDS Aurelio PMS Say 2007 Pan,5,0,0.00044814,
+amazon-google,ciphered_words,gpt6luna,1,b000gwfgqk,ok,completed,palo alto business plan pro premier 2007,clit cart hendrix blur sos clarke 2007,Clit Cart Hendrix Blur SOS Clarke 2007,6,0,0.00044814,
+amazon-google,ciphered_words,gpt6luna,2,b000gcd6lw,ok,completed,computrace lojack for laptops - 3 year license (mac),catechised tyson sui boolean - 3 livy merrick (ups),catechised tyson sui boolean - 3 livy merrick (ups),7,0,0.0003348,"{""decoded"":[""catechised tyson sui boolean - 3 livy merrick (ups)"",""welsh advil socratic (ups)"",""kuwait chloe hendrix sos 2007"",""mack buford 5.1 (nan/ups)"",""avogadro aeneid kantian kurt bratislava lpn anatolian"",""angelica ivanhoe"",""hollie hex arizonan noel alabamians"",""adjustment canute van rhea"",""jo heller on nan/ups ifs"",""köln kusch & cyril gila 2007""]}"
+amazon-google,ciphered_words,gpt6luna,2,b0006oei8u,ok,completed,atari arcade classics (mac),welsh advil socratic (ups),welsh advil socratic (ups),4,0,0.0003348,
+amazon-google,ciphered_words,gpt6luna,2,b000h2421o,ok,completed,quicken legal business pro 2007,kuwait chloe hendrix sos 2007,kuwait chloe hendrix sos 2007,4,0,0.0003348,
+amazon-google,ciphered_words,gpt6luna,2,b000fcyts2,ok,completed,zend studio 5.1 (win/mac),mack buford 5.1 (nan/ups),mack buford 5.1 (nan/ups),4,0,0.0003348,
+amazon-google,ciphered_words,gpt6luna,2,b00013wh0w,ok,completed,handmark oxford american desk dictionary and thesaurus,avogadro aeneid kantian kurt bratislava lpn anatolian,avogadro aeneid kantian kurt bratislava lpn anatolian,7,0,0.0003348,
+amazon-google,ciphered_words,gpt6luna,2,b000mu6mve,ok,completed,micromat protogo,angelica ivanhoe,angelica ivanhoe,2,0,0.0003348,
+amazon-google,ciphered_words,gpt6luna,2,b000ccvp0a,ok,completed,simply put software data eliminator,hollie hex arizonan noel alabamians,hollie hex arizonan noel alabamians,5,0,0.0003348,
+amazon-google,ciphered_words,gpt6luna,2,b00024yohy,ok,completed,mastercook deluxe low carb,adjustment canute van rhea,adjustment canute van rhea,4,0,0.0003348,
+amazon-google,ciphered_words,gpt6luna,2,b00030cbu4,ok,completed,ae painter v9 win/mac box,jo heller on nan/ups ifs,jo heller on nan/ups ifs,6,0,0.0003348,
+amazon-google,ciphered_words,gpt6luna,2,b000egidpe,ok,completed,hoyle puzzle & board games 2007,köln kusch & cyril gila 2007,köln kusch & cyril gila 2007,4,0,0.0003348,
+amazon-google,ciphered_words,gpt6luna,3,b000ozhfsq,ok,completed,tlc dr. seuss reading learning system 2008,bag ps. seiko cavour gielgud duran 2008,Bag PS. Seiko Cavour Gielgud Duran 2008,6,0,0.00032067,"{""decoded"":[""Bag PS. Seiko Cavour Gielgud Duran 2008"",""Meadows Rob Delmer Arizonan Tuesdays Delmer Giauque"",""Les Boob Cars Keaton Lyme SOS CH OZ GM FT Les Boob Cars"",""Gasser CA Gig"",""Morrison 3-re-mud Beautifier (NAN/UPS)"",""Dawn Saar Abbas UK Pus (Pelee Bard Swat)"",""Stendhal SOS Sheraton"",""Erin Meccas Automatic 2007"",""40 Comte Gi Les Kunming"",""Problematical Druid 3: Qumran""]}"
+amazon-google,ciphered_words,gpt6luna,3,b0009hmx36,ok,completed,procurve vpn client software unlimited client licenses,meadows rob delmer arizonan tuesdays delmer giauque,Meadows Rob Delmer Arizonan Tuesdays Delmer Giauque,7,0,0.00032067,
+amazon-google,ciphered_words,gpt6luna,3,b000hed3gm,ok,completed,the print shop design suite pro ed sb cs by the print shop,les boob cars keaton lyme sos ch oz gm ft les boob cars,Les Boob Cars Keaton Lyme SOS CH OZ GM FT Les Boob Cars,13,0,0.00032067,
+amazon-google,ciphered_words,gpt6luna,3,b000bnb72g,ok,completed,movies on psp,gasser ca gig,Gasser CA Gig,3,0,0.00032067,
+amazon-google,ciphered_words,gpt6luna,3,b000aa8796,ok,completed,aquarium 3-in-one collection (win/mac),morison 3-re-mud beautifier (nan/ups),Morrison 3-re-mud Beautifier (NAN/UPS),6,0,0.00032067,
+amazon-google,ciphered_words,gpt6luna,3,b000lrdlia,ok,completed,star wars empire at war (intel only macs),dawn saar abbas uk pus (pelee bard swat),Dawn Saar Abbas UK Pus (Pelee Bard Swat),8,0,0.00032067,
+amazon-google,ciphered_words,gpt6luna,3,b000hkpfje,ok,completed,zonealarm pro firewall,stendhal sos sheraton,Stendhal SOS Sheraton,3,0,0.00032067,
+amazon-google,ciphered_words,gpt6luna,3,b000fer1d0,ok,completed,high school advantage 2007,erin meccas automatic 2007,Erin Meccas Automatic 2007,3,0,0.00032067,
+amazon-google,ciphered_words,gpt6luna,3,b000fjsa2g,ok,completed,40 years of the avengers,40 comte gi les kunming,40 Comte Gi Les Kunming,4,0,0.00032067,
+amazon-google,ciphered_words,gpt6luna,3,b000n5meva,ok,completed,rollercoaster tycoon 3: soaked,problematical druid 3: qumran,Problematical Druid 3: Qumran,3,0,0.00032067,
+amazon-google,ciphered_words,haiku55,1,b000a0s3x6,ok,end_turn,caillou ready for school (pc & mac),nanook ives sui meccas (al & ups),Nanook Ives Suite Meccas (Al & Ups),6,0,8.655e-05,"{""decoded"": [""Nanook Ives Suite Meccas (Al & Ups)"", ""Fauna's Caesareans"", ""Edith Piaf Gi Alsace Body Ca. Piaf Dreyfus"", ""Bosch Commerce Lyme 3 Sui Mazda Oriental"", ""Dawn Upshaw Countersank (Ups)"", ""Loki (Ups)"", ""Caribbean Cheer 8 Barnett"", ""Stendhal Sheraton SOS 5 (Conk Ohioan NB Inc Navaho)"", ""RDS Aurelio PMS Say 2007 Pan"", ""Clit Cart Hendrix Blur SOS Clarke 2007""]}"
+amazon-google,ciphered_words,haiku55,1,b000056b62,ok,end_turn,cook'n vegetarian,fnma'us caesareans,Fauna's Caesareans,3,0,8.655e-05,
+amazon-google,ciphered_words,haiku55,1,b000o39qyo,ok,end_turn,city of heroes good vs. evil edition,fica gi alsace body ca. piaf dreyfus,Edith Piaf Gi Alsace Body Ca. Piaf Dreyfus,7,0,8.655e-05,
+amazon-google,ciphered_words,haiku55,1,b000pienlo,ok,end_turn,onone plug-in suite 3 for adobe photoshop,bosh corm-re lyme 3 sui mazda oriental,Bosch Commerce Lyme 3 Sui Mazda Oriental,7,0,8.655e-05,
+amazon-google,ciphered_words,haiku55,1,b0006b64v2,ok,end_turn,star wars battlefront (mac),dawn saar countersank (ups),Dawn Upshaw Countersank (Ups),4,0,8.655e-05,
+amazon-google,ciphered_words,haiku55,1,b00006iqth,ok,end_turn,halo (mac),loki (ups),Loki (Ups),2,0,8.655e-05,
+amazon-google,ciphered_words,haiku55,1,b000lp6jky,ok,end_turn,roxio toast 8 titanium,carib cheer 8 barnett,Caribbean Cheer 8 Barnett,3,0,8.655e-05,
+amazon-google,ciphered_words,haiku55,1,b000922dwc,ok,end_turn,zonealarm firewall pro 5 (free upgrade to new version),stendhal sheraton sos 5 (conk ohioan nb inc navaho),Stendhal Sheraton SOS 5 (Conk Ohioan NB Inc Navaho),8,0,8.655e-05,
+amazon-google,ciphered_words,haiku55,1,b000hvtk9e,ok,end_turn,1pk internet sec ste 2007 oem,rds aurelio pms say 2007 pan,RDS Aurelio PMS Say 2007 Pan,5,0,8.655e-05,
+amazon-google,ciphered_words,haiku55,1,b000gwfgqk,ok,end_turn,palo alto business plan pro premier 2007,clit cart hendrix blur sos clarke 2007,Clit Cart Hendrix Blur SOS Clarke 2007,6,0,8.655e-05,
+amazon-google,ciphered_words,haiku55,2,b000gcd6lw,ok,end_turn,computrace lojack for laptops - 3 year license (mac),catechised tyson sui boolean - 3 livy merrick (ups),Catechised Tyson Sui Boolean - 3 Livy Merrick (UPS),7,0,4.009e-05,"{""decoded"": [""Catechised Tyson Sui Boolean - 3 Livy Merrick (UPS)"", ""Welsh Advil Socratic (UPS)"", ""Kuwait Chloe Hendrix SOS 2007"", ""Mack Buford 5.1 (NAN/UPS)"", ""Avogadro Aeneid Kantian Kurt Bratislava LPN Anatolian"", ""Angelica Ivanhoe"", ""Hollie Hex Arizonan Noel Alabamians"", ""Adjustment Canute Van Rhea"", ""Jo Heller on NAN/UPS IFS"", ""Köln Kusch & Cyril Gila 2007""]}"
+amazon-google,ciphered_words,haiku55,2,b0006oei8u,ok,end_turn,atari arcade classics (mac),welsh advil socratic (ups),Welsh Advil Socratic (UPS),4,0,4.009e-05,
+amazon-google,ciphered_words,haiku55,2,b000h2421o,ok,end_turn,quicken legal business pro 2007,kuwait chloe hendrix sos 2007,Kuwait Chloe Hendrix SOS 2007,4,0,4.009e-05,
+amazon-google,ciphered_words,haiku55,2,b000fcyts2,ok,end_turn,zend studio 5.1 (win/mac),mack buford 5.1 (nan/ups),Mack Buford 5.1 (NAN/UPS),4,0,4.009e-05,
+amazon-google,ciphered_words,haiku55,2,b00013wh0w,ok,end_turn,handmark oxford american desk dictionary and thesaurus,avogadro aeneid kantian kurt bratislava lpn anatolian,Avogadro Aeneid Kantian Kurt Bratislava LPN Anatolian,7,0,4.009e-05,
+amazon-google,ciphered_words,haiku55,2,b000mu6mve,ok,end_turn,micromat protogo,angelica ivanhoe,Angelica Ivanhoe,2,0,4.009e-05,
+amazon-google,ciphered_words,haiku55,2,b000ccvp0a,ok,end_turn,simply put software data eliminator,hollie hex arizonan noel alabamians,Hollie Hex Arizonan Noel Alabamians,5,0,4.009e-05,
+amazon-google,ciphered_words,haiku55,2,b00024yohy,ok,end_turn,mastercook deluxe low carb,adjustment canute van rhea,Adjustment Canute Van Rhea,4,0,4.009e-05,
+amazon-google,ciphered_words,haiku55,2,b00030cbu4,ok,end_turn,ae painter v9 win/mac box,jo heller on nan/ups ifs,Jo Heller on NAN/UPS IFS,6,0,4.009e-05,
+amazon-google,ciphered_words,haiku55,2,b000egidpe,ok,end_turn,hoyle puzzle & board games 2007,köln kusch & cyril gila 2007,Köln Kusch & Cyril Gila 2007,4,0,4.009e-05,
+amazon-google,ciphered_words,haiku55,3,b000ozhfsq,ok,end_turn,tlc dr. seuss reading learning system 2008,bag ps. seiko cavour gielgud duran 2008,Bag PS. Seiko Cavour Gielgud Duran 2008,6,0,6.91e-05,"{""decoded"": [""Bag PS. Seiko Cavour Gielgud Duran 2008"", ""Meadows Rob Delmer Arizonan Tuesdays Delmer Giauque"", ""Les Boob Cars Keaton Lyme SOS CH OZ GM FT Les Boob Cars"", ""Gasser CA GIG"", ""Morison 3-in-1 Mud Beautifier (Nan/UPS)"", ""Dawn Saar Abbas UK PUS (Pelee Bard Swat)"", ""Stendhal SOS Sheraton"", ""Erin Meccas Automatic 2007"", ""40 Comte GI Les Kunming"", ""Problematical Druid 3: Qumran""]}"
+amazon-google,ciphered_words,haiku55,3,b0009hmx36,ok,end_turn,procurve vpn client software unlimited client licenses,meadows rob delmer arizonan tuesdays delmer giauque,Meadows Rob Delmer Arizonan Tuesdays Delmer Giauque,7,0,6.91e-05,
+amazon-google,ciphered_words,haiku55,3,b000hed3gm,ok,end_turn,the print shop design suite pro ed sb cs by the print shop,les boob cars keaton lyme sos ch oz gm ft les boob cars,Les Boob Cars Keaton Lyme SOS CH OZ GM FT Les Boob Cars,13,0,6.91e-05,
+amazon-google,ciphered_words,haiku55,3,b000bnb72g,ok,end_turn,movies on psp,gasser ca gig,Gasser CA GIG,3,0,6.91e-05,
+amazon-google,ciphered_words,haiku55,3,b000aa8796,ok,end_turn,aquarium 3-in-one collection (win/mac),morison 3-re-mud beautifier (nan/ups),Morison 3-in-1 Mud Beautifier (Nan/UPS),6,1,6.91e-05,
+amazon-google,ciphered_words,haiku55,3,b000lrdlia,ok,end_turn,star wars empire at war (intel only macs),dawn saar abbas uk pus (pelee bard swat),Dawn Saar Abbas UK PUS (Pelee Bard Swat),8,0,6.91e-05,
+amazon-google,ciphered_words,haiku55,3,b000hkpfje,ok,end_turn,zonealarm pro firewall,stendhal sos sheraton,Stendhal SOS Sheraton,3,0,6.91e-05,
+amazon-google,ciphered_words,haiku55,3,b000fer1d0,ok,end_turn,high school advantage 2007,erin meccas automatic 2007,Erin Meccas Automatic 2007,3,0,6.91e-05,
+amazon-google,ciphered_words,haiku55,3,b000fjsa2g,ok,end_turn,40 years of the avengers,40 comte gi les kunming,40 Comte GI Les Kunming,4,0,6.91e-05,
+amazon-google,ciphered_words,haiku55,3,b000n5meva,ok,end_turn,rollercoaster tycoon 3: soaked,problematical druid 3: qumran,Problematical Druid 3: Qumran,3,0,6.91e-05,
+amazon-google,ciphered_words,sonnet55,1,b000a0s3x6,ok,end_turn,caillou ready for school (pc & mac),nanook ives sui meccas (al & ups),Nanook gives suit makes (all & ups),6,0,0.0009249999999999999,"These lines look like word-substitution garbles, where each word was swapped for a similar-looking or similar-sounding one. I could not recover most of them with any confidence, so the decodings below are guesses.
+
+1. ""nanook ives sui meccas (al & ups)"" might be ""Nanook Eves Suit Mecca (Al & Ups)"". Pattern-matching on letters suggests something like ""Nanook of the North..."" but that does not fit. My best guess is ""Nanook gives suit makes (all & ups)"".
+2. ""fnma'us caesareans"" is unclear. It could be ""Fanny's Caesareans"" or ""Emma's Caesareans"".
+3. ""fica gi alsace body ca. piaf dreyfus"" is unclear. A possible reading is ""Fico gi Alsace body ca. Piaf Dreyfus"".
+4. ""bosh corm-re lyme 3 sui mazda oriental"" is unclear. A possible reading is ""Bosch Corm-re Lyme 3 Suit Mazda Oriental"".
+5. ""dawn saar countersank (ups)"" is unclear. A possible reading is ""Dawn Saar Countersank (UPS)"".
+6. ""loki (ups)"" is probably ""Loki (UPS)"".
+7. ""carib cheer 8 barnett"" is unclear. A possible reading is ""Carib Cheer 8 Barnett"".
+8. ""stendhal sheraton sos 5 (conk ohioan nb inc navaho)"" is unclear. A possible reading is ""Stendhal Sheraton SOS 5 (Conk Ohioan NB Inc Navaho)"".
+9. ""rds aurelio pms say 2007 pan"" is unclear. A possible reading is ""RDS Aurelio PMS Say 2007 Pan"".
+10. ""clit cart hendrix blur sos clarke 2007"" is unclear. A possible reading is ""Clit Cart Hendrix Blur SOS Clarke 2007"".
+
+```json
+{""decoded"": [""Nanook gives suit makes (all & ups)"", ""Emma's Caesareans"", ""Fico gi Alsace body ca. Piaf Dreyfus"", ""Bosch Corm-re Lyme 3 Suit Mazda Oriental"", ""Dawn Saar Countersank (UPS)"", ""Loki (UPS)"", ""Carib Cheer 8 Barnett"", ""Stendhal Sheraton SOS 5 (Conk Ohioan NB Inc Navaho)"", ""RDS Aurelio PMS Say 2007 Pan"", ""Clit Cart Hendrix Blur SOS Clarke 2007""]}
+```"
+amazon-google,ciphered_words,sonnet55,1,b000056b62,ok,end_turn,cook'n vegetarian,fnma'us caesareans,Emma's Caesareans,3,0,0.0009249999999999999,
+amazon-google,ciphered_words,sonnet55,1,b000o39qyo,ok,end_turn,city of heroes good vs. evil edition,fica gi alsace body ca. piaf dreyfus,Fico gi Alsace body ca. Piaf Dreyfus,7,0,0.0009249999999999999,
+amazon-google,ciphered_words,sonnet55,1,b000pienlo,ok,end_turn,onone plug-in suite 3 for adobe photoshop,bosh corm-re lyme 3 sui mazda oriental,Bosch Corm-re Lyme 3 Suit Mazda Oriental,7,0,0.0009249999999999999,
+amazon-google,ciphered_words,sonnet55,1,b0006b64v2,ok,end_turn,star wars battlefront (mac),dawn saar countersank (ups),Dawn Saar Countersank (UPS),4,0,0.0009249999999999999,
+amazon-google,ciphered_words,sonnet55,1,b00006iqth,ok,end_turn,halo (mac),loki (ups),Loki (UPS),2,0,0.0009249999999999999,
+amazon-google,ciphered_words,sonnet55,1,b000lp6jky,ok,end_turn,roxio toast 8 titanium,carib cheer 8 barnett,Carib Cheer 8 Barnett,3,0,0.0009249999999999999,
+amazon-google,ciphered_words,sonnet55,1,b000922dwc,ok,end_turn,zonealarm firewall pro 5 (free upgrade to new version),stendhal sheraton sos 5 (conk ohioan nb inc navaho),Stendhal Sheraton SOS 5 (Conk Ohioan NB Inc Navaho),8,0,0.0009249999999999999,
+amazon-google,ciphered_words,sonnet55,1,b000hvtk9e,ok,end_turn,1pk internet sec ste 2007 oem,rds aurelio pms say 2007 pan,RDS Aurelio PMS Say 2007 Pan,5,0,0.0009249999999999999,
+amazon-google,ciphered_words,sonnet55,1,b000gwfgqk,ok,end_turn,palo alto business plan pro premier 2007,clit cart hendrix blur sos clarke 2007,Clit Cart Hendrix Blur SOS Clarke 2007,6,0,0.0009249999999999999,
+amazon-google,ciphered_words,sonnet55,2,b000gcd6lw,ok,end_turn,computrace lojack for laptops - 3 year license (mac),catechised tyson sui boolean - 3 livy merrick (ups),Rechargeable Battery Pack - 3 Cell Lithium (UPS),7,0,0.0008177999999999999,"These lines look like product listings where each word was replaced by another word, probably one that sounds similar or has a similar shape. I could not recover them with confidence, so the decodings below are best guesses and several are weak.
+
+Guesses by line:
+- Line 1: ""catechised tyson sui boolean - 3 livy merrick (ups)"" could be ""Rechargeable Battery Pack - 3 Cell Lithium (UPS)"", which fits a product listing, but the mapping is loose.
+- Line 2: ""welsh advil socratic (ups)"" might be ""Replacement Battery Cartridge (UPS)"".
+- Line 3: ""kuwait chloe hendrix sos 2007"" might be ""Microsoft Office Home Student 2007"".
+- Line 4: ""mack buford 5.1 (nan/ups)"" might be ""Mac OS X 5.1"" or ""Norton Antivirus 5.1 (NAN/UPS)"".
+- Line 5: ""avogadro aeneid kantian kurt bratislava lpn anatolian"" has no clear reading. I guessed at a software title.
+- Line 6: ""angelica ivanhoe"" could be ""Angelica Ivanhoe"" or a software name such as ""Adobe Illustrator"".
+- Line 7: ""hollie hex arizonan noel alabamians"" has no clear reading.
+- Line 8: ""adjustment canute van rhea"" has no clear reading.
+- Line 9: ""jo heller on nan/ups ifs"" has no clear reading.
+- Line 10: ""köln kusch & cyril gila 2007"" might be ""Kaspersky Internet Security 2007"" or ""Norton Internet Security 2007"", given the year.
+
+Since the listings seem to be software and UPS-related items, I made these guesses:
+
+{""decoded"": [""Rechargeable Battery Pack - 3 Cell Lithium (UPS)"", ""Replacement Battery Cartridge (UPS)"", ""Microsoft Office Home Student 2007"", ""Norton Antivirus 5.1 (NAN/UPS)"", ""Adobe Acrobat Professional Edition"", ""Adobe Illustrator"", ""Microsoft Windows Vista Home Premium"", ""Adobe Photoshop Elements"", ""Norton Ghost on NAN/UPS"", ""Norton Internet Security 2007""]}"
+amazon-google,ciphered_words,sonnet55,2,b0006oei8u,ok,end_turn,atari arcade classics (mac),welsh advil socratic (ups),Replacement Battery Cartridge (UPS),4,0,0.0008177999999999999,
+amazon-google,ciphered_words,sonnet55,2,b000h2421o,ok,end_turn,quicken legal business pro 2007,kuwait chloe hendrix sos 2007,Microsoft Office Home Student 2007,4,0,0.0008177999999999999,
+amazon-google,ciphered_words,sonnet55,2,b000fcyts2,ok,end_turn,zend studio 5.1 (win/mac),mack buford 5.1 (nan/ups),Norton Antivirus 5.1 (NAN/UPS),4,0,0.0008177999999999999,
+amazon-google,ciphered_words,sonnet55,2,b00013wh0w,ok,end_turn,handmark oxford american desk dictionary and thesaurus,avogadro aeneid kantian kurt bratislava lpn anatolian,Adobe Acrobat Professional Edition,7,0,0.0008177999999999999,
+amazon-google,ciphered_words,sonnet55,2,b000mu6mve,ok,end_turn,micromat protogo,angelica ivanhoe,Adobe Illustrator,2,0,0.0008177999999999999,
+amazon-google,ciphered_words,sonnet55,2,b000ccvp0a,ok,end_turn,simply put software data eliminator,hollie hex arizonan noel alabamians,Microsoft Windows Vista Home Premium,5,0,0.0008177999999999999,
+amazon-google,ciphered_words,sonnet55,2,b00024yohy,ok,end_turn,mastercook deluxe low carb,adjustment canute van rhea,Adobe Photoshop Elements,4,0,0.0008177999999999999,
+amazon-google,ciphered_words,sonnet55,2,b00030cbu4,ok,end_turn,ae painter v9 win/mac box,jo heller on nan/ups ifs,Norton Ghost on NAN/UPS,6,0,0.0008177999999999999,
+amazon-google,ciphered_words,sonnet55,2,b000egidpe,ok,end_turn,hoyle puzzle & board games 2007,köln kusch & cyril gila 2007,Norton Internet Security 2007,4,0,0.0008177999999999999,
+amazon-google,ciphered_words,sonnet55,3,b000ozhfsq,ok,end_turn,tlc dr. seuss reading learning system 2008,bag ps. seiko cavour gielgud duran 2008,bag of seiko cavour gielgud duran 2008,6,0,0.000555,"These look like product listings where each word was replaced by a similar-sounding or similar-looking word, so every decoding below is a guess rather than a certain recovery.
+
+Line 8, ""erin meccas automatic 2007"", could be ""Erin Mecca's Automatic 2007"", but I'm unsure. ""Les boob cars keaton lyme"" could be ""Les Paul Cars Keaton"", and I can't resolve it.
+
+Line 10, ""problematical druid 3: qumran"", could be ""Problematic Druid 3: Qumran"", but I can't pin down a more specific title.
+
+Line 5, ""morison 3-re-mud beautifier (nan/ups)"", looks like ""Morrison 3-in-1 Beautifier"". Line 7, ""stendhal sos sheraton"", might be ""Stendhal Sos Sheraton"".
+
+I can't recover the originals with confidence, so I give my best guess for each line, keeping the words as close to the input as I can.
+
+```json
+{""decoded"": [""bag of seiko cavour gielgud duran 2008"", ""meadows rob delmer arizonan tuesdays delmer giauque"", ""les boob cars keaton lyme sos ch oz gm ft les boob cars"", ""gasser ca gig"", ""morison 3-in-1 beautifier (nan/ups)"", ""dawn saar abbas uk pus (pelee bard swat)"", ""stendhal sos sheraton"", ""erin mecca's automatic 2007"", ""40 comte gi les kunming"", ""problematical druid 3: qumran""]}
+```"
+amazon-google,ciphered_words,sonnet55,3,b0009hmx36,ok,end_turn,procurve vpn client software unlimited client licenses,meadows rob delmer arizonan tuesdays delmer giauque,meadows rob delmer arizonan tuesdays delmer giauque,7,0,0.000555,
+amazon-google,ciphered_words,sonnet55,3,b000hed3gm,ok,end_turn,the print shop design suite pro ed sb cs by the print shop,les boob cars keaton lyme sos ch oz gm ft les boob cars,les boob cars keaton lyme sos ch oz gm ft les boob cars,13,0,0.000555,
+amazon-google,ciphered_words,sonnet55,3,b000bnb72g,ok,end_turn,movies on psp,gasser ca gig,gasser ca gig,3,0,0.000555,
+amazon-google,ciphered_words,sonnet55,3,b000aa8796,ok,end_turn,aquarium 3-in-one collection (win/mac),morison 3-re-mud beautifier (nan/ups),morison 3-in-1 beautifier (nan/ups),6,1,0.000555,
+amazon-google,ciphered_words,sonnet55,3,b000lrdlia,ok,end_turn,star wars empire at war (intel only macs),dawn saar abbas uk pus (pelee bard swat),dawn saar abbas uk pus (pelee bard swat),8,0,0.000555,
+amazon-google,ciphered_words,sonnet55,3,b000hkpfje,ok,end_turn,zonealarm pro firewall,stendhal sos sheraton,stendhal sos sheraton,3,0,0.000555,
+amazon-google,ciphered_words,sonnet55,3,b000fer1d0,ok,end_turn,high school advantage 2007,erin meccas automatic 2007,erin mecca's automatic 2007,3,0,0.000555,
+amazon-google,ciphered_words,sonnet55,3,b000fjsa2g,ok,end_turn,40 years of the avengers,40 comte gi les kunming,40 comte gi les kunming,4,0,0.000555,
+amazon-google,ciphered_words,sonnet55,3,b000n5meva,ok,end_turn,rollercoaster tycoon 3: soaked,problematical druid 3: qumran,problematical druid 3: qumran,3,0,0.000555,
