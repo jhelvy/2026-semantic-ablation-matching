@@ -254,6 +254,20 @@ Revised 2026-11-09: the latest small and mid-size models from each provider. GPT
      | `desc_ciphered` | 47 / 7 / 0 | 0.796 | 0.796 |
      | `all_ciphered` | 28 / 26 / 0 | 0.463 | 0.463 |
    - Decided 2026-11-09: do not change the cipher words. Choosing a vocabulary after seeing refusals would tune the transform to model behavior, and any real-word list still carries R2's injected-meaning problem. Run v1 Ciphered Words as it is, report its refusal rate and its F1 with and without refused queries, and decide after the paid runs whether it stays in the main results or moves to the appendix. `all_ciphered` reproduces the effect without refusals and carries the claim.
+   - **Refusals at full scale (paid runs, 2026-11-10).** Through the API, Haiku 5.5 is refused on most ciphered queries, far more than the CLI pilot showed. The refusals come from the API itself (`stop_reason: refusal`, `category=bio`, some `general_harms`), not from the harness. GPT-6 Luna refused no queries in any run.
+
+     | Haiku 5.5 refusal rate | Abt-Buy (name + description) | Amazon-Google (title only) |
+     |---|---|---|
+     | Original | 0% | 0% |
+     | Ciphered Letters | 96% | 85% |
+     | Scrambled | 97% | 4% |
+     | Ciphered Words | 47% | 0% |
+     | Factorial cells | 3.5% or less | 0.4% or less |
+
+     - The prompt does not fix it. The token-fallback prompt raises refusals (Abt-Buy Ciphered Words: 47% to 87%). k=10 lowers some of them (Abt-Buy Ciphered Words 24%, Amazon-Google Ciphered Letters 60%). Repeat 1 matches the first run to within 2 points.
+     - **Decided 2026-11-10: report the refusal rate as a finding.** Without semantic content, the model does not fall back on the lexical evidence: it declines the task. Report refusal rates for every model and condition (item 3) beside F1.
+     - **Stop paying for Haiku where it refuses.** The `--repeat 1..2` runs skip Haiku on Abt-Buy `ciphered_letters,scrambled` and Amazon-Google `ciphered_letters`. The main grid, factorial, k=10, and token-fallback runs already include these conditions and stay as they are.
+     - **Sonnet 5.5 pilot first (C.4 step 4b).** Sonnet was refused on 10 of 54 Abt-Buy Ciphered Words queries in the API pilot. If it refuses Ciphered Letters and Scrambled the way Haiku does, run Sonnet's full 30% grid only on the conditions it answers, and report the pilot refusal rate for the rest.
 6. **`08_figures.R`.** Labels for the new methods and cells; split `f1_comparison.png` and `precision_recall_scatter.png` into main (semantic methods + TF-IDF reference) and appendix (`*_lexical.png`) figures (A.2); add a factorial figure and a robustness figure, both with the TF-IDF reference line.
    - Split done 2026-11-08. Main figures show the semantic methods (v1 LLMs labeled "(v1)" until v2 replaces them) with TF-IDF as a dashed red line (F1) or red diamonds (precision-recall). `llm_robustness.png` and `llm_prompt_comparison.png` also carry the TF-IDF line. The overview figures show the four v1 conditions only. Still to add: the factorial and robustness figures, once LLM results exist.
    - Sonnet scale check done 2026-11-09. `05_cv_threshold.py` also scores Haiku, Luna, and TF-IDF on the query ids in Sonnet's parquet for each condition, as `*__sonnet30` rows. `08_figures.R` builds the main figures from the small v2 models (the v1 LLMs stand in until those exist) and draws `llm_scale_check.png` once Sonnet results exist. `README.qmd` has an "Appendix: scale check" section, and Sonnet is out of the main tables.
@@ -282,10 +296,22 @@ Budget (offline estimate from `03_estimate_llm_cost.py`, 2026-11-09; the conserv
 3. **Subscription pilot (free).** `llm_haiku55_cli` on Abt-Buy `original,ciphered_words` with `--sample-frac 0.05 --workers 2`. Check the CLI output parsing and the isolation, and iterate on the prompt here if needed.
    - Done 2026-11-09, also on `desc_ciphered,all_ciphered`. Parsing works (no `parse_fail`), and the true match was in the shortlist for every query. v1 Ciphered Words drew safety-classifier refusals (C.3 item 5). Each CLI call carries about 1,050 tokens beyond the prompt (fit across 98 calls), probably the CLI's own scaffolding plus the JSON schema; confirm with a free token count once the API key is in. No prompt changes were needed.
 4. **API pilot (about $1).** `llm_haiku55,llm_gpt6luna,llm_sonnet55` on Abt-Buy `original,ciphered_words` with `--sample-frac 0.05`. Check the status counts, whether the API refuses the same Ciphered Words queries as the CLI (and whether Luna refuses at all), and Luna's reasoning-token use. Then recalibrate `03_estimate_llm_cost.py` with `--cpt-*` and `--out-tokens` from the logged tokens.
+   - Done 2026-11-09 ($0.66). No `parse_fail` or `truncated`. The API refused Haiku on 27 of 54 Ciphered Words queries (the CLI: 10), Sonnet on 10, Luna on none. Per query: Haiku about $0.0003, Luna $0.0002 (Original) to $0.0006 (ciphered, about 850 reasoning tokens), Sonnet $0.0054. The recalibrated total for steps 5–8 was about $63, under half the earlier estimate. Pilot outputs moved to `pilot_results/`.
+4b. **Sonnet pilot on Ciphered Letters and Scrambled (about $1).** `llm_sonnet55` on both datasets, `--transformations ciphered_letters,scrambled --sample-frac 0.05`. Added 2026-11-10 after Haiku's full-scale refusals (C.3 item 5). Run it before Sonnet's full runs, and drop any condition Sonnet mostly refuses.
+   - Done 2026-11-10 ($1.56, 54–56 queries per cell; outputs in `pilot_results/*/llm_sonnet55__sample0.05_cl_sc/`). Sonnet refuses far less than Haiku, so no condition is dropped:
+
+     | Sonnet 5.5 pilot | Refused | Correct top pick | Excluding refusals | Haiku refused (full run) |
+     |---|---|---|---|---|
+     | Abt-Buy Ciphered Letters | 24% | 0.611 | 0.805 | 96% |
+     | Abt-Buy Scrambled | 28% | 0.574 | 0.795 | 97% |
+     | Amazon-Google Ciphered Letters | 30% | 0.554 | 0.795 | 85% |
+     | Amazon-Google Scrambled | 4% | 0.857 | 0.889 | 4% |
 5. **Main grid.** Run `llm_haiku55,llm_gpt6luna` on the full grid first, then `llm_sonnet55` on its 30% subsample. About $31–70.
+   - Haiku and Luna done 2026-11-10 (about $6). Sonnet held for step 4b.
 6. **Factorial.** Run all three models with `--transformations factorial`. Original resumes from `checkpoints/` with no new calls, so only the three new cells cost money: about $24–55.
 7. **Robustness.** `--top-k 10` (rank order kept) on Haiku and Luna: about $6–14.
 8. **Prompt and variance checks.** Run the token-fallback `_tf` variants and `--repeat 1..2` on Haiku and Luna only: about $8–18 per extra pass.
+   - Steps 6 (Haiku + Luna), 7, and the `_tf` runs done 2026-11-10. In the repeats, Haiku skips the conditions it refuses (C.3 item 5), so `llm_haiku55__rep1/__rep2` have no Abt-Buy `ciphered_letters,scrambled` and no Amazon-Google `ciphered_letters` (Abt-Buy rep 1 has all four, run before the cut).
 9. **Mechanism checks (C.2 items 5–6), once built.** Highlight prompt (`llm_haiku55_hl,llm_gpt6luna_hl`) on Original and the three cipher conditions; dose-response cells for Haiku and Luna on Abt-Buy. About $12–28. CLI pilot both first.
 10. **Outputs.** After each batch:
    - run `05_cv_threshold.py`, `06_summarize_results.py`, `07_instance_analysis.py`, and `08_figures.R`;
