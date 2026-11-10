@@ -227,6 +227,9 @@ Revised 2026-11-09: the latest small and mid-size models from each provider. GPT
    - Optionally add the factorial `desc_ciphered` cell to this run.
 4. **Not run: pairwise yes/no prompting.** It needs one call per candidate pair, so it multiplies token cost. It is also not the rank-then-select setting this paper studies. The paper states this as a limitation and leaves it to future work.
 
+5. **Shared-token highlighting (added 2026-11-09).** A prompt variant (`highlight`, method suffix `_hl`) that marks, in each candidate, the tokens it shares with the query (e.g. `[w55]`). The text and shortlist are unchanged; only the marking is added. If F1 recovers under the ciphers, the model can use lexical evidence once it is surfaced but does not find it on its own, which is the claim ("fails to fall back"). It also answers R1 D1: the task is solvable when the overlap is visible. Compared with the token-fallback prompt (which tells the model to use shared tokens), it separates "does not look" from "cannot find". Haiku and Luna, both datasets, on `ciphered_letters`, `desc_ciphered`, `all_ciphered` (plus Original as a check that marking does not hurt). About $6 optimistic; pilot free on the CLI first.
+6. **Dose-response: partial description cipher (added 2026-11-09).** Cipher a fraction p of descriptive word types (p = 0.25, 0.5, 0.75; p = 0 and 1 are `original` and `desc_ciphered`), identifiers intact, same nonce map and seed. Each map stays injective, so TF-IDF stays invariant (`--verify`). At p = 0.25 the text is still mostly readable, so a graded decline answers "garbled text breaks the model" better than a cliff would. Cells `desc_ciphered_p25`, `_p50`, `_p75`. Haiku and Luna on Abt-Buy (where identifiers matter), all non-LLM methods on both datasets. About $6 optimistic.
+
 ### C.3 Still to build (no API cost), in priority order
 
 1. **Part A and Part B above.** Both done 2026-11-08: `README.qmd` renders with `quarto render README.qmd`, reads only CSV/JSON, and prints "not yet run" for missing results.
@@ -255,13 +258,16 @@ Revised 2026-11-09: the latest small and mid-size models from each provider. GPT
    - Split done 2026-11-08. Main figures show the semantic methods (v1 LLMs labeled "(v1)" until v2 replaces them) with TF-IDF as a dashed red line (F1) or red diamonds (precision-recall). `llm_robustness.png` and `llm_prompt_comparison.png` also carry the TF-IDF line. The overview figures show the four v1 conditions only. Still to add: the factorial and robustness figures, once LLM results exist.
    - Sonnet scale check done 2026-11-09. `05_cv_threshold.py` also scores Haiku, Luna, and TF-IDF on the query ids in Sonnet's parquet for each condition, as `*__sonnet30` rows. `08_figures.R` builds the main figures from the small v2 models (the v1 LLMs stand in until those exist) and draws `llm_scale_check.png` once Sonnet results exist. `README.qmd` has an "Appendix: scale check" section, and Sonnet is out of the main tables.
 
+7. **Highlight prompt (C.2 item 5).** Add a `highlight` entry to `PROMPTS` in `lib/llm_runner.py` and register `llm_<model>_hl` methods. Shared tokens are computed per candidate with the same tokenizer TF-IDF uses; identical across conditions in structure because the maps are injective. Test offline, then a CLI pilot.
+8. **Dose-response cells (C.2 item 6).** Add a fraction setting to `lib/factorial.py` / `02_prepare_factorial.py` that ciphers a seeded random subset of descriptive word types, writing `desc_ciphered_p25/_p50/_p75`. Add them to `FACTORIAL_CELLS` (or a `dose` group for `--transformations`), and to `05_cv_threshold.py`'s `TRANS`, the README, and `08_figures.R` (a dose-response figure with the TF-IDF line). `--verify` must pass for each.
+
 Optional for this paper: an `--include-unmatched` flag for full catalogs (R2 D3), and a Batch API mode, which would roughly halve the cost of every pass.
 
 ### C.4 Run order (once keys and credit are in place)
 
 Script names below are the post-reorg names.
 
-Budget (offline estimate from `03_estimate_llm_cost.py`, 2026-11-09; the conservative figure is about 2.3× the optimistic one): about $85 optimistic and $195 conservative for steps 2–8.
+Budget (offline estimate from `03_estimate_llm_cost.py`, 2026-11-09; the conservative figure is about 2.3× the optimistic one): about $97 optimistic and $223 conservative for steps 2–9 (step 9 needs C.3 items 7–8 built first).
 
 | Step | Runs | Optimistic |
 |---|---|---|
@@ -269,6 +275,7 @@ Budget (offline estimate from `03_estimate_llm_cost.py`, 2026-11-09; the conserv
 | 6 | all three models, 3 factorial cells | $24 (Sonnet $18) |
 | 7 | Haiku + Luna, k=10 | $6 |
 | 8 | Haiku + Luna, token-fallback prompt; `--repeat 1..2` | $8 + $15 |
+| 9 | Haiku + Luna, highlight prompt; dose-response cells | $6 + $6 |
 
 1. `cp .env.example .env` and fill in `ANTHROPIC_API_KEY` and `OPENAI_API_KEY`. Then run `uv sync` and the tests.
 2. **Rerun `openai_embeddings`** (paid, but only a few cents: embeddings for about 2,200 records per condition) on both datasets with `--transformations all,factorial`, so every semantic method comes from the current code. The free non-LLM methods were rerun on 2026-11-08 (the committed parquets did not reproduce from the current code). Then rerun `05_cv_threshold.py`.
@@ -279,7 +286,8 @@ Budget (offline estimate from `03_estimate_llm_cost.py`, 2026-11-09; the conserv
 6. **Factorial.** Run all three models with `--transformations factorial`. Original resumes from `checkpoints/` with no new calls, so only the three new cells cost money: about $24–55.
 7. **Robustness.** `--top-k 10` (rank order kept) on Haiku and Luna: about $6–14.
 8. **Prompt and variance checks.** Run the token-fallback `_tf` variants and `--repeat 1..2` on Haiku and Luna only: about $8–18 per extra pass.
-9. **Outputs.** After each batch:
+9. **Mechanism checks (C.2 items 5–6), once built.** Highlight prompt (`llm_haiku55_hl,llm_gpt6luna_hl`) on Original and the three cipher conditions; dose-response cells for Haiku and Luna on Abt-Buy. About $12–28. CLI pilot both first.
+10. **Outputs.** After each batch:
    - run `05_cv_threshold.py`, `06_summarize_results.py`, `07_instance_analysis.py`, and `08_figures.R`;
    - then `quarto render README.qmd`.
 
