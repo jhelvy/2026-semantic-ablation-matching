@@ -4,13 +4,28 @@ Written 2026-11-08 for the revision of "Matching Without Meaning" after the TKDE
 
 **Two plans, kept in sync.** The paper plan is `/Users/jhelvy/sync/00_current/llm-fuzzy-joins/1/plan.md` (argument, manuscript edits, venue). When John says "update the plan", update both files in the same sitting, and keep shared decisions consistent: lineup, figures, run order, and status. For script names and commands, this file is the source of truth.
 
-Branch: `harness-v2`. No API calls have been made yet. Do not run any paid API call until keys and credit are confirmed.
+Branch: `harness-v2`. John confirmed keys and credit on 2026-11-09; the paid runs through 2026-11-10 cost about $60 (C.4).
 
 **Commits: John makes every commit.** Claude does not run `git commit` (or push). At each natural commit point, Claude stops, summarizes what changed and how it was checked, proposes a commit message, and waits. John reviews the diff and commits. Wherever this plan says "commit", read it as "stop and flag a commit point".
 
 ## The claim the experiments must support
 
 LLM entity matchers lean on semantics. When meaning is removed but the lexical evidence that identifies a match is kept, they do not fall back on that evidence, even though that evidence alone solves the task. TF-IDF is the control that proves the evidence is still there: it does not change under any of the transforms.
+
+**Revised framing (decided 2026-11-10, after the v2 runs).** LLM matchers win through meaning. When meaning is present, or can be recovered from the transformed text, a strong small model stays well above the lexical baseline. When meaning is truly removed but the lexical evidence is kept, the LLMs add nothing over that baseline, and on Abt-Buy they do worse than TF-IDF's own top pick. The claim that LLMs do not fall back on the preserved evidence still holds; what changed is which transforms actually remove meaning. The evidence:
+
+- **Some transforms can be read** (decode test, `09_decode_test.py`, $0.49). All three models recover most of the Scrambled text (65–99% of altered words). Ciphered Letters is a fixed letter substitution that can be broken: Sonnet recovers 90–95% when it answers, and Luna decoded some batches almost fully (up to 93%) but often answered "unrecoverable". Ciphered Words, the control, cannot be decoded (4% or less).
+- **On readable transforms, Luna holds up.** Abt-Buy CV F1: Ciphered Letters 0.93 and Scrambled 0.88, against TF-IDF 0.70.
+- **On transforms that remove meaning, Luna falls to the TF-IDF level.** Abt-Buy: Ciphered Words 0.70 vs 0.70, `all_ciphered` 0.74 vs 0.70. Amazon-Google: 0.84 vs 0.81 on both.
+- **Against TF-IDF's top-1 on the same shortlist, Luna does worse** (`07_instance_analysis.py`). Abt-Buy Ciphered Words: Luna picks the right match on 0.641 of queries, TF-IDF's top candidate is right on 0.702. Luna is right where TF-IDF is wrong on 5% of queries, and wrong where TF-IDF is right on 11%. `all_ciphered`: 0.639 vs 0.692. On Amazon-Google the two tie (0.803 vs 0.805; 0.815 vs 0.807).
+- **The Anthropic gap on readable transforms is refusal, not ability.** Haiku refuses 85–97% of Ciphered Letters queries and Sonnet 28–36%. Scored only on the queries Sonnet answered, Sonnet matches Luna (Abt-Buy Ciphered Letters 0.908 vs 0.914; TF-IDF 0.688). On Ciphered Words, on the same answered queries, Sonnet scores 0.553, Luna 0.705, TF-IDF 0.685.
+
+What this changes:
+
+- **Conditions come in two groups.** Ciphered Letters and Scrambled are *meaning-recoverable*: a capable model can read them, so robustness there is not matching without meaning. Ciphered Words and the factorial cells are the *meaning-removal* tests, and they carry the claim. Do not write that every ablation removes meaning.
+- **The v1 deficits were partly a model effect.** The weaker v1 models could not decode the ciphers; Luna can. Say so, rather than presenting the v1 drops as general.
+- **Practical message.** With meaningful product text, an LLM reranking a TF-IDF shortlist is very strong, and model choice matters (refusals above all). The limitation bites on low-meaning text: SKUs, part codes, abbreviations, opaque IDs. There, the LLM adds cost but no accuracy over TF-IDF, can override correct lexical evidence, and some models decline the task.
+- **Still open:** whether Ciphered Letters and Scrambled stay in the main figures (grouped apart as "meaning recoverable") or move to the appendix.
 
 This is a proof of concept, not a model survey. Keep the lineup small and spend the effort on the controls.
 
@@ -241,6 +256,7 @@ Revised 2026-11-09: the latest small and mid-size models from each provider. GPT
    - errors against prompt token count (R2 D1c);
    - paired bootstrap CIs for the Original-to-ablation drop, per model and condition;
    - F1 with refused queries excluded, next to the standard F1 (where refused queries count as misses), per model and condition (item 5).
+   - **Partly built 2026-11-10.** `scripts/07_instance_analysis.py` writes `results/instance_analysis.csv` (per LLM run and condition: status rates, shortlist recall, TF-IDF top-1 accuracy from the shortlist's first candidate, LLM accuracy, share of answers that pick candidate 1, and the LLM-vs-TF-IDF correct/incorrect 2x2) and `results/f1_answered.csv` (CV F1 on the queries each model did not refuse, with every main method scored on the same queries). The CV helpers moved to `scripts/lib/cv.py`, shared with `05` (its output is byte-identical). Still to add: shortlist recall for each k, the unique-identifier share of misses, errors against prompt size, and the paired bootstrap CIs.
 3. **`llm_status.csv` from `06_summarize_results.py`.** Status rates by model and condition, so parse failures are reported as their own outcome and never hidden as "no match". Refusals matter most: the pilot found safety-classifier blocks on about 20% of v1 Ciphered Words queries for Haiku (item 5). Since 2026-11-09 the CLI adapter logs these blocks as `refusal`, not `api_error`.
 4. **Transform-seed parameter.** Add `--seed N` to `01_prepare_datasets.py`, writing `*_sN.csv` the way `02_prepare_factorial.py` already does. Run 3–5 seeds for the non-LLM methods (R2 D6).
 5. **v1 Ciphered Words reproducibility. Decided 2026-11-09: keep the committed CSVs as canonical.** Do not regenerate them, and do not change the mapping code in `01_prepare_datasets.py`: sorting before mapping would give a different map, not the committed one. So the LLM runs on `ciphered_words` use the committed files, and nothing has to be rerun.
@@ -275,6 +291,17 @@ Revised 2026-11-09: the latest small and mid-size models from each provider. GPT
 
 7. **Highlight prompt (C.2 item 5).** Add a `highlight` entry to `PROMPTS` in `lib/llm_runner.py` and register `llm_<model>_hl` methods. Shared tokens are computed per candidate with the same tokenizer TF-IDF uses; identical across conditions in structure because the maps are injective. Test offline, then a CLI pilot.
 8. **Dose-response cells (C.2 item 6).** Add a fraction setting to `lib/factorial.py` / `02_prepare_factorial.py` that ciphers a seeded random subset of descriptive word types, writing `desc_ciphered_p25/_p50/_p75`. Add them to `FACTORIAL_CELLS` (or a `dose` group for `--transformations`), and to `05_cv_threshold.py`'s `TRANS`, the README, and `08_figures.R` (a dose-response figure with the TF-IDF line). `--verify` must pass for each.
+
+9. **Decode test. Done 2026-11-10 ($0.49).** `scripts/09_decode_test.py` (paid) asks each model to recover the original text of 30 sampled records per dataset (Abt-Buy name, Amazon-Google title), 10 per call, without naming the transform. Score: share of the words the transform changed that reappear in the decoded line. Output cap 32k tokens (an 8k cap truncated Luna's cipher-breaking). Writes `results/decode_test.csv` and `results/decode_test_rows.csv` (with raw responses).
+
+   | Recovered words | Luna | Haiku | Sonnet |
+   |---|---|---|---|
+   | Scrambled (Abt-Buy / Amazon-Google) | 0.77 / 0.99 | 0.68 / 0.90 | 0.65 / 0.92 |
+   | Ciphered Letters | 0.08 / 0.34 | 0.26 / 0.03 (67% refused on A-G) | 0.90 / 0.34 (67% refused on A-G; 0.95 when answered) |
+   | Ciphered Words (control) | 0.00 / 0.00 | 0.01 / 0.01 | 0.04 / 0.01 |
+
+   - Luna's Ciphered Letters result varies by batch: it either decodes almost fully (0.93 on one Amazon-Google batch, 0.81 on an Abt-Buy batch in the first run) or answers "[unrecoverable from the altered text]". In matching, the prompt carries 51 records of ciphertext, more than this test gives.
+   - **The committed Scrambled CSVs do not match `lib/transforms.py`.** The code keeps each word's first and last letters and leaves digits alone; the committed files shuffle every character, digits included ("pioneer" -> "oenirpe", "CDSB10" -> "1db0cs"). As with Ciphered Words (item 5), the committed CSVs are canonical, and the paper describes them, not the code.
 
 Optional for this paper: an `--include-unmatched` flag for full catalogs (R2 D3), and a Batch API mode, which would roughly halve the cost of every pass.
 
