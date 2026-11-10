@@ -4,6 +4,8 @@ UNIFIED RESULTS ANALYSIS SCRIPT
 ✅ Loads Abt-Buy (unfiltered, all records)
 ✅ Loads Amazon-Google (filtered to 1113, title-only)
 ✅ Generates ONE summary.csv with both datasets
+✅ Writes llm_status.csv: share of LLM rows by status (ok, no_match, parse_fail,
+   truncated, refusal, api_error) per dataset, method, and condition
 
 Figures are made by scripts/08_figures.R, not here.
 
@@ -137,6 +139,34 @@ def print_summary(metrics_df):
         
         print()
 
+STATUSES = ['ok', 'no_match', 'parse_fail', 'truncated', 'refusal', 'api_error']
+
+
+def llm_status_table(df):
+    """Share of rows by harness-v2 status, per dataset, method (run label), and condition.
+
+    Only harness-v2 rows carry a `status`; other methods are left out. Parse failures
+    and refusals are their own outcomes, never folded into "no match".
+    """
+    v2 = df[df['status'].notna()] if 'status' in df.columns else df.iloc[0:0]
+    if v2.empty:
+        return None
+    keys = ['dataset', 'method', 'transformation']
+    shares = (pd.crosstab([v2[k] for k in keys], v2['status'], normalize='index')
+              .reindex(columns=STATUSES, fill_value=0.0))
+    out = v2.groupby(keys).size().rename('n').to_frame().join(shares).reset_index()
+    return out.sort_values(keys)
+
+
+def export_llm_status(df, output_file=RESULTS / 'llm_status.csv'):
+    table = llm_status_table(df)
+    if table is None:
+        print("   No harness-v2 LLM results; llm_status.csv not written")
+        return
+    table.to_csv(output_file, index=False, float_format='%.4f')
+    print(f"✅ Exported LLM status rates to: {output_file}")
+
+
 def export_summary(metrics_df, output_file=RESULTS / 'summary.csv'):
     """Export summary to CSV"""
     output_path = Path(output_file)
@@ -185,12 +215,14 @@ def main():
     # Export
     print("\n3. Exporting summary...")
     export_summary(metrics_df)
+    export_llm_status(df_all)
     
     print("\n" + "="*80)
     print("ANALYSIS COMPLETE!")
     print("="*80)
     print("\nOutputs:")
     print("  - results/summary.csv")
+    print("  - results/llm_status.csv")
     
     print("\n" + "="*80)
     print("DATA VALIDATION")

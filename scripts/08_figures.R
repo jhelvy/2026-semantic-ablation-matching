@@ -37,7 +37,22 @@ tfidf_color <- '#980000FF'
 # The four v1 conditions shown in the overview figures. The factorial cells
 # (desc_ciphered, ids_ciphered, all_ciphered) get their own figure later.
 v1_conditions <- c('original', 'ciphered_letters', 'ciphered_words', 'scrambled')
-ablation_levels <- c('Scrambled', 'Ciphered Words', 'Ciphered Letters')
+# Two groups of ablations (decided 2026-11-10): Ciphered Letters and Scrambled can
+# be read by a capable model (decode test, 09_decode_test.py), so they are
+# "meaning readable"; Ciphered Words removes meaning. Levels run bottom to top,
+# so the meaning-removed condition sits at the bottom, below a dotted divider.
+ablation_levels <- c('Ciphered Words', 'Scrambled', 'Ciphered Letters')
+ablation_labels <- c(
+  'Ciphered Letters' = 'Ciphered Letters\n(readable)',
+  'Scrambled' = 'Scrambled\n(readable)',
+  'Ciphered Words' = 'Ciphered Words\n(meaning removed)'
+)
+condition_legend <- c(
+  'Original' = 'Original',
+  'Ciphered Letters' = 'Ciphered Letters (readable)',
+  'Ciphered Words' = 'Ciphered Words (meaning removed)',
+  'Scrambled' = 'Scrambled (readable)'
+)
 
 # Method lineup (PLAN.md, "Method lineup"): semantic methods are the object of
 # study and go in the main figures; TF-IDF is the lexical control, drawn there
@@ -223,8 +238,10 @@ f1_plot <- function(d, tfidf_line = FALSE) {
       family = font,
       show.legend = FALSE
     ) +
+    geom_hline(yintercept = 1.5, color = 'grey50', linetype = 'dotted') +
     facet_grid(method ~ dataset) +
     scale_color_manual(values = plotColors) +
+    scale_y_discrete(labels = ablation_labels) +
     scale_x_continuous(
       breaks = seq(0, 1, 0.2),
       limits = c(0, 1),
@@ -252,7 +269,10 @@ save_fig('f1_comparison_lexical.png', width = 8, height = 9.5)
 pr_plot <- function(d, tfidf_points = FALSE) {
   d <- d |>
     order_methods() |>
-    mutate(transformation = factor(transformation, levels = names(plotColors)))
+    mutate(transformation = factor(
+      transformation,
+      levels = c('Original', 'Ciphered Letters', 'Scrambled', 'Ciphered Words')
+    ))
 
   p <- d |>
     ggplot() +
@@ -291,12 +311,15 @@ pr_plot <- function(d, tfidf_points = FALSE) {
 
   p <- p +
     facet_grid(method ~ dataset) +
-    scale_color_manual(values = plotColors) +
+    scale_color_manual(values = plotColors, labels = condition_legend) +
     scale_x_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
     scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
     labs(x = 'Recall', y = 'Precision', color = NULL) +
     theme_minimal_grid(font_family = font, font_size = 16)
-  p <- facet_theme(p) + theme(legend.position = 'bottom') + panel_border()
+  p <- facet_theme(p) +
+    theme(legend.position = 'bottom') +
+    guides(color = guide_legend(nrow = 2)) +
+    panel_border()
   p
 }
 
@@ -306,104 +329,8 @@ save_fig('precision_recall_scatter.png', width = 8, height = 10)
 pr_plot(cv_v1 |> filter(method_raw %in% lexical_methods))
 save_fig('precision_recall_scatter_lexical.png', width = 8, height = 12)
 
-# Plot 3: Robustness check — GPT-4o vs GPT-4o-mini (Amazon-Google only) ---------
-# v1 results. Shows all transformations as points + error bars by model tier.
-
-robustness_lookup <- tribble(
-  ~method     , ~tier              ,
-  'llm'       , 'GPT-4o-mini (v1)' ,
-  'llm_gpt4o' , 'GPT-4o (v1)'      ,
-)
-
-cv_robustness <- cv_raw |>
-  inner_join(robustness_lookup, by = 'method') |>
-  filter(dataset == 'amazon-google', transformation %in% v1_conditions) |>
-  mutate(
-    dataset = str_replace_all(dataset, "-", " ") |> str_to_title(),
-    transformation = str_replace_all(transformation, "_", " ") |>
-      str_to_title(),
-    tier = factor(tier, levels = robustness_lookup$tier)
-  )
-
-robustness_baseline <- cv_robustness |>
-  filter(transformation == 'Original') |>
-  select(tier, dataset, f1_baseline = f1_mean, sd_baseline = f1_std)
-
-robustness_ablations <- cv_robustness |>
-  filter(transformation != 'Original') |>
-  mutate(transformation = factor(transformation, levels = ablation_levels)) |>
-  left_join(robustness_baseline, by = c('tier', 'dataset')) |>
-  mutate(
-    pct_label = if_else(
-      is.na(f1_mean),
-      NA_character_,
-      sprintf('%+.0f%%', (f1_mean - f1_baseline) / f1_baseline * 100)
-    )
-  )
-
-robustness_ablations |>
-  ggplot(aes(x = f1_mean, y = transformation)) +
-  geom_rect(
-    data = robustness_baseline,
-    inherit.aes = FALSE,
-    aes(
-      xmin = f1_baseline - sd_baseline,
-      xmax = f1_baseline + sd_baseline,
-      ymin = -Inf,
-      ymax = Inf
-    ),
-    fill = 'grey70',
-    alpha = 0.35
-  ) +
-  geom_vline(data = robustness_baseline, aes(xintercept = f1_baseline)) +
-  geom_vline(
-    data = tfidf_ref |> filter(dataset == 'Amazon Google'),
-    aes(xintercept = tfidf_f1),
-    color = tfidf_color,
-    linetype = 'dashed',
-    linewidth = 0.6
-  ) +
-  geom_errorbar(
-      orientation = 'y',
-    aes(xmin = f1_mean - f1_std, xmax = f1_mean + f1_std),
-    width = 0.3,
-    alpha = 0.9,
-    linewidth = 0.5
-  ) +
-  geom_point(size = 2.5) +
-  geom_text(
-    aes(label = pct_label, x = f1_mean - f1_std),
-    hjust = 1.1,
-    vjust = 0.5,
-    size = 3,
-    color = 'grey20',
-    family = font,
-    show.legend = FALSE
-  ) +
-  facet_grid(tier ~ dataset) +
-  scale_x_continuous(
-    limits = c(0, 1),
-    expand = expansion(add = c(0.12, 0.02))
-  ) +
-  labs(
-    x = 'F1 Score',
-    y = 'Transformation',
-    caption = 'Dashed red line: TF-IDF (lexical control) F1 on Original'
-  ) +
-  coord_cartesian(clip = 'off') +
-  theme_minimal_vgrid(font_family = font, font_size = 14) +
-  theme(
-    strip.background = element_rect(fill = 'grey80', color = NA),
-    panel.grid.minor = element_blank(),
-    plot.title.position = 'plot',
-    plot.caption.position = 'plot',
-    legend.position = 'none',
-    panel.background = element_rect(fill = 'white', color = NA),
-    plot.background = element_rect(fill = 'white', color = NA)
-  ) +
-  panel_border()
-
-save_fig('llm_robustness.png', width = 8, height = 6)
+# Plot 3 (the v1 GPT-4o vs GPT-4o-mini robustness figure, llm_robustness.png)
+# was removed 2026-11-10: candidate_list_robustness.png (Plot 7) replaces it.
 
 # Plot 4: Per-model LLM prompt comparison (standard vs token-fallback) ----------
 # v1 results. One row per model family, faceted by dataset. Ablations on the

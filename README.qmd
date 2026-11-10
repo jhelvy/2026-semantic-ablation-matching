@@ -226,11 +226,11 @@ All F1, precision, and recall values use 5-fold cross-validated thresholds (`res
 
 ![F1 by transformation: semantic methods, with TF-IDF as the dashed reference line](figs/f1_comparison.png)
 
-*F1 under each v1 transform for the semantic methods. Solid line and grey band: the method's own Original F1 (± 1 SD across folds). Dashed red line: TF-IDF F1 on Original, the lexical control. LLM rows labeled "(v1)" are the superseded TKDE runs; they will be replaced by the harness v2 runs.*
+*F1 under each v1 transform for the semantic methods (Haiku 5.5 and GPT-6 Luna on harness v2, plus the two embedding models). Solid line and grey band: the method's own Original F1 (± 1 SD across folds). Dashed red line: TF-IDF F1 on Original, the lexical control. Ciphered Letters and Scrambled are "readable": the decode test (`09_decode_test.py`) shows a capable model can recover the text. Ciphered Words removes meaning; it sits below the dotted divider.*
 
 ![Precision and recall: semantic methods, with TF-IDF as the red diamonds](figs/precision_recall_scatter.png)
 
-*Precision and recall at the cross-validated threshold. Red diamonds: TF-IDF in each condition (they coincide, because TF-IDF is invariant).*
+*Precision and recall at the cross-validated threshold. Red diamonds: TF-IDF in each condition (they coincide, because TF-IDF is invariant). The legend marks each condition as readable or meaning removed.*
 
 ### F1 by method and condition
 
@@ -266,6 +266,10 @@ prf_table('amazon-google', main_methods)
 
 F1 in each cell of the descriptive-words x identifiers design.
 
+![2x2 factorial: F1 with descriptive words and identifiers each intact or ciphered](figs/factorial_2x2.png)
+
+*One line per description state, across identifiers intact or ciphered. Dashed red line: TF-IDF F1, identical in every cell.*
+
 **Abt-Buy:**
 
 ```{r}
@@ -281,6 +285,8 @@ f1_table('amazon-google', main_methods, factorial_conditions)
 ### Candidate-list robustness
 
 The main design shows the LLM the TF-IDF top 50 candidates in rank order. One check shortens the list to the top 10, still in rank order (`__k10`), to test whether list length explains the drop.
+
+![Candidate-list robustness: ordered top 50 vs ordered top 10](figs/candidate_list_robustness.png)
 
 ```{r}
 robust_methods <- if (is.null(cv)) character(0) else
