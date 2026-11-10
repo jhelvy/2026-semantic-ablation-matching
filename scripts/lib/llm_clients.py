@@ -242,6 +242,9 @@ _FATAL_HINTS = ("credit balance", "billing", "insufficient_quota", "quota", "inv
                 "incorrect api key", "model_not_found", "does not exist")
 
 
+_OPENAI_REFUSAL_HINTS = ("flagged as potentially violating our usage policy",)
+
+
 def _is_fatal(err: Exception) -> bool:
     name = type(err).__name__
     if name in ("AuthenticationError", "PermissionDeniedError", "NotFoundError"):
@@ -304,6 +307,11 @@ def _call_openai(cfg: ModelConfig, prompt: str, effort: Optional[str], n_candida
     except openai.APIError as e:
         if _is_fatal(e):
             raise FatalAPIError(f"{type(e).__name__}: {e}") from e
+        # A 400 "prompt was flagged as potentially violating our usage policy" is a property
+        # of the prompt (retries get the same answer), so it is a refusal, not an api_error.
+        if any(h in str(e).lower() for h in _OPENAI_REFUSAL_HINTS):
+            return LLMResult("refusal", error=f"openai prompt flagged: {e}"[:1000],
+                             model_served=cfg.model_id, latency_s=time.time() - t0)
         return LLMResult("api_error", error=f"{type(e).__name__}: {e}"[:1000], latency_s=time.time() - t0)
 
     usage = resp.usage

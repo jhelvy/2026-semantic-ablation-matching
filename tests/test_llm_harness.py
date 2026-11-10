@@ -128,6 +128,21 @@ def test_openai_request_shape_and_statuses():
     assert llm_clients.call_model(MODELS["gpt6luna"], "p", 50).status == "truncated"
     llm_clients._clients["openai"] = NS(responses=_FakeResponses(_openai_resp("", refusal=True)))
     assert llm_clients.call_model(MODELS["gpt6luna"], "p", 50).status == "refusal"
+    # A prompt flagged by OpenAI's usage-policy check (HTTP 400) is a refusal, not a retryable error;
+    # other 400s stay api_error.
+    import openai
+    import httpx2 as httpx
+    req = httpx.Request("POST", "https://api.openai.com/v1/responses")
+
+    def err(msg):
+        return openai.BadRequestError(msg, response=httpx.Response(400, request=req), body=None)
+
+    llm_clients._clients["openai"] = NS(responses=_FakeResponses(exc=err(
+        "Error code: 400 - Invalid prompt: your prompt was flagged as potentially violating "
+        "our usage policy. Please try again with a different prompt")))
+    assert llm_clients.call_model(MODELS["gpt6luna"], "p", 50).status == "refusal"
+    llm_clients._clients["openai"] = NS(responses=_FakeResponses(exc=err("Error code: 400 - bad schema")))
+    assert llm_clients.call_model(MODELS["gpt6luna"], "p", 50).status == "api_error"
 
 
 # ---------------------------------------------------------------- openai-compatible adapter

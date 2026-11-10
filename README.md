@@ -20,9 +20,9 @@ task.
 >   on all seven conditions.
 > - `openai_embeddings` has not been rerun yet (it is a paid call), so
 >   its rows still come from the earlier code.
-> - Harness v2 LLM runs: not yet run. The main results use the small
->   models (Claude Haiku 5.5, GPT-6 Luna). Claude Sonnet 5.5 is a scale
->   check, reported in [its own appendix
+> - Harness v2 LLM runs: some results are in (see below). The main
+>   results use the small models (Claude Haiku 5.5, GPT-6 Luna). Claude
+>   Sonnet 5.5 is a scale check, reported in [its own appendix
 >   section](#appendix-scale-check-claude-sonnet-55).
 > - The v1 LLM results from the TKDE submission are superseded. They
 >   appear in the figures labeled “(v1)” and in [their own
@@ -104,7 +104,9 @@ from 0.807 to 0.808 on Amazon-Google.
 
 | Method              | Original | Ciphered Letters | Ciphered Words | Scrambled |
 |:--------------------|---------:|-----------------:|---------------:|----------:|
-| OpenAI Embeddings   |    0.797 |            0.404 |          0.422 |     0.507 |
+| Claude Haiku 5.5    |    0.953 |            0.055 |          0.313 |     0.057 |
+| GPT-6 Luna          |    0.966 |            0.932 |          0.701 |     0.881 |
+| OpenAI Embeddings   |    0.787 |            0.343 |          0.354 |     0.469 |
 | SentenceTransformer |    0.583 |            0.149 |          0.348 |     0.359 |
 | TF-IDF              |    0.697 |            0.697 |          0.700 |     0.704 |
 
@@ -112,7 +114,9 @@ from 0.807 to 0.808 on Amazon-Google.
 
 | Method              | Original | Ciphered Letters | Ciphered Words | Scrambled |
 |:--------------------|---------:|-----------------:|---------------:|----------:|
-| OpenAI Embeddings   |    0.802 |            0.639 |          0.700 |     0.723 |
+| Claude Haiku 5.5    |    0.896 |            0.167 |          0.713 |     0.847 |
+| GPT-6 Luna          |    0.911 |            0.872 |          0.839 |     0.901 |
+| OpenAI Embeddings   |    0.802 |            0.638 |          0.701 |     0.725 |
 | SentenceTransformer |    0.755 |            0.617 |          0.683 |     0.675 |
 | TF-IDF              |    0.808 |            0.808 |          0.807 |     0.808 |
 
@@ -122,7 +126,9 @@ from 0.807 to 0.808 on Amazon-Google.
 
 | Method              | Precision | Recall |    F1 | F1 SD (5 folds) |
 |:--------------------|----------:|-------:|------:|----------------:|
-| OpenAI Embeddings   |     0.798 |  0.796 | 0.797 |           0.009 |
+| Claude Haiku 5.5    |     0.985 |  0.922 | 0.953 |           0.010 |
+| GPT-6 Luna          |     0.989 |  0.944 | 0.966 |           0.006 |
+| OpenAI Embeddings   |     0.787 |  0.787 | 0.787 |           0.021 |
 | SentenceTransformer |     0.584 |  0.581 | 0.583 |           0.027 |
 | TF-IDF              |     0.705 |  0.689 | 0.697 |           0.025 |
 
@@ -130,6 +136,8 @@ from 0.807 to 0.808 on Amazon-Google.
 
 | Method              | Precision | Recall |    F1 | F1 SD (5 folds) |
 |:--------------------|----------:|-------:|------:|----------------:|
+| Claude Haiku 5.5    |     0.931 |  0.864 | 0.896 |           0.019 |
+| GPT-6 Luna          |     0.924 |  0.898 | 0.911 |           0.005 |
 | OpenAI Embeddings   |     0.803 |  0.801 | 0.802 |           0.028 |
 | SentenceTransformer |     0.759 |  0.751 | 0.755 |           0.040 |
 | TF-IDF              |     0.808 |  0.808 | 0.808 |           0.030 |
@@ -142,7 +150,9 @@ F1 in each cell of the descriptive-words x identifiers design.
 
 | Method | Original | Descriptions ciphered | Identifiers ciphered | Both ciphered |
 |:---|---:|---:|---:|---:|
-| OpenAI Embeddings | 0.797 | not run | not run | not run |
+| Claude Haiku 5.5 | 0.953 | 0.870 | 0.778 | 0.652 |
+| GPT-6 Luna | 0.966 | 0.919 | 0.824 | 0.745 |
+| OpenAI Embeddings | 0.787 | 0.576 | 0.699 | 0.432 |
 | SentenceTransformer | 0.583 | 0.362 | 0.526 | 0.300 |
 | TF-IDF | 0.697 | 0.697 | 0.697 | 0.696 |
 
@@ -150,7 +160,9 @@ F1 in each cell of the descriptive-words x identifiers design.
 
 | Method | Original | Descriptions ciphered | Identifiers ciphered | Both ciphered |
 |:---|---:|---:|---:|---:|
-| OpenAI Embeddings | 0.802 | not run | not run | not run |
+| Claude Haiku 5.5 | 0.896 | 0.705 | 0.885 | 0.693 |
+| GPT-6 Luna | 0.911 | 0.849 | 0.902 | 0.845 |
+| OpenAI Embeddings | 0.802 | 0.672 | 0.795 | 0.671 |
 | SentenceTransformer | 0.755 | 0.671 | 0.742 | 0.665 |
 | TF-IDF | 0.808 | 0.808 | 0.808 | 0.808 |
 
@@ -160,7 +172,16 @@ The main design shows the LLM the TF-IDF top 50 candidates in rank
 order. One check shortens the list to the top 10, still in rank order
 (`__k10`), to test whether list length explains the drop.
 
-*Not yet run.*
+| Dataset | Method | Original | Ciphered Letters | Ciphered Words | Scrambled |
+|:---|:---|:---|:---|:---|:---|
+| Abt-Buy | llm_gpt6luna | 0.966 | 0.932 | 0.701 | 0.881 |
+| Abt-Buy | llm_gpt6luna\_\_k10 | 0.938 | 0.904 | 0.697 | 0.873 |
+| Abt-Buy | llm_haiku55 | 0.953 | 0.055 | 0.313 | 0.057 |
+| Abt-Buy | llm_haiku55\_\_k10 | 0.925 | 0.069 | 0.370 | 0.111 |
+| Amazon-Google | llm_gpt6luna | 0.911 | 0.872 | 0.839 | 0.901 |
+| Amazon-Google | llm_gpt6luna\_\_k10 | 0.909 | 0.860 | 0.836 | 0.898 |
+| Amazon-Google | llm_haiku55 | 0.896 | 0.167 | 0.713 | 0.847 |
+| Amazon-Google | llm_haiku55\_\_k10 | 0.890 | 0.374 | 0.706 | 0.843 |
 
 ### LLM output status
 
@@ -187,7 +208,30 @@ identifier piece that no other candidate has.
 
 Harness v2 LLM runs only.
 
-*Not yet run.*
+| Dataset       | Method               | Cost    | Wall time (h) |
+|:--------------|:---------------------|:--------|:--------------|
+| Abt-Buy       | llm_gpt6luna         | \$3.26  | 1.4           |
+| Abt-Buy       | llm_gpt6luna\_\_k10  | \$1.37  | 0.8           |
+| Abt-Buy       | llm_gpt6luna\_\_rep1 | \$1.98  | 0.0           |
+| Abt-Buy       | llm_gpt6luna\_\_rep2 | \$1.99  | 0.0           |
+| Abt-Buy       | llm_gpt6luna_tf      | \$2.00  | 1.0           |
+| Abt-Buy       | llm_haiku55          | \$2.78  | 0.5           |
+| Abt-Buy       | llm_haiku55\_\_k10   | \$0.74  | 0.2           |
+| Abt-Buy       | llm_haiku55\_\_rep1  | \$1.34  | 0.1           |
+| Abt-Buy       | llm_haiku55\_\_rep2  | \$0.68  | 0.0           |
+| Abt-Buy       | llm_haiku55_tf       | \$1.28  | 0.2           |
+| Abt-Buy       | llm_sonnet55         | \$13.69 | 0.2           |
+| Amazon-Google | llm_gpt6luna         | \$2.16  | 0.9           |
+| Amazon-Google | llm_gpt6luna\_\_k10  | \$0.79  | 0.5           |
+| Amazon-Google | llm_gpt6luna\_\_rep1 | \$1.26  | 0.0           |
+| Amazon-Google | llm_gpt6luna\_\_rep2 | \$1.26  | 0.0           |
+| Amazon-Google | llm_gpt6luna_tf      | \$1.27  | 0.6           |
+| Amazon-Google | llm_haiku55          | \$2.74  | 0.5           |
+| Amazon-Google | llm_haiku55\_\_k10   | \$1.04  | 0.4           |
+| Amazon-Google | llm_haiku55\_\_rep1  | \$1.16  | 0.0           |
+| Amazon-Google | llm_haiku55\_\_rep2  | \$1.15  | 0.0           |
+| Amazon-Google | llm_haiku55_tf       | \$1.63  | 0.4           |
+| Amazon-Google | llm_sonnet55         | \$12.20 | 0.2           |
 
 ## Appendix: scale check (Claude Sonnet 5.5)
 
@@ -200,15 +244,26 @@ queries”), not on the full set used in the main tables. Sonnet moves
 into the main results only if it clearly beats both small models on the
 transformed conditions (PLAN.md, “Method lineup”).
 
-*Not yet run.*
+![Scale check: Sonnet 5.5 vs the small models on the same
+queries](figs/llm_scale_check.png)
 
 **Abt-Buy:**
 
-*Not yet run.*
+| Method | Original | Ciphered Letters | Ciphered Words | Scrambled | Descriptions ciphered | Identifiers ciphered | Both ciphered |
+|:---|---:|---:|---:|---:|---:|---:|---:|
+| Claude Sonnet 5.5 | 0.945 | 0.699 | 0.496 | 0.657 | 0.852 | 0.809 | 0.674 |
+| Claude Haiku 5.5 (same queries) | 0.938 | 0.059 | 0.307 | 0.071 | 0.842 | 0.793 | 0.673 |
+| GPT-6 Luna (same queries) | 0.950 | 0.891 | 0.710 | 0.861 | 0.893 | 0.820 | 0.738 |
+| TF-IDF (same queries) | 0.685 | 0.685 | 0.699 | 0.696 | 0.685 | 0.685 | 0.685 |
 
 **Amazon-Google:**
 
-*Not yet run.*
+| Method | Original | Ciphered Letters | Ciphered Words | Scrambled | Descriptions ciphered | Identifiers ciphered | Both ciphered |
+|:---|---:|---:|---:|---:|---:|---:|---:|
+| Claude Sonnet 5.5 | 0.888 | 0.647 | 0.723 | 0.829 | 0.734 | 0.888 | 0.756 |
+| Claude Haiku 5.5 (same queries) | 0.872 | 0.176 | 0.708 | 0.834 | 0.701 | 0.865 | 0.665 |
+| GPT-6 Luna (same queries) | 0.893 | 0.860 | 0.832 | 0.889 | 0.829 | 0.873 | 0.833 |
+| TF-IDF (same queries) | 0.805 | 0.805 | 0.798 | 0.805 | 0.805 | 0.805 | 0.805 |
 
 ## Appendix: lexical methods
 
