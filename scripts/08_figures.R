@@ -580,7 +580,7 @@ if (!any(cv_scale$method == 'llm_sonnet55')) {
       color = NULL,
       caption = paste(
         "All models scored on the same queries: Sonnet's fixed 30% subsample.",
-        'Error bars: \u00b1 1 SD across 5 CV folds.\nDashed red line: TF-IDF (lexical control) F1 on Original, same queries.'
+        'Error bars: +/- 1 SD across 5 CV folds.\nDashed red line: TF-IDF (lexical control) F1 on Original, same queries.'
       )
     ) +
     theme_minimal_vgrid(font_family = font, font_size = 14) +
@@ -596,4 +596,181 @@ if (!any(cv_scale$method == 'llm_sonnet55')) {
     panel_border()
 
   save_fig('llm_scale_check.png', width = 8, height = 7)
+}
+
+# Plot 6: 2x2 factorial — descriptive words x identifiers ----------------------
+# Interaction plot: x = identifiers intact or ciphered, one line per description
+# state. The key contrast is "Descriptions ciphered, identifiers intact": if a
+# model used the preserved identifiers, that point would stay near Original.
+# Main lineup (small LLMs + embeddings); TF-IDF (invariant across cells) is the
+# dashed reference.
+
+factorial_cells <- tribble(
+  ~transformation , ~descriptions , ~identifiers ,
+  'original'      , 'Intact'      , 'Intact'     ,
+  'desc_ciphered' , 'Ciphered'    , 'Intact'     ,
+  'ids_ciphered'  , 'Intact'      , 'Ciphered'   ,
+  'all_ciphered'  , 'Ciphered'    , 'Ciphered'   ,
+)
+desc_colors <- c('Intact' = 'grey20', 'Ciphered' = '#E37D39FF')
+
+cv_factorial <- cv_raw |>
+  filter(method %in% semantic_methods) |>
+  inner_join(factorial_cells, by = 'transformation') |>
+  mutate(method_raw = method) |>
+  clean_labels() |>
+  order_methods() |>
+  mutate(
+    identifiers = factor(identifiers, levels = c('Intact', 'Ciphered')),
+    descriptions = factor(descriptions, levels = c('Intact', 'Ciphered'))
+  )
+
+if (n_distinct(cv_factorial$transformation) < 4) {
+  message('factorial_2x2.png skipped: factorial cells missing from cv_results.csv')
+} else {
+  # Direct labels for the two description lines, top row only.
+  factorial_label <- cv_factorial |>
+    filter(method == levels(method)[1], dataset == 'Abt Buy', identifiers == 'Ciphered') |>
+    mutate(label = paste('Descriptions', str_to_lower(descriptions)))
+  factorial_dodge <- position_dodge(width = 0.15)
+
+  cv_factorial |>
+    ggplot(aes(x = identifiers, y = f1_mean, color = descriptions, group = descriptions)) +
+    geom_hline(
+      data = tfidf_ref,
+      aes(yintercept = tfidf_f1),
+      color = tfidf_color,
+      linetype = 'dashed',
+      linewidth = 0.6
+    ) +
+    geom_text(
+      data = tfidf_ref |>
+        mutate(method = factor(levels(cv_factorial$method)[1], levels = levels(cv_factorial$method))),
+      inherit.aes = FALSE,
+      aes(x = 0.5, y = tfidf_f1, label = 'TF-IDF'),
+      color = tfidf_color,
+      family = font,
+      size = 3.5,
+      hjust = 0,
+      vjust = -0.5
+    ) +
+    geom_line(linewidth = 0.7, position = factorial_dodge) +
+    geom_errorbar(
+      aes(ymin = f1_mean - f1_std, ymax = f1_mean + f1_std),
+      width = 0.1,
+      linewidth = 0.5,
+      position = factorial_dodge
+    ) +
+    geom_point(size = 2.2, position = factorial_dodge) +
+    geom_text(
+      data = factorial_label,
+      aes(label = label),
+      family = font,
+      size = 3.3,
+      hjust = 0,
+      nudge_x = 0.12,
+      show.legend = FALSE
+    ) +
+    facet_grid(method ~ dataset) +
+    scale_color_manual(values = desc_colors) +
+    scale_x_discrete(expand = expansion(add = c(0.5, 1.1))) +
+    scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
+    labs(
+      x = 'Identifiers',
+      y = 'F1 Score',
+      caption = paste(
+        'Error bars: +/- 1 SD across 5 CV folds.',
+        'Dashed red line: TF-IDF (lexical control) F1, identical in every cell.'
+      )
+    ) +
+    coord_cartesian(clip = 'off') +
+    theme_minimal_hgrid(font_family = font, font_size = 14) +
+    theme(
+      strip.background = element_rect(fill = 'grey80', color = NA),
+      panel.grid.minor = element_blank(),
+      plot.caption.position = 'plot',
+      plot.caption = element_text(hjust = 0),
+      legend.position = 'none',
+      panel.background = element_rect(fill = 'white', color = NA),
+      plot.background = element_rect(fill = 'white', color = NA)
+    ) +
+    panel_border()
+
+  save_fig('factorial_2x2.png', width = 8, height = 9)
+}
+
+# Plot 7: candidate-list robustness — ordered k=50 vs ordered k=10 -------------
+# Haiku 5.5 and GPT-6 Luna, Original plus the three v1 ablations. Rank order is
+# kept, so the runs differ only in list length (PLAN.md C.2 item 3). TF-IDF is
+# the dashed reference.
+
+k_lookup <- tribble(
+  ~method              , ~model              , ~list      ,
+  'llm_haiku55'        , 'Claude Haiku 5.5'  , 'k = 50'   ,
+  'llm_haiku55__k10'   , 'Claude Haiku 5.5'  , 'k = 10'   ,
+  'llm_gpt6luna'       , 'GPT-6 Luna'        , 'k = 50'   ,
+  'llm_gpt6luna__k10'  , 'GPT-6 Luna'        , 'k = 10'   ,
+)
+k_colors <- c('k = 50' = '#2166ac', 'k = 10' = '#E37D39FF')
+
+cv_k <- cv_raw |>
+  inner_join(k_lookup, by = 'method') |>
+  filter(transformation %in% v1_conditions) |>
+  mutate(
+    dataset = str_replace_all(dataset, "-", " ") |> str_to_title(),
+    transformation = factor(
+      all_conditions[transformation],
+      levels = rev(c('Original', 'Ciphered Letters', 'Ciphered Words', 'Scrambled'))
+    ),
+    model = factor(model, levels = c('GPT-6 Luna', 'Claude Haiku 5.5')),
+    list = factor(list, levels = names(k_colors))
+  )
+
+if (!any(str_detect(cv_k$method, '__k10'))) {
+  message('candidate_list_robustness.png skipped: no __k10 results yet')
+} else {
+  k_dodge <- position_dodge(width = 0.5, orientation = 'y', reverse = TRUE)
+
+  cv_k |>
+    ggplot(aes(x = f1_mean, y = transformation, color = list)) +
+    geom_vline(
+      data = tfidf_ref,
+      aes(xintercept = tfidf_f1),
+      color = tfidf_color,
+      linetype = 'dashed',
+      linewidth = 0.6
+    ) +
+    geom_errorbar(
+      orientation = 'y',
+      aes(xmin = f1_mean - f1_std, xmax = f1_mean + f1_std),
+      width = 0.3,
+      linewidth = 0.5,
+      position = k_dodge
+    ) +
+    geom_point(size = 2.2, position = k_dodge) +
+    facet_grid(model ~ dataset) +
+    scale_color_manual(values = k_colors) +
+    scale_x_continuous(breaks = seq(0, 1, 0.2), limits = c(0, 1)) +
+    labs(
+      x = 'F1 Score',
+      y = NULL,
+      color = 'Candidates shown (TF-IDF rank order)',
+      caption = paste(
+        'Error bars: +/- 1 SD across 5 CV folds.',
+        'Dashed red line: TF-IDF (lexical control) F1 on Original.'
+      )
+    ) +
+    theme_minimal_vgrid(font_family = font, font_size = 14) +
+    theme(
+      strip.background = element_rect(fill = 'grey80', color = NA),
+      panel.grid.minor = element_blank(),
+      plot.caption.position = 'plot',
+      plot.caption = element_text(hjust = 0),
+      legend.position = 'bottom',
+      panel.background = element_rect(fill = 'white', color = NA),
+      plot.background = element_rect(fill = 'white', color = NA)
+    ) +
+    panel_border()
+
+  save_fig('candidate_list_robustness.png', width = 8, height = 6)
 }
