@@ -235,12 +235,22 @@ Revised 2026-11-09: the latest small and mid-size models from each provider. GPT
    - F1 limited to queries whose true match made the shortlist;
    - the share of LLM misses where the true pair shares an identifier piece that no other candidate has (the headline stat for R2 D2);
    - errors against prompt token count (R2 D1c);
-   - paired bootstrap CIs for the Original-to-ablation drop, per model and condition.
-3. **`llm_status.csv` from `06_summarize_results.py`.** Status rates by model and condition, so parse failures are reported as their own outcome and never hidden as "no match".
+   - paired bootstrap CIs for the Original-to-ablation drop, per model and condition;
+   - F1 with refused queries excluded, next to the standard F1 (where refused queries count as misses), per model and condition (item 5).
+3. **`llm_status.csv` from `06_summarize_results.py`.** Status rates by model and condition, so parse failures are reported as their own outcome and never hidden as "no match". Refusals matter most: the pilot found safety-classifier blocks on about 20% of v1 Ciphered Words queries for Haiku (item 5). Since 2026-11-09 the CLI adapter logs these blocks as `refusal`, not `api_error`.
 4. **Transform-seed parameter.** Add `--seed N` to `01_prepare_datasets.py`, writing `*_sN.csv` the way `02_prepare_factorial.py` already does. Run 3–5 seeds for the non-LLM methods (R2 D6).
 5. **v1 Ciphered Words reproducibility. Decided 2026-11-09: keep the committed CSVs as canonical.** Do not regenerate them, and do not change the mapping code in `01_prepare_datasets.py`: sorting before mapping would give a different map, not the committed one. So the LLM runs on `ciphered_words` use the committed files, and nothing has to be rerun.
    - The paper describes the transform accurately: it also ciphers model codes, so Fig 1's "QRT-W55" example is wrong. It also says the map is fixed in the released CSVs rather than regenerated from code.
    - The factorial `all_ciphered` cell is the clean, reproducible version of the same manipulation and carries the identifier argument.
+   - **Refusals (pilot finding).** Haiku 5.5 CLI pilot, 2026-11-09 (Abt-Buy, 5% sample, 54 queries per condition). On v1 Ciphered Words, 11 of 54 queries were blocked by Claude's safety classifier ("can't help with this … Details: `[bio]`"); 10 were blocked again on retry. The v1 cipher draws replacement words from macOS `/usr/share/dict/words` (Webster's 2nd, 1934), which is full of obscure chemistry and drug terms ("arsacid", "acetanilid", "arecaine"), and most chosen words start with "a". The factorial cells, which use nonce words, had no refusals.
+
+     | Condition | ok / no_match / refusal | Correct top pick | Excluding refusals |
+     |---|---|---|---|
+     | Original | 51 / 3 / 0 | 0.907 | 0.907 |
+     | v1 Ciphered Words | 22 / 22 / 10 | 0.370 | 0.455 |
+     | `desc_ciphered` | 47 / 7 / 0 | 0.796 | 0.796 |
+     | `all_ciphered` | 28 / 26 / 0 | 0.463 | 0.463 |
+   - Decided 2026-11-09: do not change the cipher words. Choosing a vocabulary after seeing refusals would tune the transform to model behavior, and any real-word list still carries R2's injected-meaning problem. Run v1 Ciphered Words as it is, report its refusal rate and its F1 with and without refused queries, and decide after the paid runs whether it stays in the main results or moves to the appendix. `all_ciphered` reproduces the effect without refusals and carries the claim.
 6. **`08_figures.R`.** Labels for the new methods and cells; split `f1_comparison.png` and `precision_recall_scatter.png` into main (semantic methods + TF-IDF reference) and appendix (`*_lexical.png`) figures (A.2); add a factorial figure and a robustness figure, both with the TF-IDF reference line.
    - Split done 2026-11-08. Main figures show the semantic methods (v1 LLMs labeled "(v1)" until v2 replaces them) with TF-IDF as a dashed red line (F1) or red diamonds (precision-recall). `llm_robustness.png` and `llm_prompt_comparison.png` also carry the TF-IDF line. The overview figures show the four v1 conditions only. Still to add: the factorial and robustness figures, once LLM results exist.
    - Sonnet scale check done 2026-11-09. `05_cv_threshold.py` also scores Haiku, Luna, and TF-IDF on the query ids in Sonnet's parquet for each condition, as `*__sonnet30` rows. `08_figures.R` builds the main figures from the small v2 models (the v1 LLMs stand in until those exist) and draws `llm_scale_check.png` once Sonnet results exist. `README.qmd` has an "Appendix: scale check" section, and Sonnet is out of the main tables.
@@ -263,7 +273,8 @@ Budget (offline estimate from `03_estimate_llm_cost.py`, 2026-11-09; the conserv
 1. `cp .env.example .env` and fill in `ANTHROPIC_API_KEY` and `OPENAI_API_KEY`. Then run `uv sync` and the tests.
 2. **Rerun `openai_embeddings`** (paid, but only a few cents: embeddings for about 2,200 records per condition) on both datasets with `--transformations all,factorial`, so every semantic method comes from the current code. The free non-LLM methods were rerun on 2026-11-08 (the committed parquets did not reproduce from the current code). Then rerun `05_cv_threshold.py`.
 3. **Subscription pilot (free).** `llm_haiku55_cli` on Abt-Buy `original,ciphered_words` with `--sample-frac 0.05 --workers 2`. Check the CLI output parsing and the isolation, and iterate on the prompt here if needed.
-4. **API pilot (about $1).** `llm_haiku55,llm_gpt6luna,llm_sonnet55` on Abt-Buy `original` with `--sample-frac 0.05`. Check the status counts and Luna's reasoning-token use. Then recalibrate `03_estimate_llm_cost.py` with `--cpt-*` and `--out-tokens` from the logged tokens.
+   - Done 2026-11-09, also on `desc_ciphered,all_ciphered`. Parsing works (no `parse_fail`), and the true match was in the shortlist for every query. v1 Ciphered Words drew safety-classifier refusals (C.3 item 5). Each CLI call carries about 1,050 tokens beyond the prompt (fit across 98 calls), probably the CLI's own scaffolding plus the JSON schema; confirm with a free token count once the API key is in. No prompt changes were needed.
+4. **API pilot (about $1).** `llm_haiku55,llm_gpt6luna,llm_sonnet55` on Abt-Buy `original,ciphered_words` with `--sample-frac 0.05`. Check the status counts, whether the API refuses the same Ciphered Words queries as the CLI (and whether Luna refuses at all), and Luna's reasoning-token use. Then recalibrate `03_estimate_llm_cost.py` with `--cpt-*` and `--out-tokens` from the logged tokens.
 5. **Main grid.** Run `llm_haiku55,llm_gpt6luna` on the full grid first, then `llm_sonnet55` on its 30% subsample. About $31–70.
 6. **Factorial.** Run all three models with `--transformations factorial`. Original resumes from `checkpoints/` with no new calls, so only the three new cells cost money: about $24–55.
 7. **Robustness.** `--top-k 10` (rank order kept) on Haiku and Luna: about $6–14.
