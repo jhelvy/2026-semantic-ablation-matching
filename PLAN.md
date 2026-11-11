@@ -25,11 +25,14 @@ LLM entity matchers lean on semantics. When meaning is removed but the lexical e
 What this changes:
 
 - **Conditions come in two groups.** Ciphered Letters and Scrambled are *meaning-recoverable*: a capable model can read them, so robustness there is not matching without meaning. Ciphered Words and the factorial cells are the *meaning-removal* tests, and they carry the claim. Do not write that every ablation removes meaning.
-- **The v1 deficits were partly a model effect.** The weaker v1 models could not decode the ciphers; Luna can. Say so, rather than presenting the v1 drops as general.
+- **The v1 deficits were partly a model effect.** The weaker v1 models could not decode the ciphers; Luna can. Decided in the Step 1 draft (2026-11-10): the paper cites no v1 numbers, since those runs were contaminated. The Limitations paragraph says instead that a stronger model may decode transforms ours cannot, as the readable conditions already show.
 - **Practical message.** With meaningful product text, an LLM reranking a TF-IDF shortlist is very strong, and model choice matters (refusals above all). The limitation bites on low-meaning text: SKUs, part codes, abbreviations, opaque IDs. There, the LLM adds cost but no accuracy over TF-IDF, can override correct lexical evidence, and some models decline the task.
-- **Still open:** whether Ciphered Letters and Scrambled stay in the main figures (grouped apart as "meaning recoverable") or move to the appendix.
+- **Readable conditions stay in the main figures (decided 2026-11-10).** John likes the readable vs meaning-removed contrast. The figures label Ciphered Letters and Scrambled "(readable)" and Ciphered Words "(meaning removed)", separated by a dotted line.
+- **Identifiers count when they look like identifiers (found while drafting, 2026-11-10).** On the 43.5% of Abt-Buy queries with a unique shared identifier, Luna is right on 99.6% (Original), 98.1% with both factorial factors ciphered (codes become codes of the same shape), and 86.8% under Ciphered Words (codes become dictionary words). The model uses lexical evidence that has the form of a code, and often ignores it when it does not. The draft's Discussion has a short section on this; John to confirm the reading.
 
 This is a proof of concept, not a model survey. Keep the lineup small and spend the effort on the controls.
+
+**Paper status (2026-11-10).** Target venue: PVLDB (Experiments & Analysis). The manuscript is on the PVLDB template at `pvldb/1/source/main.tex` in the paper repo, and the Step 1 rewrite is drafted there with every number from `results/`. The title is still being workshopped, around LLM entity matchers relying on semantic meaning. The paper uses `figs/` as is: `f1_comparison.png`, `precision_recall_scatter.png`, `factorial_2x2.png` in the main text; `*_lexical.png`, `candidate_list_robustness.png`, `llm_scale_check.png` in the appendix. The token-fallback comparison is a table, not a figure. After any figure change here, copy the PNGs into `pvldb/1/source/`.
 
 ### Method lineup (decided 2026-11-08)
 
