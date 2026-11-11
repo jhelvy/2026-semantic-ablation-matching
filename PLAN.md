@@ -1,8 +1,8 @@
 # Plan: revision experiments and repo cleanup
 
-Written 2026-11-08 for the revision of "Matching Without Meaning" after the TKDE reject (TKDE-2026-06-2289). The full revision plan, including the manuscript edits and venue strategy, is in the paper repo (`2026-semantic-ablation-paper/tkde/1/plan.md`). This file covers only the changes to this repo: how it is organized, how the README is built, and what we will run.
+Written 2026-11-08 for the revision of "Matching Without Meaning" after the TKDE reject (TKDE-2026-06-2289). The full revision plan, including the manuscript edits and venue strategy, is in the paper repo (`2026-semantic-ablation-paper/pvldb/1/plan.md`). This file covers only the changes to this repo: how it is organized, how the README is built, and what we will run.
 
-**Two plans, kept in sync.** The paper plan is `/Users/jhelvy/gh/research/2026-semantic-ablation-paper/tkde/1/plan.md` (argument, manuscript edits, venue); it moved there from `~/sync/00_current/llm-fuzzy-joins/1/` on 2026-11-10. When John says "update the plan", update both files in the same sitting, and keep shared decisions consistent: lineup, figures, run order, and status. For script names and commands, this file is the source of truth.
+**Two plans, kept in sync.** The paper plan is `/Users/jhelvy/gh/research/2026-semantic-ablation-paper/pvldb/1/plan.md` (argument, manuscript edits, venue); it moved there on 2026-11-10, from `~/sync/00_current/llm-fuzzy-joins/1/` by way of `tkde/1/`. When John says "update the plan", update both files in the same sitting, and keep shared decisions consistent: lineup, figures, run order, and status. For script names and commands, this file is the source of truth.
 
 Branch: `harness-v2`. John confirmed keys and credit on 2026-11-09; the paid runs through 2026-11-10 cost about $60 (C.4).
 
