@@ -48,6 +48,7 @@ This is a proof of concept, not a model survey. Keep the lineup small and spend 
 3. **Finish the zero-cost build items (Part C.3).**
 4. **Run the experiments in the order in Part C.4.**
 5. **Re-render the README after each batch of results.**
+6. **Add the third dataset and the previous-generation models (Part D, added 2026-11-13).**
 
 ---
 
@@ -223,7 +224,7 @@ Revised 2026-11-09: the latest small and mid-size models from each provider. GPT
 - Sonnet's 30% subsample is a fixed set of query records (one seed), so it is a subset of the Haiku and Luna runs, and all three models can be compared on it.
 - **Any further runs on larger models use 10% (decided 2026-11-10).** Pass `--sample-frac 0.1` explicitly; do not change `SUBSAMPLE_FRAC` in `lib/llm_clients.py`, which defines the finished 30% runs and their `__sonnet30` comparison rows. Why: the 30% scale check (done 2026-11-10, $25.89) already settles the question. On every transformed condition except `ids_ciphered`, Sonnet is below Luna on the same queries (paired 95% CI excludes zero, gaps of 5–34 points; on `ids_ciphered` the two are level, corrected 2026-11-10 from `results/bootstrap_ci.csv`), and within about 3 points of Haiku wherever Haiku answers. At about 100 queries per condition the paired CI is roughly ±8 points, enough for gaps this size. A 10% run writes to `llm_sonnet55__sample0.1/`, which `05_cv_threshold.py`'s scale-check code does not read yet (it reads `llm_sonnet55/`), so extend `SCALE_REF` when such runs exist.
 - All three models reason at effort `medium` (Claude: adaptive thinking, which cannot be turned off; Luna: `reasoning.effort`).
-- No v1 model is rerun as a bridge to the TKDE submission. The v1 numbers are contaminated, and the paper goes to a new venue, so the bridge has no use.
+- No v1 model is rerun as a bridge to the TKDE submission. The v1 numbers are contaminated, and the paper goes to a new venue, so the bridge has no use. (Revised 2026-11-13: the previous generation of each small model is now in scope as a comparison of model generations, not as a bridge. See Part D.)
 - Not in the lineup: an OpenAI mid-size model (`gpt-6.1-terra` at $1/$5, or `gpt-6.1-sol` at $2/$10). Add one only if a reviewer asks for a second mid-size model.
 - Subscription pilots (`llm_haiku55_cli`, `llm_sonnet55_cli`) write to `pilot_results/` and are never reported.
 - Test-set sizes stay as they are: 1,081 Abt-Buy and 1,113 Amazon-Google queries. The 95% CI is about ±2 points at F1 ≈ 0.9 on the full set and about ±3.5 points on the 30% subsample. Paired comparisons across conditions are tighter.
@@ -356,6 +357,103 @@ Budget (offline estimate from `03_estimate_llm_cost.py`, 2026-11-09; the conserv
 10. **Outputs.** After each batch:
    - run `05_cv_threshold.py`, `06_summarize_results.py`, `07_instance_analysis.py`, and `08_figures.R`;
    - then `quarto render README.qmd`.
+
+---
+
+## Part D: Third dataset and previous-generation models (added 2026-11-13)
+
+**Decided 2026-11-13 (John).** Three additions, all at small-model scale:
+
+1. **Add WDC Products as a third dataset.** The "LLM below TF-IDF's top-1" result rests on Abt-Buy alone; Amazon-Google is a tie. WDC Products is a second identifier-heavy product dataset, and its corner cases (near-identical variants: same card at 32GB and 64GB) are separated only by digits and codes, so even the Original condition tests whether the model reads them.
+2. **Add the previous generation of each small model:** Claude Haiku 4.5 and GPT-5.6 Luna, full grid, all three datasets. This answers a practical question: what does one model generation buy on low-meaning text? The decode test showed that current models read the "readable" ciphers; the older models may not, which would explain the v1 collapse without leaning on the contaminated v1 numbers.
+3. **Check the WDC setup with the free methods before any paid run** (D.3).
+
+Framing note (the argument lives in the paper plan): newer models are more robust on the *readable* conditions because they recover meaning. That is not evidence that they use lexical evidence once meaning is gone, and Haiku 5.5's refusals show that "newer" is not uniformly "more reliable".
+
+No public parts or SKU catalog benchmark exists (searched 2026-11-13: electronic components, spare parts, industrial catalogs). OpenSanctions Pairs (names, ID numbers, transliterations; pairwise, CC-BY-NC) is the lower-meaning alternative, kept for later because it is a different domain and task shape.
+
+### D.1 WDC Products: source and setup
+
+- **Source.** Peeters & Bizer, "WDC Products" (EDBT 2024), http://webdatacommons.org/largescaleproductcorpus/wdc-products/. File: `https://data.dws.informatik.uni-mannheim.de/largescaleproductcorpus/data/wdc-products/80multi.zip` (2.4 MB, sha256 `5385e2491e82c7f6c208d8eac7ec777a4a44180769f3a339c99803ff2b068981`, downloaded 2026-11-13).
+- **Variant: 80% corner cases, multi-class, 0% unseen products.** The test set is `wdcproductsmulti80cc20rnd000un_gs.json.gz` (1,000 offers, 500 products); the catalog comes from `wdcproductsmulti80cc20rnd000un_train_large.json.gz` (2,841 offers, the same 500 products). Offers come from many shops and are mostly PC parts, memory cards, lenses, printers, and watches; some titles are in Spanish, German, or French.
+- **Task shape, matching our harness.**
+  - Queries (left side, `offers`): the 1,000 test offers.
+  - Catalog (right side, `catalog`): one offer per product from `train_large`, the one with the lowest `id` (500 records). Deterministic and blind to text.
+  - Mapping: each query to the catalog record with its `cluster_id`. Every query has exactly one true match, and each catalog record matches two queries (many-to-one; Amazon-Google already has one-to-many pairs). Check that `04`, `05`, and `07` score many-to-one correctly before reporting.
+- **Text: title only** (`title_only=True`, as for Amazon-Google). Descriptions are missing on 28% of test offers, are long and partly HTML or non-English, and would add cost. Titles carry the codes. CSV columns: `id`, `title`, `description`, `manufacturer` (from `brand`), `price`; the transforms cover all text columns, as for the other datasets.
+- **Measured 2026-11-13** (scratch check, title only, scikit-learn TF-IDF rather than the repo's; recheck with `04`): TF-IDF top-1 0.624; recall at 10 0.982, at 50 0.995. Share of title tokens that are letter-digit codes: WDC 11.5%, Abt-Buy 12.7%, Amazon-Google 3.3%. Share of true pairs whose titles share such a code: WDC 45%, Abt-Buy 45%, Amazon-Google 11.5%. So WDC is not lower in meaning than Abt-Buy; it is a second Abt-Buy-like dataset with harder near-duplicates.
+- **License: open question for John.** The dataset page states no license; the arXiv paper is CC BY-NC-ND 4.0, which may or may not be meant for the data. Default until it is settled: gitignore `data/wdc-products/` except a README, and regenerate every file from the download with a deterministic script (D.2). Results parquets carry ids and model output, not record text, so they are committed as usual. Ask the WDC team (Bizer group) whether transformed CSVs can be redistributed before the repo goes public.
+
+### D.2 WDC transforms
+
+- **New script `scripts/01b_prepare_wdc.py`.** Downloads the zip (or reuses a cached copy), checks the sha256, writes `data/wdc-products/data_original/{offers,catalog}.csv` and `wdc_mapping.csv`, then writes the three v1 transforms to `data_test/` with the functions in `lib/transforms.py`. It never calls `process_dataset` for another dataset.
+- **Add `wdc-products` to `DATASETS`** in `lib/datasets.py` (`left_name: offers`, `right_name: catalog`, `title_only: True`). Guard `01_prepare_datasets.py` so it refuses `wdc-products` and no longer includes it in `--dataset all` (WDC is built by `01b`; the "never rerun 01" rule is unchanged for the other two).
+- **Deterministic Ciphered Words map.** The v1 map depends on set iteration order (`PYTHONHASHSEED`). Add an opt-in `sort_words=True` path to `extract_unique_words` / `generate_ciphered_words`; the default stays as is, so nothing about the committed CSVs changes. `01b` runs the transforms in the v1 order (letters, words, scrambled) in a fresh process, so the global `random.seed(42)` gives the same letter cipher every run. Test: two runs under different `PYTHONHASHSEED` values give byte-identical CSVs.
+- **Scrambled follows `lib/transforms.py`** (first and last letters kept, words of 3 letters or fewer kept, digit runs kept). Found 2026-11-13 while checking this: the committed Amazon-Google Scrambled CSVs match that code exactly, but the committed Abt-Buy Scrambled CSVs shuffle every character, short words and multi-digit numbers included (C.3 item 9 noted the Abt-Buy behavior but not that Amazon-Google differs). WDC uses the code, as Amazon-Google does. The paper has to describe the two existing datasets separately (paper plan).
+- **Factorial:** `uv run scripts/02_prepare_factorial.py --dataset wdc-products --verify`. Use the dataset name, not `all`, which reorders the other datasets' manifests. Default `--max-id-df 20`.
+- **Hard-coded dataset lists to extend:** `lib/cv.py` (`CFG`), `06_summarize_results.py`, `09_decode_test.py` (`DATASETS`, `MODEL_KEYS`), `08_figures.R` (labels and panel layout), `README.qmd`.
+
+### D.3 Free checks on WDC (before any paid run)
+
+- `uv run scripts/04_run_experiments.py --dataset wdc-products --methods tfidf,soft_tfidf,levenshtein,jaro_winkler,monge_elkan,sentence_transformer --transformations all,factorial`, then `05`.
+- Pass conditions: 1,000 queries and 500 catalog records load; the TF-IDF invariance check in `02 --verify` passes; TF-IDF F1 is flat across the seven conditions (within about 0.01); TF-IDF recall at 50 is at least 0.98; a few transformed titles read as expected by eye.
+- Then `openai_embeddings` on WDC (paid, a few cents).
+
+### D.4 Previous-generation models
+
+Checked 2026-11-13 against the Anthropic and OpenAI deprecation and pricing pages:
+
+| Method | Model | $/1M in/out | Status |
+|---|---|---|---|
+| `llm_haiku45` | `claude-haiku-4-5-20251001` | 1.00 / 5.00 | Active, but past its "not sooner than Oct 15, 2026" retirement floor; Anthropic can retire it with 60 days' notice. **Run it first.** |
+| `llm_gpt56luna` | `gpt-5.6-luna` | 0.20 / 1.20 | Active. Its place as GPT-6 Luna's predecessor is inferred from the name; confirm on the models endpoint during the pilot. |
+| optional: `llm_gpt4omini` | `gpt-4o-mini-2024-07-18` | 0.15 / 0.60 | Shuts down Jan 14, 2027. Two generations back, and the TKDE model. **John to decide**; not in the default budget. |
+
+Not used: `gpt-5-mini` and `gpt-5-nano` (shut down Dec 11, 2026).
+
+- **Harness changes (`lib/llm_clients.py`).**
+  - Haiku 4.5 rejects `output_config.effort` and has no adaptive thinking; thinking is `thinking: {type: "enabled", budget_tokens: N}` (N at least 1024 and below `max_tokens`). Add a `thinking_budget` field to `ModelConfig`; `_call_anthropic` sends `thinking` when it is set and sends no `effort`.
+  - Structured output (`output_config.format`, JSON schema) on Haiku 4.5: confirm in the pilot. If the API rejects it, send the schema in the prompt only and rely on `parse_match_json`; `parse_fail` rates are reported either way.
+  - Temperature is not sent (unchanged; the 2026-10-21 API version rejects it).
+  - GPT-5.6 Luna uses the existing OpenAI path with `reasoning.effort = medium`, like GPT-6 Luna.
+  - Offline tests for both configs with the fake clients in `tests/test_llm_harness.py`.
+- **Reasoning parity (decided in this plan; John can change it).** The current models run at effort `medium`. Their logged output tokens per answered call (thinking included): Haiku 5.5 median 285, p90 645; GPT-6 Luna median 220, p90 1,021. Haiku 4.5 gets extended thinking with `budget_tokens = 1024`, the API minimum and close to Haiku 5.5's p90. The paper reports each model "at the setting closest to medium effort".
+- **API pilot (about $1).** `llm_haiku45,llm_gpt56luna` on Abt-Buy `original,ciphered_words`, `--sample-frac 0.05`. Check status counts, refusals, parse failures, and tokens; then recalibrate `03_estimate_llm_cost.py`.
+- **Decode test for every small model.** The generation story depends on it: can the older models read Ciphered Letters and Scrambled? Add `haiku45` and `gpt56luna` to `09_decode_test.py`, and WDC to its datasets. Run the new models on all three datasets and the current small models on WDC (about $1–2).
+
+### D.5 Runs and budget
+
+Estimates use the current models' median tokens per call times list price (Abt-Buy, Amazon-Google, WDC: 3,194 queries × 7 conditions = 22,358 calls per model); recalibrate after the pilot.
+
+| Step | Runs | Estimate |
+|---|---|---|
+| D.3 | non-LLM methods on WDC; `openai_embeddings` | free; cents |
+| D.4 | pilot; decode tests | about $1; $1–2 |
+| D.5a | `llm_haiku45` full grid (`all,factorial`), all three datasets | about $80 |
+| D.5b | `llm_gpt56luna` full grid, all three datasets | about $13 |
+| D.5c | `llm_haiku55`, `llm_gpt6luna` full grid on WDC | about $3 each |
+| optional | `llm_gpt4omini` full grid, all three datasets | about $8 |
+
+Total about $100 without the optional run.
+
+- Order: D.3, then the D.4 pilot, then D.5a (retirement risk), D.5b, D.5c, then the decode tests.
+- Run every condition once for Haiku 4.5, including the ones Haiku 5.5 refuses; the refusal rate across generations is part of the comparison.
+- Out of scope for WDC and the older models: k=10, the token-fallback prompt, repeats, Sonnet.
+
+### D.6 Outputs
+
+- `05`, `06`, `07` with WDC and the new methods (the unique-shared-identifier statistic in `07` now applies to two datasets).
+- `08_figures.R`: a third dataset panel in the main figures; a new `model_generations.png` (per condition, each model next to its predecessor, TF-IDF reference line). Main text or appendix is decided once results are in.
+- `README.qmd`: WDC in the data and results sections; a generations section.
+- Copy changed figures to the paper's `pvldb/1/source/`.
+
+### D.7 Commit points
+
+1. This plan (both plan files).
+2. `01b_prepare_wdc.py`, the `DATASETS` entry, the `sort_words` option, the `01` guard, `.gitignore`, determinism test; the factorial cells and `--verify` output.
+3. Non-LLM results on WDC and the regenerated tables (D.3).
+4. Harness support for `haiku45` and `gpt56luna`, with offline tests.
+5. After the pilot, then after each paid batch (D.5a, D.5b, D.5c, decode tests).
 
 ## Definition of done
 
