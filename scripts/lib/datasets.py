@@ -39,6 +39,19 @@ DATASETS = {
         'title_only': True,         # title/name column only (as in the paper)
         'mapping_file': 'data_original/Amazon_GoogleProducts_perfectMapping.csv'
     },
+    # Third dataset (2026-11-13). Built by scripts/01b_prepare_wdc.py, not 01. Many-to-one:
+    # each catalog record is the true match of two queries.
+    'wdc-products': {
+        'dir': DATA / 'wdc-products',
+        'files': {
+            'left': 'data_original/offers.csv',
+            'right': 'data_original/catalog.csv'
+        },
+        'left_name': 'offers',
+        'right_name': 'catalog',
+        'title_only': True,         # title only (as Amazon-Google); descriptions are sparse and long
+        'mapping_file': 'data_original/wdc_mapping.csv'
+    },
     # The two DBLP datasets are configured but their data is not in this repo.
     'dblp-acm': {
         'dir': DATA / 'dblp-acm',

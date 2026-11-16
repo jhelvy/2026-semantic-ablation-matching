@@ -8,7 +8,8 @@ Importing this module seeds Python's global `random` with 42, as the original
 prepare_datasets.py did. Ciphered Words builds its map by iterating over a
 Python set, so its output depends on PYTHONHASHSEED; the committed CSVs in
 data/*/data_test/ are the only copy of the map the paper used. Do not
-regenerate them as a check.
+regenerate them as a check. The opt-in sort_words=True path removes that
+dependency (used only for wdc-products, scripts/01b_prepare_wdc.py).
 """
 
 import pandas as pd
@@ -70,8 +71,14 @@ def generate_ciphered_letters(df_left, df_right, dataset_config):
 # TRANSFORMATION 2: CIPHERED WORDS
 # ============================================================================
 
-def generate_ciphered_words(df_left, df_right, dataset_config):
-    """Generate ciphered words transformation (word replacement)"""
+def generate_ciphered_words(df_left, df_right, dataset_config, sort_words=False):
+    """Generate ciphered words transformation (word replacement)
+
+    sort_words=True sorts each length class of unique words before mapping, so the
+    map no longer depends on PYTHONHASHSEED (opt-in; used by scripts/01b_prepare_wdc.py).
+    The default keeps set iteration order, which is what produced the committed
+    Abt-Buy and Amazon-Google CSVs.
+    """
     
     print("\n" + "="*80)
     print("TRANSFORMATION 2: CIPHERED WORDS")
@@ -83,7 +90,7 @@ def generate_ciphered_words(df_left, df_right, dataset_config):
     
     # Extract unique words
     print("\nExtracting unique words...")
-    words_by_length = extract_unique_words(df_left, df_right)
+    words_by_length = extract_unique_words(df_left, df_right, sort_words=sort_words)
     
     # Create mappings
     print("\nCreating word mappings...")
@@ -132,8 +139,8 @@ def load_english_dictionary():
     
     return by_length
 
-def extract_unique_words(df_left, df_right):
-    """Extract unique words from both datasets"""
+def extract_unique_words(df_left, df_right, sort_words=False):
+    """Extract unique words from both datasets (sort_words=True: sorted within each length)"""
     
     text_parts = []
     for df in [df_left, df_right]:
@@ -147,7 +154,7 @@ def extract_unique_words(df_left, df_right):
     words = {w for w in words if not w.isdigit() and len(w) >= 1}
     
     by_length = defaultdict(list)
-    for w in words:
+    for w in (sorted(words) if sort_words else words):
         by_length[len(w)].append(w)
     
     print(f"   Found {len(words):,} unique words")

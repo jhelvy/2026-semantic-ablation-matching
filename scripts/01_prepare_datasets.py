@@ -25,6 +25,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lib.transforms import DATASETS, process_dataset  # noqa: E402
 
+# Built by scripts/01b_prepare_wdc.py (deterministic Ciphered Words map); refused here
+# and left out of --dataset all.
+BUILT_ELSEWHERE = {'wdc-products': '01b_prepare_wdc.py'}
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -47,6 +51,9 @@ Examples:
 
     args = parser.parse_args()
 
+    if args.dataset in BUILT_ELSEWHERE:
+        parser.error(f"{args.dataset} is built by scripts/{BUILT_ELSEWHERE[args.dataset]}, not this script")
+
     print("="*80)
     print("MASTER DATASET TRANSFORMATION GENERATOR")
     print("="*80)
@@ -56,8 +63,9 @@ Examples:
     print("  3. Scrambled (letter scrambling)")
 
     if args.dataset == 'all':
-        print(f"\nProcessing ALL {len(DATASETS)} datasets...")
-        for dataset_name in DATASETS.keys():
+        todo = [d for d in DATASETS if d not in BUILT_ELSEWHERE]
+        print(f"\nProcessing ALL {len(todo)} datasets...")
+        for dataset_name in todo:
             process_dataset(dataset_name)
     else:
         print(f"\nProcessing dataset: {args.dataset}")

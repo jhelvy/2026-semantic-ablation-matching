@@ -129,7 +129,9 @@ def classify_pieces(df_left, df_right, max_id_df, english):
             record_df.update(rec_pieces)
 
     def is_kept(p):
-        return p.isdigit() or len(p) == 1
+        # digits, 1-char pieces, and letterless pieces ("2_1"): no letters to substitute, and a
+        # descriptive piece with no letter run would map to itself and never pass build_map.
+        return p.isdigit() or len(p) == 1 or not any(c.isalpha() for c in p)
 
     id_pieces = {p for p in code_candidates if not is_kept(p) and record_df[p] <= max_id_df}
     kept = {p for p in vocab if is_kept(p)}

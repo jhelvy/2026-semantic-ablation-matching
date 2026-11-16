@@ -73,6 +73,16 @@ def test_cells():
     assert a.split()[1] == r.split()[1]
 
 
+def test_letterless_piece_is_kept_not_looped():
+    # WDC titles contain "2_1": no letters, not pure digits. It used to be a descriptive piece
+    # that _nonce mapped to itself, so build_map looped forever.
+    left = pd.DataFrame({"id": ["a"], "title": ["Dual 2_1 speaker set DSC-W55"]})
+    right = pd.DataFrame({"id": ["b"], "title": ["speaker 2_1 dsc-w55"]})
+    _, _, kept, desc, dm, im = _maps(left, right)    # terminates
+    assert "2_1" in kept and "2_1" not in desc
+    assert "2_1" not in dm and "2_1" not in im
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     for t in tests:
