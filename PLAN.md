@@ -409,6 +409,7 @@ No public parts or SKU catalog benchmark exists (searched 2026-11-13: electronic
   - Pass conditions: 1,000 queries and 500 catalog records load; `02 --verify` passed; TF-IDF CV F1 is 0.653 on six conditions and 0.654 on Ciphered Words (flat); TF-IDF shortlist recall (computed offline with `llm_runner.build_requests`, k=50) is 0.655 / 0.953 / 0.986 / 0.992 / 0.996 at k = 1 / 5 / 10 / 20 / 50, the same on every condition except Ciphered Words (0.652 at k=1). The repo's TF-IDF top-1 is 0.655, not the 0.624 of the D.1 scratch check.
   - CV F1 on WDC, Original / all_ciphered: TF-IDF 0.653 / 0.653, Soft TF-IDF 0.667 / 0.659, Sentence-Transformer 0.521 / 0.484, Monge-Elkan 0.479 / 0.463, Jaro-Winkler 0.392 / 0.382, Levenshtein 0.351 / 0.384. Sentence-Transformer is below TF-IDF even on Original, and loses far less to ablation than on Abt-Buy (0.583 to 0.300).
   - **Found: the v1 Ciphered Words map is not injective.** Where a word length has more unique words than the dictionary supplies (1,500 per length), `create_word_mappings` fills in random consonant-vowel words drawn with replacement, so distinct words can share a cipher word ("hub" and "6tb" both become "tat"). Target words with two or more sources: WDC 286, committed Abt-Buy 121, committed Amazon-Google 4,055. That is why Ciphered Words is the one condition where TF-IDF moves (Abt-Buy 0.697 to 0.700, Amazon-Google 0.808 to 0.807, WDC 0.653 to 0.654). The factorial cells are injective by construction. Per C.3 item 5 nothing is regenerated; the paper should not say v1 Ciphered Words preserves token identity exactly.
+  - **`openai_embeddings` on WDC done 2026-11-17** (about 150k–300k tokens, under $0.01). CV F1: Original 0.653 (equal to TF-IDF), ids_ciphered 0.628, ciphered_letters 0.524, scrambled 0.533, desc_ciphered 0.505, all_ciphered 0.498, ciphered_words 0.496. Unlike Sentence-Transformer, it drops well below TF-IDF once meaning is removed, as on Abt-Buy. Abt-Buy and Amazon-Google rows in `cv_results.csv` and `summary.csv` are unchanged.
 
 ### D.4 Previous-generation models
 
@@ -446,6 +447,8 @@ Estimates use the current models' median tokens per call times list price (Abt-B
 | optional | `llm_gpt4omini` full grid, all three datasets | about $8 |
 
 Total about $100 without the optional run.
+
+- **D.5c re-estimated 2026-11-17 (offline).** WDC prompts built with `build_requests` (k=50, 1,000 queries per condition), priced with each model's own Amazon-Google logs per condition (chars per input token, mean output tokens per call; Amazon-Google is the other title-only dataset). Haiku 5.5: 15.7M input tokens, about $2.55 for 7 conditions ($2.80 if it answers every ciphered-letters query instead of refusing 85%). GPT-6 Luna: 10.0M input tokens, about $2.00. Both together about $4.50–4.80. Prices from `lib/llm_clients.py` ($0.10 / $0.50 per 1M for both); recheck before the run.
 
 - Order: D.3, then the D.4 pilot, then D.5a (retirement risk), D.5b, D.5c, then the decode tests.
 - Run every condition once for Haiku 4.5, including the ones Haiku 5.5 refuses; the refusal rate across generations is part of the comparison.
