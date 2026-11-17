@@ -13,6 +13,7 @@ CFG = {
     "abt-buy": dict(left="abt", right="buy", mp="abt-buy/data_original/abt_buy_perfect_mapping.csv"),
     "amazon-google": dict(left="amazon", right="google",
                           mp="amazon-google/data_original/amazon_googleproducts_perfectmapping.csv"),
+    "wdc-products": dict(left="offers", right="catalog", mp="wdc-products/data_original/wdc_mapping.csv"),
 }
 TRANS = ["original", "ciphered_letters", "ciphered_words", "scrambled",
          "desc_ciphered", "ids_ciphered", "all_ciphered"]   # factorial cells: used only if run

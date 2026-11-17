@@ -3,7 +3,8 @@ UNIFIED RESULTS ANALYSIS SCRIPT
 ================================
 ✅ Loads Abt-Buy (unfiltered, all records)
 ✅ Loads Amazon-Google (filtered to 1113, title-only)
-✅ Generates ONE summary.csv with both datasets
+✅ Loads WDC Products (1000 queries, title-only)
+✅ Generates ONE summary.csv with all datasets
 ✅ Writes llm_status.csv: share of LLM rows by status (ok, no_match, parse_fail,
    truncated, refusal, api_error) per dataset, method, and condition
 
@@ -42,6 +43,8 @@ def load_all_results(results_dir=RESULTS):
             print(f"  ✅ {dataset:15s} {method:20s} {trans:20s} {len(df):5d} records (filtered, title-only)")
         elif dataset == 'abt-buy':
             print(f"  ✅ {dataset:15s} {method:20s} {trans:20s} {len(df):5d} records (unfiltered)")
+        elif dataset == 'wdc-products' and len(df) == 1000:
+            print(f"  ✅ {dataset:15s} {method:20s} {trans:20s} {len(df):5d} records (title-only)")
         else:
             print(f"  ⚠️  {dataset:15s} {method:20s} {trans:20s} {len(df):5d} records (unexpected count!)")
         
@@ -242,6 +245,16 @@ def main():
     if not ab_metrics.empty:
         ab_count = ab_metrics['total_records'].iloc[0]
         print(f"✅ Abt-Buy: Loaded ({ab_count} records, unfiltered)")
+
+    # WDC Products: 1,000 queries, title only
+    wdc_metrics = metrics_df[metrics_df['dataset'] == 'wdc-products']
+    if not wdc_metrics.empty:
+        bad = wdc_metrics[wdc_metrics['total_records'] != 1000]
+        if bad.empty:
+            print("✅ WDC Products: 1000 records in every run (title-only)")
+        else:
+            print(f"⚠️  WDC Products: unexpected counts in {len(bad)} runs: "
+                  f"{sorted(bad['total_records'].unique().tolist())}")
 
 if __name__ == "__main__":
     main()
