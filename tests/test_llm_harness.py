@@ -338,6 +338,84 @@ def test_method_registry_and_default_subsample():
         assert set(df["id_left"]) <= set(df_h["id_left"]) and len(df_h) == 30
 
 
+# ---------------------------------------------- previous-generation models (Part D)
+def test_haiku45_config_and_request_shape():
+    cfg = MODELS["haiku45"]
+    assert cfg.model_id == "claude-haiku-4-5-20251001" and cfg.tier == "small"
+    assert (cfg.input_price, cfg.output_price) == (1.00, 5.00)
+    assert cfg.effort is None and cfg.thinking_budget == 1024
+    assert 1024 <= cfg.thinking_budget < cfg.max_output_tokens          # API rules for budget_tokens
+    fake = _FakeMessages(_anthropic_resp('{"match": 2, "confidence": 0.9, "rationale": "sku"}'))
+    llm_clients._clients["anthropic"] = NS(messages=fake)
+    r = llm_clients.call_model(cfg, "prompt", 50)
+    assert r.status == "ok" and r.match_index == 2
+    kw = fake.kwargs
+    assert kw["model"] == "claude-haiku-4-5-20251001"
+    assert kw["thinking"] == {"type": "enabled", "budget_tokens": 1024}
+    assert "effort" not in kw["output_config"]                         # Haiku 4.5 rejects effort
+    assert kw["output_config"]["format"]["type"] == "json_schema"       # structured output kept
+    assert "temperature" not in kw and "top_p" not in kw and "fallbacks" not in kw
+    assert kw["max_tokens"] > kw["thinking"]["budget_tokens"]
+    assert abs(r.cost_usd - (1000 * 1.00 + 200 * 5.00) / 1e6) < 1e-12
+    # the 5.5 models are unchanged: effort sent, no thinking param
+    fake55 = _FakeMessages(_anthropic_resp('{"match": 1, "confidence": 0.5, "rationale": "x"}'))
+    llm_clients._clients["anthropic"] = NS(messages=fake55)
+    llm_clients.call_model(MODELS["haiku55"], "p", 50)
+    assert "thinking" not in fake55.kwargs and fake55.kwargs["output_config"]["effort"] == "medium"
+
+
+def test_haiku45_statuses_and_effort_guard():
+    llm_clients._clients["anthropic"] = NS(messages=_FakeMessages(_anthropic_resp("", "max_tokens")))
+    assert llm_clients.call_model(MODELS["haiku45"], "p", 50).status == "truncated"
+    llm_clients._clients["anthropic"] = NS(messages=_FakeMessages(_anthropic_resp("", "refusal")))
+    assert llm_clients.call_model(MODELS["haiku45"], "p", 50).status == "refusal"
+    llm_clients._clients["anthropic"] = NS(messages=_FakeMessages(_anthropic_resp("not json")))
+    assert llm_clients.call_model(MODELS["haiku45"], "p", 50).status == "parse_fail"
+    # --effort on Haiku 4.5 would be a 400 on every call: fail before any request is sent
+    fake = _FakeMessages(_anthropic_resp("{}"))
+    llm_clients._clients["anthropic"] = NS(messages=fake)
+    try:
+        llm_clients.call_model(MODELS["haiku45"], "p", 50, effort="low")
+        raise AssertionError("expected FatalAPIError")
+    except FatalAPIError:
+        pass
+    assert fake.kwargs is None
+    # "" means "send none" and is allowed
+    llm_clients._clients["anthropic"] = NS(messages=_FakeMessages(
+        _anthropic_resp('{"match": 0, "confidence": 0.2, "rationale": "none"}')))
+    assert llm_clients.call_model(MODELS["haiku45"], "p", 50, effort="").status == "no_match"
+
+
+def test_gpt56luna_config_and_request_shape():
+    cfg = MODELS["gpt56luna"]
+    assert cfg.provider == "openai" and cfg.model_id == "gpt-5.6-luna" and cfg.tier == "small"
+    assert (cfg.input_price, cfg.output_price) == (0.20, 1.20) and cfg.thinking_budget is None
+    fake = _FakeResponses(_openai_resp('{"match": 3, "confidence": 0.7, "rationale": "code"}'))
+    llm_clients._clients["openai"] = NS(responses=fake)
+    r = llm_clients.call_model(cfg, "p", 50)
+    assert r.status == "ok" and r.match_index == 3
+    assert fake.kwargs["model"] == "gpt-5.6-luna"
+    assert fake.kwargs["reasoning"] == {"effort": "medium"}             # same setting as GPT-6 Luna
+    assert fake.kwargs["text"]["format"]["strict"] is True
+    assert "temperature" not in fake.kwargs
+    assert abs(r.cost_usd - (r.input_tokens * 0.20 + r.output_tokens * 1.20) / 1e6) < 1e-12
+
+
+def test_previous_generation_method_registry():
+    for k in ("llm_haiku45", "llm_haiku45_tf", "llm_gpt56luna", "llm_gpt56luna_tf"):
+        assert k in llm_runner.LLM_METHODS and llm_runner.LLM_METHODS[k].result_root == "results"
+    with tempfile.TemporaryDirectory() as tmp:
+        saved = llm_runner.call_model
+        try:
+            llm_runner.call_model = _fake_call(["ok"] * 30)
+            out = Path(tmp) / "results" / "toy" / "llm_haiku45" / "original.parquet"
+            df = llm_runner.run_llm(*_toy_data(), "haiku45", output_path=str(out))
+        finally:
+            llm_runner.call_model = saved
+        assert len(df) == 30                                            # full grid: no default subsample
+        assert set(df["model_id"]) == {"claude-haiku-4-5-20251001"} and set(df["effort"]) == {""}
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     for t in tests:

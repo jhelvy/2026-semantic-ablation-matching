@@ -81,14 +81,22 @@ MATCH_SCHEMA = {
 # The subsample is a fixed set of query records (one seed), so Sonnet's
 # records are a subset of the Haiku / Luna runs. All three reason at effort
 # "medium" by default.
+# Added 2026-11-17 (PLAN.md Part D, previous-generation models for the "does it
+# hold across generations" comparison; full grid, small tier):
+#   haiku45   - Claude Haiku 4.5. No `effort` parameter and no adaptive thinking:
+#               extended thinking with a fixed budget (thinking_budget=1024, the API
+#               minimum, close to Haiku 5.5's p90 output of 645 tokens).
+#   gpt56luna - GPT-5.6 Luna, the predecessor of GPT-6 Luna. Same OpenAI path, effort "medium".
 #
 # *_cli entries run through the Claude Code CLI on a Claude subscription. They
 # are for pilots and prompt iteration only and write to pilot_results/, never
 # to results/.
 #
 # Prices are USD per 1M tokens, checked 2026-11-06; re-check before budgeting.
-#   Claude: claude-api skill model table (cached 2026-10-06)
-#   OpenAI: https://developers.openai.com/api/docs/pricing (gpt-6-luna re-checked 2026-11-09)
+#   Claude: claude-api skill model table (cached 2026-10-06); Haiku 4.5 $1 / $5 re-checked
+#           2026-11-17 against the skill table (cached 2026-11-03)
+#   OpenAI: https://developers.openai.com/api/docs/pricing (gpt-6-luna re-checked 2026-11-09;
+#           gpt-5.6-luna 0.20 / 1.20 as recorded in PLAN.md D.4 on 2026-11-13)
 # Output tokens include thinking/reasoning tokens.
 
 SUBSAMPLE_FRAC = 0.3
@@ -110,6 +118,8 @@ class ModelConfig:
     api_key_env: Optional[str] = None             # openai_compatible only
     extra_body: Optional[dict] = None             # openai_compatible only
     response_format: str = "json_schema"          # openai_compatible: json_schema | json_object | none
+    thinking_budget: Optional[int] = None         # anthropic only: manual extended thinking
+                                                  # (Haiku 4.5); None = adaptive default, with effort
 
 
 MODELS = {
@@ -118,9 +128,18 @@ MODELS = {
                            0.10, 0.50, "medium", 8000, "small"),
     "sonnet55": ModelConfig("sonnet55", "anthropic", "claude-sonnet-5-5", "Claude Sonnet 5.5",
                             2.00, 10.00, "medium", 8000, "mid", default_sample_frac=SUBSAMPLE_FRAC),
+    # --- Previous-generation Anthropic small model. Haiku 4.5 rejects `output_config.effort`
+    # and has no adaptive thinking, so reasoning is set by `thinking_budget` (min 1024, must be
+    # below max_tokens). effort=None: none is sent. Dated snapshot id, as in models.md.
+    "haiku45": ModelConfig("haiku45", "anthropic", "claude-haiku-4-5-20251001", "Claude Haiku 4.5",
+                           1.00, 5.00, None, 8000, "small", thinking_budget=1024),
     # --- OpenAI small model. Reasoning effort matches the Claude models.
     "gpt6luna": ModelConfig("gpt6luna", "openai", "gpt-6-luna", "GPT-6 Luna",
                             0.10, 0.50, "medium", 8000, "small"),
+    # --- Previous-generation OpenAI small model (predecessor of GPT-6 Luna; confirm the id on the
+    # models endpoint in the D.4 pilot). Same Responses-API path and effort as GPT-6 Luna.
+    "gpt56luna": ModelConfig("gpt56luna", "openai", "gpt-5.6-luna", "GPT-5.6 Luna",
+                             0.20, 1.20, "medium", 8000, "small"),
     # --- Pilot-only: Claude Code CLI on a subscription (no API billing). Same
     # prompts and schema, but a different harness (CLI system prompt, CLI
     # defaults), so these numbers are never reported.
@@ -259,9 +278,14 @@ def _call_anthropic(cfg: ModelConfig, prompt: str, effort: Optional[str], n_cand
     output_config = {"format": {"type": "json_schema", "schema": MATCH_SCHEMA}}
     if effort:
         output_config["effort"] = effort
+    kwargs = {}
+    if cfg.thinking_budget:
+        # Haiku 4.5: manual extended thinking. `budget_tokens` counts toward max_tokens and
+        # must be at least 1024 and below it. Structured outputs work with it (claude-api skill).
+        kwargs["thinking"] = {"type": "enabled", "budget_tokens": cfg.thinking_budget}
     t0 = time.time()
     try:
-        # No `thinking` param: adaptive thinking is the default on the 5.5 family.
+        # Otherwise no `thinking` param: adaptive thinking is the default on the 5.5 family.
         # No `fallbacks`: a silent switch to another model would contaminate
         # per-model results, so refusals are logged as status="refusal" instead.
         resp = client.messages.create(
@@ -269,6 +293,7 @@ def _call_anthropic(cfg: ModelConfig, prompt: str, effort: Optional[str], n_cand
             max_tokens=cfg.max_output_tokens,
             output_config=output_config,
             messages=[{"role": "user", "content": prompt}],
+            **kwargs,
         )
     except anthropic.APIError as e:
         if _is_fatal(e):
@@ -453,6 +478,9 @@ _CALLERS = {"anthropic": _call_anthropic, "openai": _call_openai,
 def call_model(cfg: ModelConfig, prompt: str, n_candidates: int, effort: Optional[str] = None) -> LLMResult:
     """Single structured call. `effort` overrides the model default; pass "" to send none."""
     eff = cfg.effort if effort is None else (effort or None)
+    if cfg.thinking_budget and eff:
+        raise FatalAPIError(f"{cfg.label} has no `effort` parameter (the API rejects it); its reasoning "
+                            f"is the fixed thinking budget of {cfg.thinking_budget} tokens")
     if cfg.provider in ("anthropic", "claude_cli") and eff == "none":
         raise FatalAPIError("Claude 5.5 models cannot run with effort 'none' (thinking cannot be "
                             "disabled); use 'low' as the minimum-reasoning condition")
