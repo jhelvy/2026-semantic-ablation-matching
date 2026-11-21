@@ -470,6 +470,12 @@ Not used: `gpt-5-mini` and `gpt-5-nano` (shut down Dec 11, 2026).
   - Code: `kimik3` back in `MODELS` (model, endpoint, and key name fixed in code, not read from `.env`, so `llm_kimik3` always means this model). New `ModelConfig` fields `effort_param`, `max_tokens_param`, `allowed_efforts`; `call_model` fails before any request if the effort is not `low`/`high`/`max` (so `--effort medium` cannot 400 every row, and `--effort ""` cannot silently fall back to `max`). `haiku45` and `gpt56luna` now default to the 30% subsample. `.env.example` recreated with the three key names. `KIMI_BASE_URL` and `KIMI_MODEL` in `.env` are no longer read.
   - Tests: 21 in `test_llm_harness.py` (28 in all), up from 19. New: Kimi request shape (top-level `reasoning_effort`, `max_completion_tokens`, strict schema, no temperature/thinking/extra_body, fenced JSON), effort guard, fatal vs row-level 429. `test_previous_generation_method_registry` now checks that Haiku 4.5, GPT-5.6 Luna and Kimi K3 get the same 30% query ids as Sonnet.
   - Offline estimate (`03`, its default 600 output tokens per call): $0.013 per call, so the pilot (108 calls) about $1.40 and the 3,832-call suite about $50. Output tokens at `low` are the unknown.
+- **API pilot done (2026-11-21, John approved; $1.14 total).** `llm_kimik3` on Abt-Buy `original,ciphered_words`, `--sample-frac 0.05` (54 queries per condition, 108 calls, blocking recall 0.981, k=50, effort `low`, 8 workers). Outputs moved to `pilot_results/api_pilot_d4b/abt-buy/` (gitignored, never read by 05/06), as in D.4.
+  - **Checks passed.** Served as `kimi-k3` on every row; all 108 stop reasons `stop`; no `parse_fail`, `truncated`, `refusal` or `api_error`; every row needed one attempt. Strict `json_schema` works (no Markdown fences came back).
+  - **Statuses.** Original 51 ok / 3 no_match; Ciphered Words 29 ok / 25 no_match. Kimi never refused, where Haiku 5.5 refused 47% of Ciphered Words queries on the full Abt-Buy run. (Sample F1 at the best threshold: 0.932 / 0.578; 54 queries, not for interpretation.)
+  - **Tokens per call (mean; median/p90 in brackets).** Output: original 130 (116/180), Ciphered Words 625 (490/1,137), max 4,076, far below the 16,000 cap. Input 1,540 / 1,741. **Reasoning parity holds at `low`:** on the same conditions the `medium` models produce Haiku 5.5 137 / 245, GPT-6 Luna 96 / 763, GPT-5.6 Luna 94 / 882, Haiku 4.5 731 / 848. Keep `low`.
+  - **Cost per call:** $0.0066 original, $0.0146 Ciphered Words. Latency mean 7 s / 20 s.
+  - **Suite estimate (3,832 calls, `03` with the pilot's output tokens).** Original about $4.60 at 130 output tokens, plus about 1.5× for input, because `03` underestimates Kimi's original-text input (1,019 estimated vs 1,540 logged per call on Abt-Buy; ablated text is close, 1,636 vs 1,741), so about $6.50. The three ablated conditions are $40 at the mean of 625 output tokens, $62 if every call reasoned at the p90 of 1,137. Central about $48, range about $45–65. Ciphered Letters is the unknown: a model that tries to decode it may reason longer.
 - **Go or no-go rule.** Price the 3,832-call suite from the pilot. If it is above about $60, choose (John): Kimi on Abt-Buy and WDC only (the identifier-heavy datasets), a lower reasoning setting, or a cheaper open-weights model on the same route (check current options and prices first).
 
 ### D.5 Runs and budget
@@ -478,15 +484,15 @@ Not used: `gpt-5-mini` and `gpt-5-nano` (shut down Dec 11, 2026).
 
 | Step | Runs | Estimate |
 |---|---|---|
-| D.4b | `llm_kimik3` pilot, Abt-Buy, 5%, 2 conditions | about $1–2 |
+| D.4b | `llm_kimik3` pilot, Abt-Buy, 5%, 2 conditions | about $1–2 (**done 2026-11-21: $1.14**) |
 | D.5a | `llm_haiku45`, 30% suite, all three datasets | about $22 |
 | D.5b | `llm_gpt56luna`, 30% suite, all three datasets | about $3.50 |
 | D.5c | `llm_haiku55`, `llm_gpt6luna` full grid on WDC (unchanged) | about $4.50–4.80 |
 | D.5d | `llm_sonnet55` on WDC, 30%, 4 conditions | about $7 |
-| D.5e | `llm_kimik3`, 30% suite, all three datasets (after the pilot's go/no-go) | about $50–80 before the pilot |
+| D.5e | `llm_kimik3`, 30% suite, all three datasets (after the pilot's go/no-go) | about $50–80 before the pilot; **about $48 (range $45–65) from the pilot** |
 | decode | `haiku45`, `gpt56luna`, `kimik3` on three datasets; current small models on WDC | about $2–3 |
 
-Total about $40 without Kimi, about $90–120 with it; the Kimi range is a guess until the pilot. Batch API would halve the Anthropic and OpenAI steps but needs new harness code; not planned.
+Total about $40 without Kimi, about $90–120 with it; the Kimi range is a guess until the pilot. **Revised 2026-11-21 after the Kimi pilot: about $90 with Kimi (range $85–105).** Batch API would halve the Anthropic and OpenAI steps but needs new harness code; not planned.
 
 Commands (once approved), e.g. `uv run scripts/04_run_experiments.py --dataset abt-buy --methods llm_haiku45 --transformations original,ciphered_letters,ciphered_words,all_ciphered` (the 30% default applies), per dataset. After each run, check that its query ids equal Sonnet's on Abt-Buy and Amazon-Google.
 
