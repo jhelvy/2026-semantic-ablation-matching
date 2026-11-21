@@ -30,7 +30,7 @@ What this changes:
 - **Readable conditions stay in the main figures (decided 2026-11-10).** John likes the readable vs meaning-removed contrast. The figures label Ciphered Letters and Scrambled "(readable)" and Ciphered Words "(meaning removed)", separated by a dotted line.
 - **Identifiers count when they look like identifiers (found while drafting, 2026-11-10).** On the 43.5% of Abt-Buy queries with a unique shared identifier, Luna is right on 99.6% (Original), 98.1% with both factorial factors ciphered (codes become codes of the same shape), and 86.8% under Ciphered Words (codes become dictionary words). The model uses lexical evidence that has the form of a code, and often ignores it when it does not. The draft's Discussion has a short section on this; John to confirm the reading.
 
-This is a proof of concept, not a model survey. Keep the lineup small and spend the effort on the controls.
+This is a proof of concept, not a model survey. Keep the lineup small and spend the effort on the controls. (Revised 2026-11-20: breadth is added cheaply, with more models on a fixed 30% query subsample and four conditions, plus a Ditto-style supervised baseline; see Part D.)
 
 **Target venue (decided 2026-11-20, John): Data & Knowledge Engineering (DKE).** It replaces PVLDB, which becomes the alternative. DKE published the closest prior work, Moslemi et al. (DKE 164, 2026), semantic perturbations on Abt-Buy and WDC for supervised matchers. The framing above is confirmed; recasting the paper as "semantic ablation testing" was considered and dropped as the main contribution because the general idea has prior art (details and positioning in the paper plan). The manuscript will move to the Elsevier template in a new `dke/1/` folder in the paper repo; until then, copy figures to `pvldb/1/source/`.
 
@@ -362,7 +362,16 @@ Budget (offline estimate from `03_estimate_llm_cost.py`, 2026-11-09; the conserv
 
 ---
 
-## Part D: Third dataset and previous-generation models (added 2026-11-13)
+## Part D: Third dataset, more models, and a supervised baseline (added 2026-11-13; redesigned 2026-11-20)
+
+**Redesign (decided 2026-11-20, John).** The full-grid runs of the older models (about $160) are replaced by a smaller suite across more models, which costs less and gives more breadth:
+
+1. **Fixed 30% query subsample for every new model run:** seed 42, the same queries as Sonnet 5.5's existing runs (Abt-Buy 324, Amazon-Google 334; WDC 300; 958 in all). Every model can then be compared on one set of queries, and Sonnet needs no reruns on the first two datasets. A 20% draw would not be a subset of the 30% one (`rng.choice` does not nest), which is why the sample is not smaller. Precision: at about 320 queries per dataset, the paired 95% CI for a model minus TF-IDF's top-1 is about ±4.5 points (±2.5 pooled over the three datasets), from the 16% discordance on the full Abt-Buy runs. That is enough for the effects the new models test (refusal, collapse, above/at/below TF-IDF; 10–80 points). The narrow claim (Luna 6 points below TF-IDF's top-1 on Abt-Buy) stays on the full grids of Haiku 5.5 and GPT-6 Luna.
+2. **Four conditions for the new models:** `original`, `ciphered_letters` (readable), `ciphered_words` and `all_ciphered` (meaning removed). 958 × 4 = 3,832 calls per model.
+3. **Models.** Haiku 5.5 and GPT-6 Luna keep their full grids and add WDC (D.5c). New on the 30% suite: Haiku 4.5 and GPT-5.6 Luna (previous generation), Kimi K3 (open weights, back in the lineup; pilot first, D.4b), and Sonnet 5.5 on WDC.
+4. **A Ditto-style supervised baseline** (D.8; free, no API).
+
+The 2026-11-13 design below is kept for the record. Where it conflicts with the redesign (full grids for the older models, the D.5 budget, "out of scope: Sonnet"), the redesign wins.
 
 **Decided 2026-11-13 (John).** Three additions, all at small-model scale:
 
@@ -441,8 +450,37 @@ Not used: `gpt-5-mini` and `gpt-5-nano` (shut down Dec 11, 2026).
 - **Reasoning parity (decided in this plan; John can change it).** The current models run at effort `medium`. Their logged output tokens per answered call (thinking included): Haiku 5.5 median 285, p90 645; GPT-6 Luna median 220, p90 1,021. Haiku 4.5 gets extended thinking with `budget_tokens = 1024`, the API minimum and close to Haiku 5.5's p90. The paper reports each model "at the setting closest to medium effort".
 - **API pilot (about $1).** `llm_haiku45,llm_gpt56luna` on Abt-Buy `original,ciphered_words`, `--sample-frac 0.05`. Check status counts, refusals, parse failures, and tokens; then recalibrate `03_estimate_llm_cost.py`.
 - **Decode test for every small model.** The generation story depends on it: can the older models read Ciphered Letters and Scrambled? Add `haiku45` and `gpt56luna` to `09_decode_test.py`, and WDC to its datasets. Run the new models on all three datasets and the current small models on WDC (about $1–2).
+- **Redesign (2026-11-20):** `haiku45` and `gpt56luna` get `default_sample_frac=0.3`, as Sonnet has, so their results land in `results/{ds}/llm_haiku45/` with no `__sample` suffix. `test_previous_generation_method_registry` checks a full-grid default and must change with it. Add `kimik3` to `09_decode_test.py` too.
+
+### D.4b Kimi K3 (open weights; added 2026-11-20)
+
+- **Route.** OpenRouter, pinned to the Moonshot AI provider with fallbacks off, so every call is served by the same stack. The `openai_compatible` adapter, its provider pinning, and its tests are still in `lib/llm_clients.py`; only the registry entry was removed on 2026-11-09. Restore it from commit `309a1a9^`: `kimik3`, model `moonshotai/kimi-k3`, `$3 / $15` (2026-11-09 price), `max_tokens 16000`, size "open", `default_sample_frac=0.3`, key from `KIMI_API_KEY`, base URL from `KIMI_BASE_URL` (default `https://openrouter.ai/api/v1`), model override `KIMI_MODEL`, structured output via `KIMI_RESPONSE_FORMAT` (default `json_schema`). For Moonshot's own API instead: `KIMI_BASE_URL=https://api.moonshot.ai/v1`, `KIMI_MODEL=kimi-k3`.
+- **Before the pilot, verify on OpenRouter** (not from memory): the model id, current price, whether the Moonshot provider supports `json_schema` structured output (else `json_object`), and how reasoning is controlled. Effort stays at the provider default unless a "medium" setting exists; record what was used.
+- **Key (John).** Add `KIMI_API_KEY=...` (an OpenRouter key with credit) to `.env`. `.env.example` is missing from the repo, although `CLAUDE.md` mentions it; recreate it with the three key names and no values.
+- **Pilot (about $1–2, needs approval):** `llm_kimik3` on Abt-Buy `original,ciphered_words`, `--sample-frac 0.05` (108 calls). Check the served model and provider, the statuses (parse failures, refusals, truncation at 16,000 tokens), and the input and output tokens per call. Move the outputs to `pilot_results/` afterwards, as in D.4.
+- **Go or no-go rule.** Price the 3,832-call suite from the pilot. If it is above about $60, choose (John): Kimi on Abt-Buy and WDC only (the identifier-heavy datasets), a lower reasoning setting, or a cheaper open-weights model on the same route (check current options and prices first).
 
 ### D.5 Runs and budget
+
+**Redesigned budget (2026-11-20).** Per-call costs from logged runs and the D.4 pilot: Haiku 4.5 about $0.0058, GPT-5.6 Luna about $0.0009, Sonnet 5.5 about $0.0056 (its 30% runs). 3,832 calls per new model (958 queries × 4 conditions). Every paid step still needs John's approval, with its estimate, before it runs.
+
+| Step | Runs | Estimate |
+|---|---|---|
+| D.4b | `llm_kimik3` pilot, Abt-Buy, 5%, 2 conditions | about $1–2 |
+| D.5a | `llm_haiku45`, 30% suite, all three datasets | about $22 |
+| D.5b | `llm_gpt56luna`, 30% suite, all three datasets | about $3.50 |
+| D.5c | `llm_haiku55`, `llm_gpt6luna` full grid on WDC (unchanged) | about $4.50–4.80 |
+| D.5d | `llm_sonnet55` on WDC, 30%, 4 conditions | about $7 |
+| D.5e | `llm_kimik3`, 30% suite, all three datasets (after the pilot's go/no-go) | about $50–80 before the pilot |
+| decode | `haiku45`, `gpt56luna`, `kimik3` on three datasets; current small models on WDC | about $2–3 |
+
+Total about $40 without Kimi, about $90–120 with it; the Kimi range is a guess until the pilot. Batch API would halve the Anthropic and OpenAI steps but needs new harness code; not planned.
+
+Commands (once approved), e.g. `uv run scripts/04_run_experiments.py --dataset abt-buy --methods llm_haiku45 --transformations original,ciphered_letters,ciphered_words,all_ciphered` (the 30% default applies), per dataset. After each run, check that its query ids equal Sonnet's on Abt-Buy and Amazon-Google.
+
+Order: Kimi key and registry entry, then the D.4b pilot; D.5a first among paid runs (Haiku 4.5 retirement risk), then D.5b, D.5c, D.5d, D.5e if go, then the decode tests. D.8 (Ditto-style) runs in parallel, as it is free.
+
+**Superseded 2026-11-20** (kept for the record): the full-grid plan below.
 
 Estimates use the current models' median tokens per call times list price (Abt-Buy, Amazon-Google, WDC: 3,194 queries × 7 conditions = 22,358 calls per model); recalibrate after the pilot.
 
@@ -460,17 +498,17 @@ Total about $160 without the optional run (revised 2026-11-17 after the pilot; p
 - **D.5c re-estimated 2026-11-17 (offline).** WDC prompts built with `build_requests` (k=50, 1,000 queries per condition), priced with each model's own Amazon-Google logs per condition (chars per input token, mean output tokens per call; Amazon-Google is the other title-only dataset). Haiku 5.5: 15.7M input tokens, about $2.55 for 7 conditions ($2.80 if it answers every ciphered-letters query instead of refusing 85%). GPT-6 Luna: 10.0M input tokens, about $2.00. Both together about $4.50–4.80. Prices from `lib/llm_clients.py` ($0.10 / $0.50 per 1M for both); recheck before the run.
 
 - **Paused 2026-11-17 (John):** D.5a, D.5b and the decode tests are on hold because the revised cost (about $160) is too high. No paid run is approved. Options on the table: Haiku 4.5 on a fixed 30% subsample (about $40, no new code); Batch API support for both providers (half price, new harness code); Haiku 4.5 without thinking (about $55); drop Haiku 4.5 and keep Luna 5.6 (about $17). Prompt caching does not apply: the shared prefix is about 20 tokens and prompts are below Haiku 4.5's 4,096-token minimum. D.5c (Haiku 5.5 and GPT-6 Luna on WDC, about $4.50–4.80) is independent of this decision and also not yet approved.
-- **Redesign proposed 2026-11-20 (John asked; not yet approved).** Replace the full-grid D.5a/D.5b with a reduced suite across more models, including at least one open-weights model (Kimi K3) and WDC, on a smaller fixed sample. Proposal: every new model on the fixed 30% query subsample (seed 42, the same queries as Sonnet's existing runs; WDC 300 queries) and four conditions (`original`, `ciphered_letters`, `ciphered_words`, `all_ciphered`); Haiku 5.5 and GPT-6 Luna keep their full grids and add WDC (D.5c). Candidate models: Haiku 4.5, GPT-5.6 Luna, Kimi K3 (open weights; $3 / $15 on 2026-11-09, re-verify), Sonnet 5.5 on WDC. Optional supervised baseline: Ditto. This section is rewritten once John confirms the model list and sample size. Until then nothing in D.5 runs.
+- **Superseded 2026-11-20 by the redesign** (top of Part D and the redesigned budget at the top of D.5): 30% suite, Kimi pilot first, Ditto-style baseline (John).
 - Order: D.3, then the D.4 pilot, then D.5a (retirement risk), D.5b, D.5c, then the decode tests.
 - Run every condition once for Haiku 4.5, including the ones Haiku 5.5 refuses; the refusal rate across generations is part of the comparison.
-- Out of scope for WDC and the older models: k=10, the token-fallback prompt, repeats, Sonnet.
+- Out of scope for WDC and the older models: k=10, the token-fallback prompt, repeats. (Sonnet on WDC is back in scope: D.5d.)
 
 ### D.6 Outputs
 
-- `05`, `06`, `07` with WDC and the new methods (the unique-shared-identifier statistic in `07` now applies to two datasets).
-- `08_figures.R`: a third dataset panel in the main figures; a new `model_generations.png` (per condition, each model next to its predecessor, TF-IDF reference line). Main text or appendix is decided once results are in.
-- `README.qmd`: WDC in the data and results sections; a generations section.
-- Copy changed figures to the paper's `pvldb/1/source/`.
+- `05`, `06`, `07` with WDC and the new methods (the unique-shared-identifier statistic in `07` now applies to two datasets). `07` compares models on their shared queries; for the 30% suite that is Sonnet's query set.
+- `08_figures.R`: a third dataset panel in the main figures. A new `model_breadth.png` replaces the planned `model_generations.png`: per condition and dataset, every LLM on the shared 30% queries, each model next to its predecessor, TF-IDF reference line, with refusal rates marked. Main text or appendix is decided once results are in. The Ditto-style results get their own panel or table (D.8).
+- `README.qmd`: WDC in the data and results sections; a model-breadth section; the Ditto-style baseline.
+- Copy changed figures to the paper's manuscript `source/` folder (`pvldb/1/source/` until `dke/1/` exists).
 
 ### D.7 Commit points
 
@@ -479,6 +517,27 @@ Total about $160 without the optional run (revised 2026-11-17 after the pilot; p
 3. Non-LLM results on WDC and the regenerated tables (D.3).
 4. Harness support for `haiku45` and `gpt56luna`, with offline tests.
 5. After the pilot, then after each paid batch (D.5a, D.5b, D.5c, decode tests).
+
+Added 2026-11-20 for the redesign:
+
+6. This redesign (both plan files).
+7. Harness: `kimik3` back in `MODELS`, `default_sample_frac=0.3` for `haiku45` and `gpt56luna`, `.env.example`, updated offline tests (free).
+8. After the Kimi pilot (D.4b), then after each paid batch (D.5a–e, decode tests).
+9. The Ditto-style script, its offline tests, and its results (D.8).
+
+### D.8 Ditto-style supervised baseline (added 2026-11-20; free, no API)
+
+Why: R2 D5 asked for Ditto or DeepMatcher, and Ditto was the strongest model in Moslemi et al. (DKE 2026), the paper we build on. It also tests whether the failure to fall back belongs to zero-shot LLM matching or to neural matchers in general: a matcher trained on ablated data can learn the shared-token evidence directly.
+
+- **Model.** A Ditto-style cross-encoder with Hugging Face `transformers`: records serialized as in Ditto (`COL title VAL ... COL description VAL ...`, same text fields as the other methods via `title_only`), RoBERTa-base fine-tuned for binary match classification. No Ditto optimizations (domain-knowledge injection, TF-IDF summarization, augmentation); the paper says so and calls it "Ditto-style". Max sequence length 256. DeepMatcher is not run.
+- **Task shape, the same as the LLMs.** 5-fold cross-validation over queries (fixed seed). Training pairs: each training query's true match plus 9 hard negatives drawn from its TF-IDF top-50 shortlist (seeded). 10% of the training queries are held out to choose the epoch. Test: score all 50 shortlist candidates of each held-out query and predict the argmax; its probability is the score that `05` thresholds. Every query gets a prediction from the fold that held it out.
+- **Two regimes.**
+  - (A) Train on Original, test on all seven conditions: a matcher with priors learned from meaningful text, like the LLMs. 5 fine-tunes per dataset. Method `ditto_style`.
+  - (B) Train and test on the same ablated condition, `ciphered_words` and `all_ciphered`: the matcher can learn token identity. 10 fine-tunes per dataset. Method `ditto_style_matched`; its `original` row is regime A's.
+  - 45 fine-tunes in all, one training seed each. Time one fold on the Mac (MPS) first; if the full set is too slow, use DistilRoBERTa or a GPU.
+- **Prediction to test.** If (B) recovers to TF-IDF's level or above while (A) falls, the LLMs' failure is a property of zero-shot matching on meaning, not of neural matchers.
+- **Code.** New script `scripts/04b_ditto_style.py` (as `01b`, a numbered sibling) writing `results/{ds}/ditto_style{,_matched}/{transformation}.parquet` with the usual columns, so `05`–`08` pick it up. Offline tests for fold assignment, negative sampling, and serialization (not training). `sentence-transformers` already pulls in `torch` and `transformers`; confirm no new dependency is needed.
+- **Lineup.** Ditto-style is a supervised reference, not an object of study, and not a lexical method. It gets its own table or panel, not a line in the LLM figures.
 
 ## Definition of done
 
