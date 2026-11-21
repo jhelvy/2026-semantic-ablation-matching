@@ -473,7 +473,7 @@ Not used: `gpt-5-mini` and `gpt-5-nano` (shut down Dec 11, 2026).
 - **API pilot done (2026-11-21, John approved; $1.14 total).** `llm_kimik3` on Abt-Buy `original,ciphered_words`, `--sample-frac 0.05` (54 queries per condition, 108 calls, blocking recall 0.981, k=50, effort `low`, 8 workers). Outputs moved to `pilot_results/api_pilot_d4b/abt-buy/` (gitignored, never read by 05/06), as in D.4.
   - **Checks passed.** Served as `kimi-k3` on every row; all 108 stop reasons `stop`; no `parse_fail`, `truncated`, `refusal` or `api_error`; every row needed one attempt. Strict `json_schema` works (no Markdown fences came back).
   - **Statuses.** Original 51 ok / 3 no_match; Ciphered Words 29 ok / 25 no_match. Kimi never refused, where Haiku 5.5 refused 47% of Ciphered Words queries on the full Abt-Buy run. (Sample F1 at the best threshold: 0.932 / 0.578; 54 queries, not for interpretation.)
-  - **Tokens per call (mean; median/p90 in brackets).** Output: original 130 (116/180), Ciphered Words 625 (490/1,137), max 4,076, far below the 16,000 cap. Input 1,540 / 1,741. **Reasoning parity holds at `low`:** on the same conditions the `medium` models produce Haiku 5.5 137 / 245, GPT-6 Luna 96 / 763, GPT-5.6 Luna 94 / 882, Haiku 4.5 731 / 848. Keep `low`.
+  - **Tokens per call (mean; median/p90 in brackets).** Output: original 130 (116/180), Ciphered Words 625 (490/1,137), max 4,076, far below the 16,000 cap. Input 1,540 / 1,741. **Reasoning parity holds at `low`:** on the same conditions the three `medium` models produce Haiku 5.5 137 / 245, GPT-6 Luna 96 / 763, GPT-5.6 Luna 94 / 882 (range 94–137 / 245–882); Haiku 4.5, on its 1,024-token thinking budget, 731 / 848. Keep `low`.
   - **Cost per call:** $0.0066 original, $0.0146 Ciphered Words. Latency mean 7 s / 20 s.
   - **Suite estimate (3,832 calls, `03` with the pilot's output tokens).** Original about $4.60 at 130 output tokens, plus about 1.5× for input, because `03` underestimates Kimi's original-text input (1,019 estimated vs 1,540 logged per call on Abt-Buy; ablated text is close, 1,636 vs 1,741), so about $6.50. The three ablated conditions are $40 at the mean of 625 output tokens, $62 if every call reasoned at the p90 of 1,137. Central about $48, range about $45–65. Ciphered Letters is the unknown: a model that tries to decode it may reason longer.
 - **Go or no-go rule.** Price the 3,832-call suite from the pilot. If it is above about $60, choose (John): Kimi on Abt-Buy and WDC only (the identifier-heavy datasets), a lower reasoning setting, or a cheaper open-weights model on the same route (check current options and prices first).
@@ -485,14 +485,24 @@ Not used: `gpt-5-mini` and `gpt-5-nano` (shut down Dec 11, 2026).
 | Step | Runs | Estimate |
 |---|---|---|
 | D.4b | `llm_kimik3` pilot, Abt-Buy, 5%, 2 conditions | about $1–2 (**done 2026-11-21: $1.14**) |
-| D.5a | `llm_haiku45`, 30% suite, all three datasets | about $22 |
-| D.5b | `llm_gpt56luna`, 30% suite, all three datasets | about $3.50 |
-| D.5c | `llm_haiku55`, `llm_gpt6luna` full grid on WDC (unchanged) | about $4.50–4.80 |
-| D.5d | `llm_sonnet55` on WDC, 30%, 4 conditions | about $7 |
+| D.5a | `llm_haiku45`, 30% suite, all three datasets | about $22 (**done 2026-11-21: $24.38**) |
+| D.5b | `llm_gpt56luna`, 30% suite, all three datasets | about $3.50 (**done 2026-11-21: $2.88**) |
+| D.5c | `llm_haiku55`, `llm_gpt6luna` full grid on WDC (unchanged) | about $4.50–4.80 (**done 2026-11-21: $5.48**) |
+| D.5d | `llm_sonnet55` on WDC, 30%, 4 conditions | about $7 (**done 2026-11-21: $7.19**) |
 | D.5e | `llm_kimik3`, 30% suite, all three datasets (after the pilot's go/no-go) | about $50–80 before the pilot; **about $48 (range $45–65) from the pilot** |
 | decode | `haiku45`, `gpt56luna`, `kimik3` on three datasets; current small models on WDC | about $2–3 |
 
 Total about $40 without Kimi, about $90–120 with it; the Kimi range is a guess until the pilot. **Revised 2026-11-21 after the Kimi pilot: about $90 with Kimi (range $85–105).** Batch API would halve the Anthropic and OpenAI steps but needs new harness code; not planned.
+
+**Status 2026-11-21 (John approved D.5a–d; credit added on both providers).**
+- **D.5a done: `llm_haiku45`, $24.38** (estimate $23–25). 3,832 calls, 958 queries × 4 conditions. Query ids equal Sonnet's on Abt-Buy and Amazon-Google, and equal GPT-5.6 Luna's on all three datasets (WDC 300). No refusals, parse failures or API errors. **One `truncated` row** (Amazon-Google Ciphered Letters, `b0007prnjo`): it hit the 8,000-token cap with no text; the 99th percentile of output is 2,653 tokens. It is kept as model behavior (counts as a missed match), so the paper's "no final run contains ... truncations" sentence needs a qualifier. Mean output 687–1,068 tokens per call. No-match answers are frequent under ablation (Abt-Buy Ciphered Words 225 of 324; WDC 189 of 300), where Haiku 5.5 refused instead.
+- **D.5b done: `llm_gpt56luna`, $2.88** (estimate $3.50–4.50). 3,832 calls; ids equal Sonnet's (Abt-Buy, Amazon-Google) and Haiku 4.5's (all three). Statuses only `ok` and `no_match`. Served id `gpt-5.6-luna` confirmed in the D.4 pilot.
+- Sample F1 at the best threshold, printed by `04` (not cross-validated, not for interpretation), Original / Ciphered Letters / Ciphered Words / all_ciphered: Haiku 4.5 Abt-Buy 0.929 / 0.812 / 0.397 / 0.543, Amazon-Google 0.882 / 0.715 / 0.721 / 0.654, WDC 0.885 / 0.651 / 0.448 / 0.532; GPT-5.6 Luna Abt-Buy 0.954 / 0.910 / 0.686 / 0.755, Amazon-Google 0.892 / 0.832 / 0.817 / 0.821, WDC 0.947 / 0.807 / 0.633 / 0.746.
+- **D.5c done.** `llm_gpt6luna` WDC, 1,000 queries × 7 conditions: **$2.53** (estimate about $2.00, 27% over; Ciphered Letters $0.54 and all_ciphered $0.45 reasoned longer than the Amazon-Google logs implied). Statuses only `ok` and `no_match`. `llm_haiku55` WDC, same grid: **$2.95** (estimate $2.55–2.80). **Refusals on WDC:** Ciphered Letters 738 of 1,000, Ciphered Words 86, desc_ciphered 24, all_ciphered 21, Scrambled 8, none on Original or ids_ciphered. No parse failures, truncations or API errors.
+- **D.5d done: `llm_sonnet55` WDC, 300 × 4: $7.19** (estimate $6.50–7). Ids equal Haiku 4.5's and GPT-5.6 Luna's; the 300 are a subset of both full WDC runs. 8 refusals on Ciphered Letters, none elsewhere.
+- **D.5a–d total: $39.93** (Anthropic $34.52, OpenAI $5.41), against about $38–40 estimated.
+- Sample F1 at the best threshold (not cross-validated), Original / C. Letters / C. Words / all_ciphered: GPT-6 Luna WDC 0.933 / 0.845 / 0.676 / 0.770 (Scrambled 0.906, desc 0.846, ids 0.888); Haiku 5.5 WDC 0.903 / 0.314 / 0.442 / 0.601 (Scrambled 0.866, desc 0.724, ids 0.830); Sonnet WDC 0.913 / 0.750 / 0.526 / 0.587.
+- **Next:** rerun `05_cv_threshold.py` and `06_summarize_results.py`. These overwrite the committed `results/cv_results.csv` and `results/summary.csv` (new rows for the breadth models and WDC LLM runs). Then D.5e (Kimi, needs a Moonshot top-up), decode tests, D.8.
 
 Commands (once approved), e.g. `uv run scripts/04_run_experiments.py --dataset abt-buy --methods llm_haiku45 --transformations original,ciphered_letters,ciphered_words,all_ciphered` (the 30% default applies), per dataset. After each run, check that its query ids equal Sonnet's on Abt-Buy and Amazon-Google.
 
