@@ -162,8 +162,8 @@ def _chat_resp(text, finish="stop"):
 
 
 def test_openai_compatible_request_shape_and_statuses():
-    # No model in the lineup uses this route since Kimi K3 was dropped; keep
-    # the adapter tested with a stand-in config (OpenRouter, provider pinned).
+    # The adapter's OpenRouter defaults (provider pinning, unified reasoning field), tested
+    # with a stand-in config; Kimi K3 uses the Moonshot settings (test_kimik3_* below).
     cfg = llm_clients.ModelConfig(
         "openmodel", "openai_compatible", "vendor/open-model", "Open model", 3.00, 15.00, None,
         16000, "mid", default_sample_frac=0.3, base_url="https://openrouter.ai/api/v1",
@@ -176,10 +176,86 @@ def test_openai_compatible_request_shape_and_statuses():
     assert r.status == "ok" and r.match_index == 7
     assert fake.kwargs["response_format"]["type"] == "json_schema"
     assert fake.kwargs["extra_body"]["provider"] == {"order": ["vendor"], "allow_fallbacks": False}
+    assert fake.kwargs["max_tokens"] == 16000 and "max_completion_tokens" not in fake.kwargs
     assert abs(r.cost_usd - (2000 * 3.0 + 900 * 15.0) / 1e6) < 1e-12
     assert cfg.default_sample_frac == 0.3
+    llm_clients.call_model(cfg, "p", 50, effort="high")
+    assert fake.kwargs["extra_body"]["reasoning"] == {"effort": "high"}   # OpenRouter style
+    assert "reasoning_effort" not in fake.kwargs
     llm_clients._clients[key] = NS(chat=_FakeChat(_chat_resp("", "length")))
     assert llm_clients.call_model(cfg, "p", 50).status == "truncated"
+
+
+def test_kimik3_config_and_request_shape():
+    cfg = MODELS["kimik3"]
+    assert (cfg.provider, cfg.model_id, cfg.tier) == ("openai_compatible", "kimi-k3", "open")
+    assert cfg.base_url == "https://api.moonshot.ai/v1" and cfg.api_key_env == "KIMI_API_KEY"
+    assert (cfg.input_price, cfg.output_price) == (3.00, 15.00)
+    assert cfg.default_sample_frac == 0.3 and cfg.effort == "low"
+    key = f"openai_compatible:|{cfg.base_url}|{cfg.api_key_env}"
+    # Moonshot may wrap JSON in a Markdown fence; the lenient parser must still read it.
+    fake = _FakeChat(_chat_resp('```json\n{"match": 4, "confidence": 0.8, "rationale": "model no"}\n```'))
+    llm_clients._clients[key] = NS(chat=fake)
+    r = llm_clients.call_model(cfg, "p", 50)
+    assert r.status == "ok" and r.match_index == 4
+    kw = fake.kwargs
+    assert kw["model"] == "kimi-k3"
+    assert kw["reasoning_effort"] == "low"                       # top-level, not OpenRouter's field
+    assert kw["max_completion_tokens"] == 16000 and "max_tokens" not in kw
+    assert kw["response_format"]["type"] == "json_schema"
+    assert kw["response_format"]["json_schema"]["strict"] is True
+    assert "extra_body" not in kw                                # no provider pinning, no reasoning dict
+    for p in ("temperature", "top_p", "thinking"):               # fixed / unsupported on K3
+        assert p not in kw
+    llm_clients.call_model(cfg, "p", 50, effort="high")
+    assert fake.kwargs["reasoning_effort"] == "high"
+    llm_clients._clients[key] = NS(chat=_FakeChat(_chat_resp("", "length")))
+    assert llm_clients.call_model(cfg, "p", 50).status == "truncated"
+
+
+def test_kimik3_effort_guard_and_fatal_errors():
+    import httpx2 as httpx
+    import openai
+    cfg = MODELS["kimik3"]
+    key = f"openai_compatible:|{cfg.base_url}|{cfg.api_key_env}"
+    fake = _FakeChat(_chat_resp("{}"))
+    llm_clients._clients[key] = NS(chat=fake)
+    for bad in ("medium", ""):                                   # "" would mean Moonshot's default, max
+        try:
+            llm_clients.call_model(cfg, "p", 50, effort=bad)
+            raise AssertionError(f"effort {bad!r} should fail before any call")
+        except FatalAPIError:
+            pass
+    assert fake.kwargs is None
+
+    def raising(err):
+        class _C:
+            completions = None
+
+            def create(self, **kw):
+                raise err
+        c = _C()
+        c.completions = c
+        return NS(chat=c)
+    req = httpx.Request("POST", "https://api.moonshot.ai/v1/chat/completions")
+    # Moonshot reports insufficient balance as HTTP 429 exceeded_current_quota_error: fatal.
+    quota = openai.RateLimitError(
+        "Error code: 429 - {'error': {'type': 'exceeded_current_quota_error', 'message': "
+        "'Account balance is insufficient or the account has been disabled'}}",
+        response=httpx.Response(429, request=req), body=None)
+    llm_clients._clients[key] = raising(quota)
+    try:
+        llm_clients.call_model(cfg, "p", 50)
+        raise AssertionError("insufficient balance should be fatal")
+    except FatalAPIError:
+        pass
+    # An ordinary rate limit (after the SDK's retries) is a per-row api_error, not fatal.
+    rate = openai.RateLimitError(
+        "Error code: 429 - {'error': {'type': 'rate_limit_reached_error', 'message': "
+        "'Your account reached max request per minute'}}",
+        response=httpx.Response(429, request=req), body=None)
+    llm_clients._clients[key] = raising(rate)
+    assert llm_clients.call_model(cfg, "p", 50).status == "api_error"
 
 
 # ---------------------------------------------------------------- claude CLI pilot adapter
@@ -326,8 +402,9 @@ def test_parse_fail_retried_once():
 
 
 def test_method_registry_and_default_subsample():
-    assert {"llm_haiku55", "llm_haiku55_tf", "llm_sonnet55", "llm_gpt6luna",
+    assert {"llm_haiku55", "llm_haiku55_tf", "llm_sonnet55", "llm_gpt6luna", "llm_kimik3",
             "llm_haiku55_cli", "llm_sonnet55_cli"} <= set(llm_runner.LLM_METHODS)
+    assert llm_runner.LLM_METHODS["llm_kimik3"].result_root == "results"
     with tempfile.TemporaryDirectory() as tmp:
         llm_runner.call_model = _fake_call(["ok"] * 30)
         out = Path(tmp) / "results" / "toy" / "llm_sonnet55" / "original.parquet"
@@ -404,16 +481,24 @@ def test_gpt56luna_config_and_request_shape():
 def test_previous_generation_method_registry():
     for k in ("llm_haiku45", "llm_haiku45_tf", "llm_gpt56luna", "llm_gpt56luna_tf"):
         assert k in llm_runner.LLM_METHODS and llm_runner.LLM_METHODS[k].result_root == "results"
+    # Redesign 2026-11-21: the new models run on the fixed 30% subsample, the same query
+    # records as Sonnet 5.5, so all models compare on one shared query set.
     with tempfile.TemporaryDirectory() as tmp:
         saved = llm_runner.call_model
         try:
-            llm_runner.call_model = _fake_call(["ok"] * 30)
-            out = Path(tmp) / "results" / "toy" / "llm_haiku45" / "original.parquet"
-            df = llm_runner.run_llm(*_toy_data(), "haiku45", output_path=str(out))
+            dfs = {}
+            for mk in ("sonnet55", "haiku45", "gpt56luna", "kimik3"):
+                llm_runner.call_model = _fake_call(["ok"] * 30)
+                out = Path(tmp) / "results" / "toy" / f"llm_{mk}" / "original.parquet"
+                dfs[mk] = llm_runner.run_llm(*_toy_data(), mk, output_path=str(out))
         finally:
             llm_runner.call_model = saved
-        assert len(df) == 30                                            # full grid: no default subsample
-        assert set(df["model_id"]) == {"claude-haiku-4-5-20251001"} and set(df["effort"]) == {""}
+        for mk in ("haiku45", "gpt56luna", "kimik3"):
+            assert len(dfs[mk]) == 9                                    # 30% of 30 query records
+            assert set(dfs[mk]["id_left"]) == set(dfs["sonnet55"]["id_left"]), mk
+        assert set(dfs["haiku45"]["model_id"]) == {"claude-haiku-4-5-20251001"}
+        assert set(dfs["haiku45"]["effort"]) == {""}
+        assert set(dfs["kimik3"]["model_id"]) == {"kimi-k3"} and set(dfs["kimik3"]["effort"]) == {"low"}
 
 
 if __name__ == "__main__":

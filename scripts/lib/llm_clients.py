@@ -22,9 +22,8 @@ Fatal account-level errors (bad key, no credit, unknown model) raise
 FatalAPIError so a run stops instead of writing thousands of blank rows.
 
 Providers: Anthropic Messages API, OpenAI Responses API, any OpenAI-compatible
-Chat Completions server (no model in the current lineup uses it; it was built
-for Kimi K3, dropped 2026-11-09), and the Claude Code CLI on a subscription
-(pilots only).
+Chat Completions server (Kimi K3 on Moonshot's own API; dropped 2026-11-09,
+back 2026-11-21), and the Claude Code CLI on a subscription (pilots only).
 
 Sampling parameters (temperature etc.) are NOT sent: current Claude models
 reject them, and current OpenAI reasoning models do not support them.
@@ -87,6 +86,13 @@ MATCH_SCHEMA = {
 #               extended thinking with a fixed budget (thinking_budget=1024, the API
 #               minimum, close to Haiku 5.5's p90 output of 645 tokens).
 #   gpt56luna - GPT-5.6 Luna, the predecessor of GPT-6 Luna. Same OpenAI path, effort "medium".
+# Redesign 2026-11-21 (PLAN.md Part D): every new model runs on the fixed 30% subsample, the
+# same query records as Sonnet 5.5 (seed 42), on four conditions:
+#   haiku45, gpt56luna - now default_sample_frac=0.3 (were full grid)
+#   kimik3    - Kimi K3, open weights, on Moonshot's own API (platform.kimi.ai). K3 always
+#               thinks; effort is the top-level `reasoning_effort` (low | high | max, default
+#               max). "low" here: Moonshot has no "medium", and "max" is the costliest. Confirm
+#               token parity with the other models' "medium" in the D.4b pilot.
 #
 # *_cli entries run through the Claude Code CLI on a Claude subscription. They
 # are for pilots and prompt iteration only and write to pilot_results/, never
@@ -97,6 +103,11 @@ MATCH_SCHEMA = {
 #           2026-11-17 against the skill table (cached 2026-11-03)
 #   OpenAI: https://developers.openai.com/api/docs/pricing (gpt-6-luna re-checked 2026-11-09;
 #           gpt-5.6-luna 0.20 / 1.20 as recorded in PLAN.md D.4 on 2026-11-13)
+#   Kimi K3: input $3.00 from https://platform.kimi.ai/docs/guide/context-caching.md (cache-miss
+#           price; cache hits are $0.30 but are billed here at the full price, so cost is an
+#           upper bound); output $15.00 from the Moonshot AI row on
+#           https://openrouter.ai/moonshotai/kimi-k3/providers (OpenRouter passes provider prices
+#           through; Moonshot's own price table did not render). Checked 2026-11-21.
 # Output tokens include thinking/reasoning tokens.
 
 SUBSAMPLE_FRAC = 0.3
@@ -112,7 +123,7 @@ class ModelConfig:
     output_price: float      # $ / 1M output tokens
     effort: Optional[str]    # default reasoning effort; None = do not send
     max_output_tokens: int   # cap incl. thinking tokens
-    tier: str                # "small" | "mid" | "pilot"
+    tier: str                # "small" | "mid" | "open" | "pilot"
     default_sample_frac: Optional[float] = None   # None = full grid
     base_url: Optional[str] = None                # openai_compatible only
     api_key_env: Optional[str] = None             # openai_compatible only
@@ -120,6 +131,11 @@ class ModelConfig:
     response_format: str = "json_schema"          # openai_compatible: json_schema | json_object | none
     thinking_budget: Optional[int] = None         # anthropic only: manual extended thinking
                                                   # (Haiku 4.5); None = adaptive default, with effort
+    effort_param: str = "openrouter"              # openai_compatible: how effort is sent.
+                                                  # "openrouter" = extra_body reasoning.effort;
+                                                  # "reasoning_effort" = top-level field (Moonshot)
+    max_tokens_param: str = "max_tokens"          # openai_compatible: "max_tokens" | "max_completion_tokens"
+    allowed_efforts: Optional[tuple] = None       # if set, any other effort fails before a call
 
 
 MODELS = {
@@ -132,14 +148,33 @@ MODELS = {
     # and has no adaptive thinking, so reasoning is set by `thinking_budget` (min 1024, must be
     # below max_tokens). effort=None: none is sent. Dated snapshot id, as in models.md.
     "haiku45": ModelConfig("haiku45", "anthropic", "claude-haiku-4-5-20251001", "Claude Haiku 4.5",
-                           1.00, 5.00, None, 8000, "small", thinking_budget=1024),
+                           1.00, 5.00, None, 8000, "small", thinking_budget=1024,
+                           default_sample_frac=SUBSAMPLE_FRAC),
     # --- OpenAI small model. Reasoning effort matches the Claude models.
     "gpt6luna": ModelConfig("gpt6luna", "openai", "gpt-6-luna", "GPT-6 Luna",
                             0.10, 0.50, "medium", 8000, "small"),
     # --- Previous-generation OpenAI small model (predecessor of GPT-6 Luna; confirm the id on the
     # models endpoint in the D.4 pilot). Same Responses-API path and effort as GPT-6 Luna.
     "gpt56luna": ModelConfig("gpt56luna", "openai", "gpt-5.6-luna", "GPT-5.6 Luna",
-                             0.20, 1.20, "medium", 8000, "small"),
+                             0.20, 1.20, "medium", 8000, "small", default_sample_frac=SUBSAMPLE_FRAC),
+    # --- Open weights: Kimi K3 on Moonshot's own API (OpenAI-compatible Chat Completions).
+    # Checked 2026-11-21 against platform.kimi.ai/docs (kimi-k3 quickstart, chat API reference,
+    # response_format and errors pages):
+    #   * model "kimi-k3", base URL https://api.moonshot.ai/v1 (keys from platform.kimi.ai are
+    #     401 on other regional platforms);
+    #   * json_schema with strict=True is supported for kimi-k3;
+    #   * thinking is always on and cannot be disabled; `thinking` param not supported;
+    #     effort = top-level `reasoning_effort` in {low, high, max}; reasoning tokens are
+    #     billed as output and counted in completion_tokens;
+    #   * temperature/top_p are fixed (other values are an error), so none are sent;
+    #   * `max_tokens` is deprecated in favour of `max_completion_tokens` (default 131072),
+    #     which also counts toward the TPM rate limit, so it is capped at 16000 here.
+    # Fixed in code, not from .env, so llm_kimik3 results always mean this model and endpoint.
+    "kimik3": ModelConfig("kimik3", "openai_compatible", "kimi-k3", "Kimi K3",
+                          3.00, 15.00, "low", 16000, "open", default_sample_frac=SUBSAMPLE_FRAC,
+                          base_url="https://api.moonshot.ai/v1", api_key_env="KIMI_API_KEY",
+                          effort_param="reasoning_effort", max_tokens_param="max_completion_tokens",
+                          allowed_efforts=("low", "high", "max")),
     # --- Pilot-only: Claude Code CLI on a subscription (no API billing). Same
     # prompts and schema, but a different harness (CLI system prompt, CLI
     # defaults), so these numbers are never reported.
@@ -362,15 +397,17 @@ def _call_openai(cfg: ModelConfig, prompt: str, effort: Optional[str], n_candida
 def _call_openai_compatible(cfg: ModelConfig, prompt: str, effort: Optional[str], n_candidates: int) -> LLMResult:
     import openai
     client = _client(f"openai_compatible:|{cfg.base_url}|{cfg.api_key_env}")
-    kwargs = dict(model=cfg.model_id, messages=[{"role": "user", "content": prompt}],
-                  max_tokens=cfg.max_output_tokens)
+    kwargs = dict(model=cfg.model_id, messages=[{"role": "user", "content": prompt}])
+    kwargs[cfg.max_tokens_param] = cfg.max_output_tokens
     if cfg.response_format == "json_schema":
         kwargs["response_format"] = {"type": "json_schema", "json_schema": {
             "name": "entity_match", "schema": MATCH_SCHEMA, "strict": True}}
     elif cfg.response_format == "json_object":   # schema then rests on the prompt + parser
         kwargs["response_format"] = {"type": "json_object"}
     extra = dict(cfg.extra_body or {})
-    if effort:
+    if effort and cfg.effort_param == "reasoning_effort":
+        kwargs["reasoning_effort"] = effort       # Moonshot: top-level field (low | high | max)
+    elif effort:
         extra["reasoning"] = {"effort": effort}   # OpenRouter's unified reasoning field
     if extra:
         kwargs["extra_body"] = extra
@@ -481,6 +518,10 @@ def call_model(cfg: ModelConfig, prompt: str, n_candidates: int, effort: Optiona
     if cfg.thinking_budget and eff:
         raise FatalAPIError(f"{cfg.label} has no `effort` parameter (the API rejects it); its reasoning "
                             f"is the fixed thinking budget of {cfg.thinking_budget} tokens")
+    if cfg.allowed_efforts and eff not in cfg.allowed_efforts:
+        # e.g. "medium" or "" on Kimi K3: Moonshot would reject every call (or, for "", silently
+        # use its default "max"), so fail before any request is sent.
+        raise FatalAPIError(f"{cfg.label} accepts effort in {cfg.allowed_efforts}, not {eff!r}")
     if cfg.provider in ("anthropic", "claude_cli") and eff == "none":
         raise FatalAPIError("Claude 5.5 models cannot run with effort 'none' (thinking cannot be "
                             "disabled); use 'low' as the minimum-reasoning condition")
