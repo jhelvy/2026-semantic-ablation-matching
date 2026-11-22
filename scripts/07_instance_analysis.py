@@ -10,7 +10,8 @@ Reads the saved per-query results (no API calls) and writes five tables.
    * TF-IDF top-1 accuracy on the same queries (the shortlist's first candidate);
    * LLM accuracy (correct top pick; refusals count as misses), and how its answers
      relate to TF-IDF's top-1: picked_top1 (share of answered queries where the LLM
-     chose candidate 1), and the 2x2 of LLM vs TF-IDF top-1 correct/incorrect
+     chose candidate 1), llm_correct_answered / tfidf_top1_correct_answered (both
+     accuracies on the queries the LLM answered, status ok), and the 2x2 of LLM vs TF-IDF top-1 correct/incorrect
      (both, llm_only, tfidf_only, neither; shares of all queries);
    * CV F1 on all queries and on queries whose true match made the shortlist;
    * unique shared identifier (R2 D2): uid_share = share of queries where the query
@@ -47,9 +48,13 @@ Reads the saved per-query results (no API calls) and writes five tables.
    ciphers can be compared at the same prompt size.
 
 5. results/bootstrap_ci.csv: paired bootstrap 95% CIs (2,000 resamples of query
-   ids, seed 42). Three comparisons, each on the queries both arms share:
+   ids). Each comparison has its own random stream, seeded from 42 and the
+   comparison's key, so adding runs does not move existing CIs. Comparisons, each
+   on the queries both arms share:
    * drop:   Original minus the condition, same LLM run;
    * vs_tfidf_top1: LLM minus TF-IDF top-1 (accuracy only), same condition;
+   * vs_tfidf_top1_answered: the same, on the queries the LLM answered (status ok);
+      descriptive, since the model chooses which queries it answers;
    * model_gap: one main LLM minus another, same condition.
    Metrics: accuracy (correct top pick) and F1 at a fixed threshold (the
    F1-optimal tau on the full set for each arm). The reported F1 values stay the
@@ -62,6 +67,7 @@ Usage:
 import json
 import re
 import sys
+import zlib
 from itertools import combinations
 from pathlib import Path
 
@@ -152,6 +158,8 @@ def instance_row(df, truth, uid):
         tfidf_top1_correct=tf_ok.mean(),
         llm_correct=llm_ok.mean(),
         picked_top1=(picked[answered] == 1).mean() if answered.any() else np.nan,
+        llm_correct_answered=llm_ok[answered].mean() if answered.any() else np.nan,
+        tfidf_top1_correct_answered=tf_ok[answered].mean() if answered.any() else np.nan,
         both=(llm_ok & tf_ok).mean(),
         llm_only=(llm_ok & ~tf_ok).mean(),
         tfidf_only=(~llm_ok & tf_ok).mean(),
@@ -208,7 +216,9 @@ def arm(df, truth):
     return pd.DataFrame({"acc": df["is_correct"].astype(float).values,
                          "tp": (pred & true).astype(float), "fp": (pred & ~true).astype(float),
                          "top1": (df["true_rank_in_candidates"] == 1).astype(float).values
-                         if "true_rank_in_candidates" in df else np.nan}, index=df.index)
+                         if "true_rank_in_candidates" in df else np.nan,
+                         "answered": (df["status"] == "ok").values if "status" in df else True},
+                        index=df.index)
 
 
 def boot(a, b, metric, rng):
@@ -238,7 +248,6 @@ def boot(a, b, metric, rng):
 # =============================================================================
 
 def main():
-    rng = np.random.default_rng(SEED)
     inst, ans, recall, psize, ci = [], [], [], [], []
     for ds in CFG:
         truth = truth_set(ds)
@@ -288,6 +297,9 @@ def main():
         # bootstrap CIs
         def add(kind, a_name, b_name, t, a, b, metrics):
             for metric in metrics:
+                # one stream per comparison, so a CI does not depend on which other runs exist
+                key = f"{ds}|{kind}|{t}|{a_name}|{b_name}|{metric}"
+                rng = np.random.default_rng([SEED, zlib.crc32(key.encode())])
                 est, lo, hi, n = boot(a, b, metric, rng)
                 ci.append(dict(dataset=ds, comparison=kind, transformation=t, method_a=a_name,
                                method_b=b_name, metric="acc" if metric.startswith("acc") else "f1_fixed_tau",
@@ -295,6 +307,9 @@ def main():
 
         for (m, t), a in arms.items():
             add("vs_tfidf_top1", m, "tfidf_top1", t, a, a, ["acc_vs_top1"])
+            sub = a[a["answered"].astype(bool)]
+            if len(sub):
+                add("vs_tfidf_top1_answered", m, "tfidf_top1", t, sub, sub, ["acc_vs_top1"])
             if t != "original" and (m, "original") in arms:
                 add("drop", f"{m}:original", f"{m}:{t}", t, arms[(m, "original")], a, ["acc", "f1"])
         for t in TRANS:
