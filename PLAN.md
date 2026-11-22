@@ -490,7 +490,7 @@ Not used: `gpt-5-mini` and `gpt-5-nano` (shut down Dec 11, 2026).
 | D.5c | `llm_haiku55`, `llm_gpt6luna` full grid on WDC (unchanged) | about $4.50–4.80 (**done 2026-11-21: $5.48**) |
 | D.5d | `llm_sonnet55` on WDC, 30%, 4 conditions | about $7 (**done 2026-11-21: $7.19**) |
 | D.5e | `llm_kimik3`, 30% suite, all three datasets (after the pilot's go/no-go) | about $50–80 before the pilot; **about $48 (range $45–65) from the pilot**; **done 2026-11-21: $40.54** |
-| decode | `haiku45`, `gpt56luna`, `kimik3` on three datasets; current small models on WDC | about $2–3 |
+| decode | `haiku45`, `gpt56luna`, `kimik3` on three datasets; current small models on WDC and `all_ciphered` | about $2–3; $2.75–6.60 for the extended grid (**done 2026-11-21: $4.44**) |
 
 Total about $40 without Kimi, about $90–120 with it; the Kimi range is a guess until the pilot. **Revised 2026-11-21 after the Kimi pilot: about $90 with Kimi (range $85–105).** Batch API would halve the Anthropic and OpenAI steps but needs new harness code; not planned.
 
@@ -511,8 +511,15 @@ Total about $40 without Kimi, about $90–120 with it; the Kimi range is a guess
   - `07`: each bootstrap comparison now has its own RNG stream (seed 42 + CRC32 of the comparison key), so CIs no longer move when runs are added. This moved existing CI bounds once more, by up to 0.007; estimates unchanged. Two CIs that sat on zero flipped (Amazon-Google Haiku 5.5 Scrambled vs TF-IDF top-1, −2.7 [−5.6, −0.2]; WDC Sonnet vs GPT-6 Luna Original f1_fixed_tau). Manuscript CIs updated to match (intro and `tab:vs_tfidf`, k=10 sentence); the Sonnet-vs-Luna claim still holds.
   - `07` adds `llm_correct_answered` and `tfidf_top1_correct_answered` to `instance_analysis.csv` and a `vs_tfidf_top1_answered` comparison to `bootstrap_ci.csv`.
   - New `scripts/07b_shared_piece_split.py` -> `results/shared_piece_split.csv`: why all_ciphered beats ciphered_words (see the paper plan, breadth finding 7). Run after `07`.
-  - `09_decode_test.py` extended: 6 models, WDC, `all_ciphered`; Haiku 4.5 thinking budget (1,024; Haiku 4.5 max output 64K, checked with the claude-api skill), Kimi K3 via Moonshot Chat Completions; `--models/--datasets/--transforms/--dry-run`; a run replaces only the cells it covers. 54 new cells (162 calls) estimated at $2.75–6.60, mostly Kimi. **Waiting for John's approval.**
-- **Next:** decode tests (approval), D.8.
+  - `09_decode_test.py` extended: 6 models, WDC, `all_ciphered`; Haiku 4.5 thinking budget (1,024; Haiku 4.5 max output 64K, checked with the claude-api skill), Kimi K3 via Moonshot Chat Completions; `--models/--datasets/--transforms/--dry-run`; a run replaces only the cells it covers. 54 new cells (162 calls) estimated at $2.75–6.60, mostly Kimi.
+- **Decode tests done 2026-11-21 (John approved; $4.44 for 54 new cells, $4.69 for all 72).** Run as three targeted invocations (new models on everything; current models on WDC; current models on Abt-Buy and Amazon-Google `all_ciphered`), so the 18 earlier cells were not re-called; their 540 rows are identical. `results/decode_test.csv` now has 6 models × 3 datasets × 4 conditions. Recovery of changed tokens, all rows (answered rows where they differ):
+  - Ciphered Words: 0.00–0.06 for every model and dataset (answered up to 0.07).
+  - all_ciphered: 0.00–0.05 on Abt-Buy and Amazon-Google; WDC 0.00 (Haiku 4.5) to 0.25 (Kimi).
+  - Scrambled: 0.77–1.00 for every model except Haiku 4.5 on Abt-Buy (0.20; 0.58 answered).
+  - Ciphered Letters varies by model: Sonnet 0.90 / 0.34 / 0.60 (AB / AG / WDC; answered 0.90 / 0.95 / 0.97, Sonnet refuses some), Kimi 0.44 / 0.14 / 0.48, GPT-5.6 Luna 0.38 / 0.09 / 0.42, GPT-6 Luna 0.08 / 0.34 / 0.57, Haiku 5.5 0.26 / 0.03 / 0.16, Haiku 4.5 0.07 / 0.13 / 0.04.
+  - Statuses: Haiku 4.5 hit the 32k output cap on 3 of 36 calls (Abt-Buy Ciphered Letters batch 3, Scrambled batches 1–2; $0.16 each). The visible text is a few hundred characters cut off mid-list, so the output went to thinking far past `budget_tokens=1024`. Haiku 5.5 refused 4 of 6 WDC Ciphered Words / Ciphered Letters batches and Sonnet 2. Kimi and GPT-5.6 Luna: no refusal, truncation or parse failure.
+  - Interpretation (what decoding means for the matching results) waits for the interpretation stopping point, with John.
+- **Next:** D.8 full run (started 2026-11-21, about 10 h), then `05`/`06`.
 
 Commands (once approved), e.g. `uv run scripts/04_run_experiments.py --dataset abt-buy --methods llm_haiku45 --transformations original,ciphered_letters,ciphered_words,all_ciphered` (the 30% default applies), per dataset. After each run, check that its query ids equal Sonnet's on Abt-Buy and Amazon-Google.
 
@@ -576,6 +583,12 @@ Why: R2 D5 asked for Ditto or DeepMatcher, and Ditto was the strongest model in 
 - **Prediction to test.** If (B) recovers to TF-IDF's level or above while (A) falls, the LLMs' failure is a property of zero-shot matching on meaning, not of neural matchers.
 - **Code.** New script `scripts/04b_ditto_style.py` (as `01b`, a numbered sibling) writing `results/{ds}/ditto_style{,_matched}/{transformation}.parquet` with the usual columns, so `05`–`08` pick it up. Offline tests for fold assignment, negative sampling, and serialization (not training). `sentence-transformers` already pulls in `torch` and `transformers`; confirm no new dependency is needed.
 - **Lineup.** Ditto-style is a supervised reference, not an object of study, and not a lexical method. It gets its own table or panel, not a line in the LLM figures.
+- **Status, 2026-11-21: code built, full run started (not yet committed).**
+  - `scripts/lib/ditto.py` (serialization, query folds, validation split, negative sampling) and `scripts/04b_ditto_style.py` (training, scoring, fold checkpoints under `checkpoints/ditto/`, assembly into `results/`). `tests/test_ditto_style.py`: 5 offline tests pass. No new dependency (torch 2.14.1, transformers 4.57.6 already in the lock). Settings: RoBERTa-base, max length 256, batch 32, AdamW lr 3e-5, linear decay without warmup, up to 5 epochs, epoch chosen on validation top-1 over full shortlists.
+  - **Text fields match the other methods exactly**, quirk included: under pandas 2.2, `prepare_text_column` drops any text column with a missing value, so Abt-Buy uses name + description for Abt but name only for Buy (441 of 1,092 Buy descriptions and 6 manufacturers are missing). This holds for every committed result, LLM prompts included. Not changed (it would move every Abt-Buy number); the paper's "each record has a product name and a free-text description, which we concatenate" needs correcting (paper plan). A test pins the behavior.
+  - **Timing fold (Abt-Buy, regime A, fold 0, M1 Max MPS): 31 min** (about 4 min per epoch, 11 min to test seven conditions). Validation top-1 0.895 / 0.953 / 0.965 / 0.965 / 0.965 over epochs 1–5; best epoch 3. Projection: Abt-Buy about 6 h, Amazon-Google and WDC (title only, about a fifth of the sequence length) about 1.5–2 h each; about 10 h in all, so the full run stays on the Mac with RoBERTa-base.
+  - **First full run stopped 2026-11-21: regime B collapsed.** Abt-Buy fold 0 trained on Ciphered Words kept its training loss at 0.33 in all 5 epochs (the class-prior loss for 1 positive in 10 is 0.325; validation top-1 0.19–0.36), where regime A reached 0.15 in epoch 1. Fix: linear warmup over the first 10% of steps (`WARMUP = 0.1`), for both regimes. Retested on the same fold: loss 0.30 / 0.14 / 0.10 / 0.08 / 0.06, validation top-1 0.71–0.74, test top-1 0.700. The no-warmup checkpoints are kept in the session scratchpad, not used. `--matched` added to run one regime B condition.
+  - Full run restarted 2026-11-21 with warmup on all three datasets (regime A fold 0 retrained under the new settings; the regime B Ciphered Words fold 0 retest is kept). A watcher flags any fit whose final-epoch loss is above 0.25. Then `05`, `06`, and the D.8 check.
 
 ## Definition of done
 
